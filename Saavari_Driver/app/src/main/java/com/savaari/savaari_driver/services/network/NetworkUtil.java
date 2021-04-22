@@ -4,13 +4,8 @@ package com.savaari.savaari_driver.services.network;
 import android.text.TextUtils;
 import android.util.Log;
 
-//import com.example.savaari_driver.entity.Driver;
-//import com.example.savaari_driver.entity.Location;
-//import com.example.savaari_driver.entity.Payment;
-//import com.example.savaari_driver.entity.Ride;
-//import com.example.savaari_driver.entity.RideRequest;
-//import com.example.savaari_driver.entity.Vehicle;
-//import com.fasterxml.jackson.core.JsonProcessingException;
+import com.savaari.savaari_driver.entity.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.json.JSONException;
@@ -33,7 +28,7 @@ public class NetworkUtil {
     // Main Attributes
     private static NetworkUtil networkUtil = null;
     private static final String TAG = "NetworkUtil";
-    private static String urlAddress = "https://68eeaa6e4524.ngrok.io/"; // remember to add a "/" at the end of the url
+    private static String urlAddress = "https://1105c3b03acf.ngrok.io/"; // remember to add a "/" at the end of the url
 
     // For Wrapping and Unwrapping
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -246,6 +241,23 @@ public class NetworkUtil {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+    // Loading User Data
+    public Driver loadUserData(int currentUserID)
+    {
+        JSONObject jsonParam = new JSONObject();
+        try {
+            jsonParam.put("USER_ID", currentUserID);
+            String result = sendPost(urlAddress + "driver_data", jsonParam);
+            if (result != null) {
+                return objectMapper.readValue(result, Driver.class);
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

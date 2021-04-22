@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.animation.Animation;
+import android.widget.ImageView;
 
 import com.savaari.savaari_driver.R;
-// import com.example.savaari_driver.auth.login.LoginActivity;
+import com.savaari.savaari_driver.auth.login.LoginActivity;
 // import com.example.savaari_driver.register.RegisterActivity;
 
 
@@ -46,7 +48,7 @@ public class MainActivity extends Util {
 
         final int USER_ID = sh.getInt("USER_ID", -1);
         if (USER_ID == -1) {
-            // launchLoginActivity();
+            launchLoginActivity();
         }
         else {
             ((SavaariApplication) getApplication()).getRepository().persistLogin(object -> {
@@ -59,13 +61,13 @@ public class MainActivity extends Util {
         }
     }
 
-//    public void launchLoginActivity() {
-//        Intent i = new Intent(MainActivity.this, LoginActivity.class);
-//        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//        startActivity(i);
-//        finish();
-//    }
-//
+    public void launchLoginActivity() {
+        Intent i = new Intent(MainActivity.this, LoginActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
+        finish();
+    }
+
 //    public void launchRegisterActivity(int userID, boolean apiConnection) {
 //        Intent i = new Intent(MainActivity.this, RegisterActivity.class);
 //        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
