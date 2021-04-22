@@ -490,4 +490,67 @@ public class OracleDBHandler implements DBHandler {
                 driver.getStatus(),
                 driver.getUserID())) > 0);
     }
+
+    @Override
+    public boolean respondToVehicleRegistrationRequest(Vehicle currentVehicleRequest) {
+
+        Connection connect = null;
+        PreparedStatement approveVehicleRequestStatement = null,
+                deleteVehicleRequestStatement = null,
+                rejectVehicleRequestStatement = null;
+        try {
+            int numRowsUpdated;
+
+            String approveVehicleRequestQuery =
+                    "INSERT INTO DRIVERS_VEHICLES\n" +
+                            " SELECT VRR.DRIVER_ID,  0, ?, VRR.NUMBER_PLATE, " + Vehicle.VH_ACCEPTANCE_ACK + ", VRR.COLOR" +
+                            " FROM VEHICLE_REGISTRATION_REQ VRR" +
+                            " WHERE VRR.REGISTRATION_REQ_ID = ?";
+
+            String deleteVehicleRequestQuery =
+                    "DELETE FROM VEHICLE_REGISTRATION_REQ" +
+                            " WHERE REGISTRATION_REQ_ID = ?";
+
+            String rejectVehicleRequestQuery = "UPDATE VEHICLE_REGISTRATION_REQ" +
+                    " SET STATUS = " + Vehicle.VH_REQ_REJECTED +
+                    " WHERE REGISTRATION_REQ_ID = ?";
+
+            connect = DBCPDataSource.getConnection();
+            approveVehicleRequestStatement = connect.prepareStatement(approveVehicleRequestQuery);
+            deleteVehicleRequestStatement = connect.prepareStatement(deleteVehicleRequestQuery);
+            rejectVehicleRequestStatement = connect.prepareStatement(rejectVehicleRequestQuery);
+
+            // If any records 'dirty' - response received but not persisted, then persist
+            if (currentVehicleRequest.getStatus() == Vehicle.VH_REQ_ACCEPTED) {
+                approveVehicleRequestStatement.setInt(1, currentVehicleRequest.getVehicleTypeID());
+                approveVehicleRequestStatement.setInt(2, currentVehicleRequest.getVehicleID());
+
+                numRowsUpdated = approveVehicleRequestStatement.executeUpdate();
+
+                if (numRowsUpdated > 0) {
+                    deleteVehicleRequestStatement.setInt(1, currentVehicleRequest.getVehicleID());
+
+                    deleteVehicleRequestStatement.executeUpdate();
+                }
+            }
+            else if (currentVehicleRequest.getStatus() == Vehicle.VH_REQ_REJECTED) {
+                rejectVehicleRequestStatement.setInt(1, currentVehicleRequest.getVehicleID());
+
+                rejectVehicleRequestStatement.executeUpdate();
+            }
+
+            return true;
+        }
+        catch (Exception e) {
+            System.out.println(LOG_TAG + "Exception:respondToVehicleRequest()");
+            e.printStackTrace();
+            return false;
+        }
+        finally {
+            closeStatement(approveVehicleRequestStatement);
+            closeStatement(deleteVehicleRequestStatement);
+            closeStatement(rejectVehicleRequestStatement);
+            closeConnection(connect);
+        }
+    }
 }
