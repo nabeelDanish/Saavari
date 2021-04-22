@@ -13,13 +13,13 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.savaari_driver.R;
-import com.example.savaari_driver.SavaariApplication;
-import com.example.savaari_driver.entity.Vehicle;
-import com.example.savaari_driver.register.fragments.FragmentClickListener;
-import com.example.savaari_driver.register.fragments.menu.adapter.VehicleRegistrationAdapter;
-import com.example.savaari_driver.ride.adapter.OnItemClickListener;
-import com.example.savaari_driver.ride.adapter.VehicleTypeItem;
+import com.savaari.savaari_driver.R;
+import com.savaari.savaari_driver.SavaariApplication;
+import com.savaari.savaari_driver.entity.Vehicle;
+import com.savaari.savaari_driver.register.fragments.FragmentClickListener;
+import com.savaari.savaari_driver.register.fragments.menu.adapter.VehicleRegistrationAdapter;
+import com.savaari.savaari_driver.ride.adapter.OnItemClickListener;
+import com.savaari.savaari_driver.ride.adapter.VehicleTypeItem;
 
 import java.util.ArrayList;
 import java.util.Objects;

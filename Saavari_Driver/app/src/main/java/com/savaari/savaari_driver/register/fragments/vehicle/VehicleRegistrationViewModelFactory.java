@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.savaari_driver.Repository;
+import com.savaari.savaari_driver.Repository;
 
 /**
  * ViewModel provider factory to instantiate LoginViewModel.
