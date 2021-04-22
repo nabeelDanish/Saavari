@@ -275,7 +275,7 @@ public class RegisterActivity
                 launchDocumentFragment();
                 break;
             case (R.id.nav_your_vehicles):
-                // launchVehicleMenuFragment();
+                launchVehicleMenuFragment();
                 break;
             case (R.id.nav_settings):
 //                i = new Intent(com.savaari.savaari_driver.register.RegisterActivity.this, SettingsActivity.class);
