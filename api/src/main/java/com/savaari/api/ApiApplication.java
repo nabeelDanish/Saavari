@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Map;
 
 @SpringBootApplication
@@ -298,6 +299,129 @@ public class ApiApplication {
 		}
 
 		return null;
+	}
+
+
+	/*
+	* -------------------------------------------
+	*  DRIVER & VEHICLE REGISTRATION REQUESTS
+	* -------------------------------------------
+	* */
+
+	/* Get Driver & Vehicle Requests */
+	@CrossOrigin(origins = "*")
+	@PostMapping("/driverRequests")
+	public String driverRequests(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		AdminSystem adminSystem = getAttributeObject(request, AdminSystem.class, AdminSystem.class.getName());
+		if (adminSystem == null) { return null; }
+
+		try {
+			ArrayList<Driver> driverRequests = adminSystem.getDriverRequests();
+			if (driverRequests != null) {
+				return objectMapper.writeValueAsString(driverRequests);
+			}
+
+			return null;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@CrossOrigin(origins = "*")
+	@PostMapping("/vehicleRequests")
+	public String vehicleRequests(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		AdminSystem adminSystem = getAttributeObject(request, AdminSystem.class, AdminSystem.class.getName());
+		if (adminSystem == null) { return null; }
+
+		try {
+			ArrayList<Vehicle> vehicleRequests = adminSystem.getVehicleRequests();
+			if (vehicleRequests != null) {
+				return objectMapper.writeValueAsString(vehicleRequests);
+			}
+
+			return null;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/* Send Registration Request methods */
+
+	@RequestMapping(value = "/registerDriver", method = RequestMethod.POST)
+	public String registerDriver(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		CRUDController crudController = getAttributeObject(request, CRUDController.class, CRUDController.class.getName());
+
+		Driver driver = new Driver();
+		driver.setUserID(Integer.parseInt(allParams.get("USER_ID")));
+		driver.setFirstName(allParams.get("FIRST_NAME"));
+		driver.setLastName(allParams.get("LAST_NAME"));
+		driver.setPhoneNo(allParams.get("PHONE_NO"));
+		driver.setCNIC(allParams.get("CNIC"));
+		driver.setLicenseNumber(allParams.get("LICENSE_NUMBER"));
+
+		boolean status = crudController.registerDriver(driver);
+
+		// Package response
+		JSONObject result = new JSONObject();
+		if (status) {
+			result.put("STATUS", 200);
+		} else {
+			result.put("STATUS", 400);
+		}
+
+		storeObjectAsAttribute(request, CRUDController.class.getName(), crudController);
+
+		return result.toString();
+	}
+
+	/* Respond to Registration Requests */
+
+	@CrossOrigin(origins = "*")
+	@RequestMapping(value = "/respondToDriverRequest", method = RequestMethod.POST)
+	public String respondToDriverRequest(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		AdminSystem adminSystem = getAttributeObject(request, AdminSystem.class, AdminSystem.class.getName());
+		if (adminSystem == null) { return null; }
+
+		Driver driver = new Driver();
+		driver.setUserID(Integer.parseInt(allParams.get("DRIVER_ID")));
+		driver.setStatus(Integer.parseInt(allParams.get("STATUS")));
+
+		Administrator administrator = getAttributeObject(request, Administrator.class, Administrator.class.getName());
+
+		boolean status = adminSystem.respondToDriverRegistrationRequest(driver);
+
+		// Packaging Response
+		JSONObject jsonObject = new JSONObject();
+		if (status) {
+			jsonObject.put("STATUS", 200);
+		} else {
+			jsonObject.put("STATUS", 404);
+		}
+		return jsonObject.toString();
 	}
 
 }
