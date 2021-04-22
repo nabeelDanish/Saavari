@@ -1,5 +1,6 @@
 package com.savaari.api.database;
 
+import com.savaari.api.entity.Administrator;
 import com.savaari.api.entity.Driver;
 import com.savaari.api.entity.User;
 import com.savaari.api.entity.Vehicle;
@@ -256,4 +257,62 @@ public class OracleDBHandler implements DBHandler {
         return null;
     }
     /* End of section */
+
+
+    /*
+     * -------------------------------------
+     *  ADMIN SYSTEM REQUESTS
+     * -------------------------------------
+     */
+
+    @Override
+    public boolean addAdmin(Administrator admin) {
+        return (executeUpdate(String.format("INSERT INTO ADMIN_DETAILS" +
+                        " VALUES(0, '%s', '%s', '%s', '%s', '%s', '%s', %d)",
+                admin.getEmailAddress(),
+                admin.getPassword(),
+                admin.getFirstName(),
+                admin.getLastName(),
+                admin.getPhoneNo(),
+                admin.getCNIC(),
+                admin.getCredentials())) > 0);
+    }
+
+    @Override
+    public boolean loginAdmin(Administrator admin) {
+        Connection connect = null;
+        ResultSet resultSet = null;
+        try {
+            String sqlQuery = "SELECT USER_ID, EMAIL_ADDRESS, PASSWORD, FIRST_NAME, LAST_NAME, PHONE_NO, CNIC, CREDENTIALS" +
+                    " FROM ADMIN_DETAILS WHERE EMAIL_ADDRESS = '" + admin.getEmailAddress() + "'";
+
+            connect = DBCPDataSource.getConnection();
+            resultSet = connect.createStatement().executeQuery(sqlQuery);
+
+            // If email address & password verified
+            if (resultSet.next() && User.verifyPassword(resultSet.getString(2), admin.getPassword())) {
+                admin.Initialize(resultSet.getInt(1),
+                        resultSet.getString(2),
+                        resultSet.getString(3),
+                        resultSet.getString(4),
+                        resultSet.getString(5),
+                        resultSet.getString(6),
+                        resultSet.getString(7),
+                        resultSet.getInt(8));
+
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch (Exception e) {
+            System.out.println("Exception in DBHandler:loginAdmin()");
+            e.printStackTrace();
+            return false;
+        }
+        finally {
+            closeAll(connect, null, resultSet);
+        }
+    }
 }
