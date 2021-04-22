@@ -3,8 +3,11 @@ package com.savaari.api;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.savaari.api.controllers.AdminSystem;
 import com.savaari.api.controllers.CRUDController;
+import com.savaari.api.entity.Administrator;
 import com.savaari.api.entity.Driver;
+import com.savaari.api.entity.Vehicle;
 import org.json.JSONObject;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -230,6 +233,71 @@ public class ApiApplication {
 		}
 		storeObjectAsAttribute(request, CRUDController.class.getName(), crudController);
 		return result;
+	}
+
+
+	/*
+	* -------------------------------------
+	*  ADMIN SYSTEM REQUESTS
+	* -------------------------------------
+	*/
+
+	@CrossOrigin(origins = "*")
+	@PostMapping("/add_admin")
+	public String addAdmin(@RequestBody String allParams, HttpServletRequest request) {
+
+		JSONObject result = new JSONObject();
+
+		try {
+			Administrator administrator = objectMapper.readValue(allParams, Administrator.class);
+
+			if (new AdminSystem().addAdmin(administrator)) {
+				result.put("STATUS_CODE", 200);
+			}
+			else {
+				result.put("STATUS_CODE", 404);
+			}
+			return result.toString();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			result.put("STATUS_CODE", 404);
+			return result.toString();
+		}
+	}
+
+	@CrossOrigin(origins = "*")
+	@PostMapping("/login_admin")
+	public String loginAdmin(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		AdminSystem adminSystem = getAttributeObject(request, AdminSystem.class, AdminSystem.class.getName());
+		if (adminSystem == null) { return null; }
+
+		Administrator admin = new Administrator();
+		admin.setEmailAddress(allParams.get("username"));
+		admin.setPassword(allParams.get("password"));
+
+		// Package response
+		JSONObject result = new JSONObject();
+
+		if (adminSystem.loginAdmin(admin)) {
+			return null;
+		}
+		else {
+			if (request.getSession(false) == null) {
+				request.getSession(true);
+			}
+
+			try {
+				storeObjectAsAttribute(request, AdminSystem.class.getName(), adminSystem);
+				return objectMapper.writeValueAsString(admin);
+			}
+			catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return null;
 	}
 
 }
