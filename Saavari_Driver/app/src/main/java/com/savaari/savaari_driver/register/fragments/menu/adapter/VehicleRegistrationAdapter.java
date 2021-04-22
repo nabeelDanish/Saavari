@@ -10,9 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.savaari_driver.R;
-import com.example.savaari_driver.ride.adapter.OnItemClickListener;
-import com.example.savaari_driver.ride.adapter.VehicleTypeItem;
+import com.savaari.savaari_driver.R;
+import com.savaari.savaari_driver.ride.adapter.OnItemClickListener;
+import com.savaari.savaari_driver.ride.adapter.VehicleTypeItem;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

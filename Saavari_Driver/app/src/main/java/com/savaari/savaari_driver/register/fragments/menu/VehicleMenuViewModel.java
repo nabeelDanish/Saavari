@@ -2,8 +2,8 @@ package com.savaari.savaari_driver.register.fragments.menu;
 
 import androidx.lifecycle.ViewModel;
 
-import com.example.savaari_driver.Repository;
-import com.example.savaari_driver.entity.*;
+import com.savaari.savaari_driver.Repository;
+import com.savaari.savaari_driver.entity.*;
 
 public class VehicleMenuViewModel extends ViewModel
 {

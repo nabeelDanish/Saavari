@@ -16,10 +16,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.example.savaari_driver.R;
-import com.example.savaari_driver.SavaariApplication;
-import com.example.savaari_driver.entity.Vehicle;
-import com.example.savaari_driver.register.fragments.FragmentClickListener;
+import com.savaari.savaari_driver.R;
+import com.savaari.savaari_driver.SavaariApplication;
+import com.savaari.savaari_driver.entity.Vehicle;
+import com.savaari.savaari_driver.register.fragments.FragmentClickListener;
 
 public class VehicleRegistrationFragment extends Fragment {
 

@@ -6,9 +6,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.savaari_driver.Repository;
-import com.example.savaari_driver.entity.Driver;
-import com.example.savaari_driver.entity.Vehicle;
+import com.savaari.savaari_driver.Repository;
+import com.savaari.savaari_driver.entity.Driver;
+import com.savaari.savaari_driver.entity.Vehicle;
 
 import static android.content.ContentValues.TAG;
 
