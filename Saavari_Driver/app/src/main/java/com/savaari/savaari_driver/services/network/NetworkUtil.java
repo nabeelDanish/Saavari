@@ -302,4 +302,30 @@ public class NetworkUtil {
             return false;
         }
     }
+
+    // Sending Vehicle Registration Request
+    public boolean sendVehicleRegistrationRequest(Driver driver, Vehicle vehicle)
+    {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("DRIVER_ID", driver.getUserID());
+            jsonObject.put("MAKE", vehicle.getMake());
+            jsonObject.put("MODEL", vehicle.getModel());
+            jsonObject.put("YEAR", vehicle.getYear());
+            jsonObject.put("NUMBER_PLATE", vehicle.getNumberPlate());
+            jsonObject.put("COLOR", vehicle.getColor());
+            jsonObject.put("STATUS", vehicle.getStatus());
+
+            String result = sendPost(urlAddress + "sendVehicleRequest", jsonObject);
+            if (result != null) {
+                jsonObject = new JSONObject(result);
+                return jsonObject.getInt("STATUS") == 200;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
