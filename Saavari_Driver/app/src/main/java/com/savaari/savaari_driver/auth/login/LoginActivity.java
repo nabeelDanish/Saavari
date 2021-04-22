@@ -22,7 +22,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.savaari.savaari_driver.R;
 import com.savaari.savaari_driver.SavaariApplication;
 import com.savaari.savaari_driver.Util;
-// import com.savaari.savaari_driver.auth.signup.SignUpActivity;
+import com.savaari.savaari_driver.auth.signup.SignUpActivity;
 import com.savaari.savaari_driver.entity.Driver;
 import com.savaari.savaari_driver.entity.Vehicle;
 // import com.savaari.savaari_driver.register.RegisterActivity;
@@ -61,8 +61,8 @@ public class LoginActivity extends Util
         newAccountButton.setOnClickListener(v -> {
             v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
 
-//            Intent i = new Intent(com.savaari.savaari_driver.auth.login.LoginActivity.this, SignUpActivity.class);
-//            startActivity(i);
+            Intent i = new Intent(com.savaari.savaari_driver.auth.login.LoginActivity.this, SignUpActivity.class);
+            startActivity(i);
         });
     }
 

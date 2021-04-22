@@ -33,10 +33,10 @@
 <!--            android:label="@string/title_activity_settings"-->
 <!--            android:parentActivityName="com.example.savaari_driver.ride.RideActivity"/>-->
 
-        <activity android:name="com.savaari.savaari_driver.auth.login.LoginActivity" />
-<!--        <activity-->
-<!--            android:name="com.example.savaari_driver.auth.signup.SignUpActivity"-->
-<!--            android:parentActivityName="com.example.savaari_driver.auth.login.LoginActivity" />-->
+        <activity android:name="com.savaari.savaari_driver.auth.login.LoginActivity"/>
+        <activity
+            android:name="com.savaari.savaari_driver.auth.signup.SignUpActivity"
+            android:parentActivityName="com.savaari.savaari_driver.auth.login.LoginActivity"/>
         <activity android:name="com.savaari.savaari_driver.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
