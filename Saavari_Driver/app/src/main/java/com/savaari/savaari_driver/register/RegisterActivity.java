@@ -26,8 +26,8 @@ import com.savaari.savaari_driver.register.fragments.FragmentClickListener;
 import com.savaari.savaari_driver.register.fragments.driver.DriverRegistrationFragment;
 import com.savaari.savaari_driver.register.fragments.menu.VehicleMenuFragment;
 import com.savaari.savaari_driver.register.fragments.vehicle.VehicleRegistrationFragment;
-import com.savaari.savaari_driver.ride.RideActivity;
-import com.savaari.savaari_driver.settings.SettingsActivity;
+// import com.savaari.savaari_driver.ride.RideActivity;
+// import com.savaari.savaari_driver.settings.SettingsActivity;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.concurrent.ScheduledFuture;
@@ -152,7 +152,7 @@ public class RegisterActivity
             case Driver.DV_REQ_SENT:
             {
                 // Request is sent, Driver can add vehicles or see vehicles status
-                launchVehicleMenuFragment();
+                // launchVehicleMenuFragment();
             }
             case Driver.DV_REQ_REJECTED:
             {
@@ -167,10 +167,10 @@ public class RegisterActivity
                     switch (where)
                     {
                         case 1:
-                            launchDocumentFragment();
+                            // launchDocumentFragment();
                             break;
                         case 2:
-                            launchVehicleMenuFragment();
+                            // launchVehicleMenuFragment();
                             break;
                     }
                 }
@@ -178,9 +178,9 @@ public class RegisterActivity
                 {
                     if (registerViewModel.getDriver().getActiveVehicle().getVehicleID() != Vehicle.DEFAULT_ID) {
                         // Goto Ride Activity
-                        launchRideActivity();
+                        // launchRideActivity();
                     } else {
-                        launchVehicleMenuFragment();
+                        // launchVehicleMenuFragment();
                     }
                 }
                 break;
@@ -188,31 +188,31 @@ public class RegisterActivity
         }
     }
 
-    private void launchVehicleMenuFragment() {
-        myToolbar.setTitle("VEHICLES");
-        Log.d(LOG_TAG, "launchVehicleMenuFragment: launching Vehicle Menu Fragment");
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.register_frame, VehicleMenuFragment.newInstance(this))
-                .commit();
-    }
-    private void launchDocumentFragment() {
-        myToolbar.setTitle("DOCUMENTS");
-        // Driver needs to fill the form and send it
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.register_frame, DriverRegistrationFragment.newInstance(this))
-                .commit();
-    }
+//    private void launchVehicleMenuFragment() {
+//        myToolbar.setTitle("VEHICLES");
+//        Log.d(LOG_TAG, "launchVehicleMenuFragment: launching Vehicle Menu Fragment");
+//        getSupportFragmentManager()
+//                .beginTransaction()
+//                .replace(R.id.register_frame, VehicleMenuFragment.newInstance(this))
+//                .commit();
+//    }
+//    private void launchDocumentFragment() {
+//        myToolbar.setTitle("DOCUMENTS");
+//        // Driver needs to fill the form and send it
+//        getSupportFragmentManager()
+//                .beginTransaction()
+//                .replace(R.id.register_frame, DriverRegistrationFragment.newInstance(this))
+//                .commit();
+//    }
 
-    private void launchRideActivity() {
-        Log.d(LOG_TAG, "launchRideActivity: Launching Ride Activity");
-        Intent i = new Intent(com.savaari.savaari_driver.register.RegisterActivity.this, RideActivity.class);
-        i.putExtra("API_CONNECTION", true);
-        i.putExtra("USER_ID", registerViewModel.getDriver().getUserID());
-        startActivity(i);
-        finish();
-    }
+//    private void launchRideActivity() {
+//        Log.d(LOG_TAG, "launchRideActivity: Launching Ride Activity");
+//        Intent i = new Intent(com.savaari.savaari_driver.register.RegisterActivity.this, RideActivity.class);
+//        i.putExtra("API_CONNECTION", true);
+//        i.putExtra("USER_ID", registerViewModel.getDriver().getUserID());
+//        startActivity(i);
+//        finish();
+//    }
 
     // Interface Implementation
     @Override
@@ -252,7 +252,7 @@ public class RegisterActivity
     @Override
     public void onBackToRideClick() {
         // Going back to Ride Activity
-        launchRideActivity();
+        // launchRideActivity();
     }
 
     @Override
@@ -278,9 +278,9 @@ public class RegisterActivity
                 launchVehicleMenuFragment();
                 break;
             case (R.id.nav_settings):
-                i = new Intent(com.savaari.savaari_driver.register.RegisterActivity.this, SettingsActivity.class);
-                startActivity(i);
-                finish();
+//                i = new Intent(com.savaari.savaari_driver.register.RegisterActivity.this, SettingsActivity.class);
+//                startActivity(i);
+//                finish();
                 break;
         }
         return true;
