@@ -19,4 +19,16 @@ public class AdminSystem {
         this.administrator = administrator;
         return this.administrator.login();
     }
+
+    public ArrayList<Vehicle> getVehicleRequests() {
+        return DBHandlerFactory.getInstance().createDBHandler().getVehicleRequests();
+    }
+
+    public ArrayList<Driver> getDriverRequests() {
+        return DBHandlerFactory.getInstance().createDBHandler().getDriverRequests();
+    }
+
+    public boolean respondToDriverRegistrationRequest(Driver driver) {
+        return DBHandlerFactory.getInstance().createDBHandler().respondToDriverRegistrationRequest(driver);
+    }
 }

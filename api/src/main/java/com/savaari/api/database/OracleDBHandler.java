@@ -260,9 +260,9 @@ public class OracleDBHandler implements DBHandler {
 
 
     /*
-     * -------------------------------------
-     *  ADMIN SYSTEM REQUESTS
-     * -------------------------------------
+     * ---------------------------------------------
+     *  CREATE & LOG INTO ADMINISTRATOR ACCOUNT
+     * ---------------------------------------------
      */
 
     @Override
@@ -314,5 +314,80 @@ public class OracleDBHandler implements DBHandler {
         finally {
             closeAll(connect, null, resultSet);
         }
+    }
+
+
+    /*
+     * --------------------------------------------------
+     *  DRIVER & VEHICLE REGISTRATION REQUEST METHODS
+     * --------------------------------------------------
+     */
+
+    /* Send Requests */
+
+    @Override
+    public boolean sendRegistrationRequest(Driver driver)
+    {
+        return (executeUpdate(String.format("UPDATE DRIVER_DETAILS SET FIRST_NAME = '%s'" +
+                        ", LAST_NAME = '%s', PHONE_NO = '%s', CNIC = '%s', LICENSE_NO = '%s', STATUS = %d WHERE USER_ID = %d",
+                driver.getFirstName(), driver.getLastName(), driver.getPhoneNo(), driver.getCNIC(), driver.getLicenseNumber(),
+                Driver.DV_REQ_SENT, driver.getUserID()))) > 0;
+    }
+
+    /* Get Requests */
+
+    @Override
+    public ArrayList<Driver> getDriverRequests() {
+        Connection connect = null;
+        ResultSet resultSet = null;
+
+        Driver driverRequest;
+        ArrayList<Driver> result = new ArrayList<>();
+
+        try {
+            connect = DBCPDataSource.getConnection();
+
+            String query = "SELECT USER_ID, USER_NAME, FIRST_NAME, LAST_NAME, PHONE_NO, CNIC, LICENSE_NO, EMAIL_ADDRESS, " +
+                    " STATUS, IS_ACTIVE, ACTIVE_VEHICLE_ID FROM DRIVER_DETAILS WHERE STATUS = " + Driver.DV_REQ_SENT;
+
+            resultSet = connect.createStatement().executeQuery(query);
+
+            // Loop through and add to list of vehicle requests
+            while (resultSet.next()) {
+                driverRequest = new Driver();
+                driverRequest.setUserID(resultSet.getInt(1));
+                driverRequest.setUsername(resultSet.getString(2));
+                driverRequest.setFirstName(resultSet.getString(3));
+                driverRequest.setLastName(resultSet.getString(4));
+                driverRequest.setPhoneNo(resultSet.getString(5));
+                driverRequest.setCNIC(resultSet.getString(6));
+                driverRequest.setLicenseNumber(resultSet.getString(7));
+                driverRequest.setEmailAddress(resultSet.getString(8));
+                driverRequest.setStatus(resultSet.getInt(9));
+                //driverRequest.setActive(resultSet.getInt(10) == 1);
+                driverRequest.setActiveVehicle(new Vehicle(resultSet.getInt(11)));
+
+                result.add(driverRequest);
+            }
+
+            return result;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        finally {
+            closeAll(connect, null, resultSet);
+        }
+    }
+
+    /* Respond to Requests */
+
+    @Override
+    public boolean respondToDriverRegistrationRequest(Driver driver) {
+
+        return (executeUpdate(String.format("UPDATE DRIVER_DETAILS SET STATUS = %d WHERE USER_ID = %d",
+                driver.getStatus(),
+                driver.getUserID())) > 0);
     }
 }

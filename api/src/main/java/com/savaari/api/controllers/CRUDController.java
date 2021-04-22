@@ -55,4 +55,17 @@ public class CRUDController
         return null;
     }
     /* End of section */
+
+
+    /* Send Registration Request methods */
+
+    public boolean registerDriver(Driver driver) {
+        this.driver.setRegistrationDetails(driver.getFirstName(),
+                driver.getLastName(),
+                driver.getPhoneNo(),
+                driver.getCNIC(),
+                driver.getLicenseNumber());
+
+        return driver.sendRegistrationRequest();
+    }
 }
