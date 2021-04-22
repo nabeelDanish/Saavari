@@ -393,7 +393,78 @@ public class ApiApplication {
 		return result.toString();
 	}
 
+	/*
+	 * Param: STATUS - previous status
+	 * If STATUS = Vehicle.VH_REJECTED, must have old registrationRequestID
+	 * ELIF STATUS = VH_DEFAULT, send new request
+	 * */
+	@RequestMapping(value = "/sendVehicleRequest", method = RequestMethod.POST)
+	public String sendVehicleRegistrationRequest(@RequestBody Map<String, String> allParams, HttpServletRequest request) {
+
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		CRUDController crudController = getAttributeObject(request, CRUDController.class, CRUDController.class.getName());
+
+		if (crudController == null) {
+			return new JSONObject().put("STATUS", 404).toString();
+		}
+
+		Vehicle vehicle = new Vehicle();
+		if (allParams.containsKey("REGISTRATION_REQ_ID")) {
+			System.out.println("Setting reg req id: " + Integer.parseInt(allParams.get("REGISTRATION_REQ_ID")));
+			vehicle.setVehicleID(Integer.parseInt(allParams.get("REGISTRATION_REQ_ID")));
+		}
+		else {
+			System.out.println("Default reg req id");
+			vehicle.setVehicleID(Vehicle.DEFAULT_ID);
+		}
+		vehicle.setMake(allParams.get("MAKE"));
+		vehicle.setModel(allParams.get("MODEL"));
+		vehicle.setYear(allParams.get("YEAR"));
+		vehicle.setNumberPlate(allParams.get("NUMBER_PLATE"));
+		vehicle.setColor(allParams.get("COLOR"));
+		vehicle.setStatus(Integer.parseInt(allParams.get("STATUS")));
+
+		JSONObject result = new JSONObject();
+		boolean requestSent = crudController.sendVehicleRegistrationRequest(vehicle);
+
+		storeObjectAsAttribute(request, CRUDController.class.getName(), crudController);
+		result.put("STATUS", ((requestSent)?200:404));
+		return result.toString();
+	}
+
 	/* Respond to Registration Requests */
+
+	/**
+	 *
+	 * @param allParams STATUS - new status (VH_REQUEST_REJECTED or VH_REQUEST_ACCEPTED), VEHICLE_TYPE_ID,
+	 *                     DRIVER_ID & REGISTRATION_REQUEST_ID
+	 * @param request Http Request object
+	 * @return JSONObject string. STATUS key maps to 200 if successful, 404 if not
+	 */
+	@CrossOrigin(origins = "*")
+	@RequestMapping(value = "/respondToVehicleRequest", method = RequestMethod.POST)
+	public String respondToVehicleRequest(@RequestBody Map<String, String> allParams, HttpServletRequest request) {
+
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		AdminSystem adminSystem = getAttributeObject(request, AdminSystem.class, AdminSystem.class.getName());
+		if (adminSystem == null) { return null; }
+
+		Vehicle vehicleRequest = new Vehicle();
+		vehicleRequest.setVehicleID(Integer.parseInt(allParams.get("REGISTRATION_REQ_ID")));
+		vehicleRequest.setVehicleTypeID(Integer.parseInt(allParams.get("VEHICLE_TYPE_ID")));
+		vehicleRequest.setStatus(Integer.parseInt(allParams.get("STATUS")));
+
+		JSONObject result = new JSONObject();
+		boolean responseSent = adminSystem.respondToVehicleRegistrationRequest(vehicleRequest);
+		result.put("STATUS", ((responseSent)?200:404));
+		return result.toString();
+	}
 
 	@CrossOrigin(origins = "*")
 	@RequestMapping(value = "/respondToDriverRequest", method = RequestMethod.POST)

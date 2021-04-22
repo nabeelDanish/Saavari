@@ -68,4 +68,8 @@ public class CRUDController
 
         return driver.sendRegistrationRequest();
     }
+
+    public boolean sendVehicleRegistrationRequest(Vehicle vehicle) {
+        return driver.sendVehicleRegistrationRequest(vehicle);
+    }
 }

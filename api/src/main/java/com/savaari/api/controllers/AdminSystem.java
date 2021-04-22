@@ -28,6 +28,10 @@ public class AdminSystem {
         return DBHandlerFactory.getInstance().createDBHandler().getDriverRequests();
     }
 
+    public boolean respondToVehicleRegistrationRequest(Vehicle vehicleRequest) {
+        return DBHandlerFactory.getInstance().createDBHandler().respondToVehicleRegistrationRequest(vehicleRequest);
+    }
+
     public boolean respondToDriverRegistrationRequest(Driver driver) {
         return DBHandlerFactory.getInstance().createDBHandler().respondToDriverRegistrationRequest(driver);
     }
