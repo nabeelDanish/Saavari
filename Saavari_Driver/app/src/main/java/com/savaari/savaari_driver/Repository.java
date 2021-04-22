@@ -41,6 +41,10 @@ public class Repository
     public void loadUserData(OnDataLoadedListener callback, int currentUserID) {
         executor.execute(() -> callback.onDataLoaded(NetworkUtil.getInstance().loadUserData(currentUserID)));
     }
+    // Sending Register Driver request
+    public void sendRegisterDriverRequest(OnDataLoadedListener callback, Driver driver) {
+        executor.execute(() -> callback.onDataLoaded(NetworkUtil.getInstance().sendRegistrationRequest(driver)));
+    }
 
 
     // Getters and Setters
