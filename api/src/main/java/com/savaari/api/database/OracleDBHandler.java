@@ -334,7 +334,107 @@ public class OracleDBHandler implements DBHandler {
                 Driver.DV_REQ_SENT, driver.getUserID()))) > 0;
     }
 
+    /*
+     * For all vehicles, if Vehicle.getStatus()
+     * = VH_DEFAULT -> Send new request
+     * = VH_REQ_REJECTED -> Update existing request
+     * */
+    @Override
+    public boolean sendVehicleRegistrationRequest(Driver driver, Vehicle currentVehicleRequest) {
+
+        //TODO: don't make new statement every time
+
+        Connection connect = null;
+        PreparedStatement statement = null;
+
+        try {
+            String sendNewRequestQuery, updateExistingRequestQuery;
+
+            connect = DBCPDataSource.getConnection();
+
+            // If request hasn't been sent
+            if (currentVehicleRequest.getStatus() == Vehicle.VH_DEFAULT) {
+                sendNewRequestQuery = "INSERT INTO VEHICLE_REGISTRATION_REQ" +
+                        " VALUES(" + driver.getUserID() +", 0, '" + currentVehicleRequest.getMake() +
+                        "', '" + currentVehicleRequest.getModel() + "', '" + currentVehicleRequest.getYear() +
+                        "', '" + currentVehicleRequest.getNumberPlate() + "', '" + currentVehicleRequest.getColor() +
+                        "', " + Vehicle.VH_REQ_SENT+ ")";
+                System.out.println("sendVehicleRequest: " + sendNewRequestQuery);
+
+                statement = connect.prepareStatement(sendNewRequestQuery);
+                statement.executeUpdate();
+                closeStatement(statement);
+
+            }
+            // Previously rejected request
+            else if (currentVehicleRequest.getStatus() == Vehicle.VH_REQ_REJECTED) {
+                updateExistingRequestQuery = "UPDATE VEHICLE_REGISTRATION_REQ" +
+                        " SET MAKE = '" + currentVehicleRequest.getMake() +
+                        "', MODEL = '" + currentVehicleRequest.getModel() +
+                        "', YEAR = '" + currentVehicleRequest.getYear() +
+                        "', NUMBER_PLATE = '" + currentVehicleRequest.getNumberPlate() +
+                        "', COLOR = '" + currentVehicleRequest.getColor() +
+                        "', STATUS = " + Vehicle.VH_REQ_SENT+
+                        " WHERE DRIVER_ID = " + driver.getUserID() +
+                        " AND REGISTRATION_REQ_ID = " + currentVehicleRequest.getVehicleID();
+
+                System.out.println("sendVehicleRequest: " + updateExistingRequestQuery);
+
+                statement = connect.prepareStatement(updateExistingRequestQuery);
+                statement.executeUpdate();
+                closeStatement(statement);
+            }
+
+            return true;
+        }
+        catch (Exception e) {
+            System.out.println(LOG_TAG + "Exception:sendVehicleRequest()");
+            e.printStackTrace();
+            return false;
+        }
+        finally {
+            closeAll(connect, statement, null);
+        }
+    }
+
     /* Get Requests */
+
+    @Override
+    public ArrayList<Vehicle> getVehicleRequests() {
+        Connection connect = null;
+        ResultSet resultSet = null;
+
+        Vehicle vehicleRequest;
+        ArrayList<Vehicle> result = new ArrayList<>();
+
+        try {
+            connect = DBCPDataSource.getConnection();
+
+            String query = "SELECT REGISTRATION_REQ_ID, MAKE, MODEL, YEAR, NUMBER_PLATE, STATUS, COLOR" +
+                    " FROM VEHICLE_REGISTRATION_REQ WHERE STATUS = " + Vehicle.VH_REQ_SENT;
+
+            resultSet = connect.createStatement().executeQuery(query);
+
+            // Loop through and add to list of vehicle requests
+            while (resultSet.next()) {
+                vehicleRequest = new Vehicle(resultSet.getInt(1), resultSet.getString(2),
+                        resultSet.getString(3), resultSet.getString(4), 0,
+                        resultSet.getString(5), resultSet.getInt(6),
+                        resultSet.getString(7));
+
+                result.add(vehicleRequest);
+            }
+
+            return result;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        finally {
+            closeAll(connect, null, resultSet);
+        }
+    }
 
     @Override
     public ArrayList<Driver> getDriverRequests() {
