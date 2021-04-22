@@ -45,6 +45,11 @@ public class Repository
     public void sendRegisterDriverRequest(OnDataLoadedListener callback, Driver driver) {
         executor.execute(() -> callback.onDataLoaded(NetworkUtil.getInstance().sendRegistrationRequest(driver)));
     }
+    // Sending Vehicle Registration Request
+    public void sendVehicleRegistrationRequest(OnDataLoadedListener callback, Driver driver, Vehicle vehicle)
+    {
+        executor.execute(() -> callback.onDataLoaded(NetworkUtil.getInstance().sendVehicleRegistrationRequest(driver, vehicle)));
+    }
 
 
     // Getters and Setters

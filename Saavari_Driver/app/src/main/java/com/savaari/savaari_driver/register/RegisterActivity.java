@@ -24,8 +24,8 @@ import com.savaari.savaari_driver.entity.Driver;
 import com.savaari.savaari_driver.entity.Vehicle;
 import com.savaari.savaari_driver.register.fragments.FragmentClickListener;
 import com.savaari.savaari_driver.register.fragments.driver.DriverRegistrationFragment;
-// import com.savaari.savaari_driver.register.fragments.menu.VehicleMenuFragment;
-// import com.savaari.savaari_driver.register.fragments.vehicle.VehicleRegistrationFragment;
+import com.savaari.savaari_driver.register.fragments.menu.VehicleMenuFragment;
+import com.savaari.savaari_driver.register.fragments.vehicle.VehicleRegistrationFragment;
 // import com.savaari.savaari_driver.ride.RideActivity;
 // import com.savaari.savaari_driver.settings.SettingsActivity;
 import com.google.android.material.navigation.NavigationView;
@@ -152,7 +152,7 @@ public class RegisterActivity
             case Driver.DV_REQ_SENT:
             {
                 // Request is sent, Driver can add vehicles or see vehicles status
-                // launchVehicleMenuFragment();
+                launchVehicleMenuFragment();
             }
             case Driver.DV_REQ_REJECTED:
             {
@@ -167,10 +167,10 @@ public class RegisterActivity
                     switch (where)
                     {
                         case 1:
-                            // launchDocumentFragment();
+                            launchDocumentFragment();
                             break;
                         case 2:
-                            // launchVehicleMenuFragment();
+                            launchVehicleMenuFragment();
                             break;
                     }
                 }
@@ -180,7 +180,7 @@ public class RegisterActivity
                         // Goto Ride Activity
                         // launchRideActivity();
                     } else {
-                        // launchVehicleMenuFragment();
+                        launchVehicleMenuFragment();
                     }
                 }
                 break;
@@ -188,14 +188,14 @@ public class RegisterActivity
         }
     }
 
-//    private void launchVehicleMenuFragment() {
-//        myToolbar.setTitle("VEHICLES");
-//        Log.d(LOG_TAG, "launchVehicleMenuFragment: launching Vehicle Menu Fragment");
-//        getSupportFragmentManager()
-//                .beginTransaction()
-//                .replace(R.id.register_frame, VehicleMenuFragment.newInstance(this))
-//                .commit();
-//    }
+    private void launchVehicleMenuFragment() {
+        myToolbar.setTitle("VEHICLES");
+        Log.d(LOG_TAG, "launchVehicleMenuFragment: launching Vehicle Menu Fragment");
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.register_frame, VehicleMenuFragment.newInstance(this))
+                .commit();
+    }
     private void launchDocumentFragment() {
         myToolbar.setTitle("DOCUMENTS");
         // Driver needs to fill the form and send it
@@ -227,26 +227,26 @@ public class RegisterActivity
 
     @Override
     public void onVehicleRegistrationClick() {
-//        myToolbar.setTitle("VEHICLES");
-//        // Driver needs to fill the form and send it
-//        getSupportFragmentManager()
-//                .beginTransaction()
-//                .replace(R.id.register_frame, VehicleRegistrationFragment.newInstance(this))
-//                .commit();
+        myToolbar.setTitle("VEHICLES");
+        // Driver needs to fill the form and send it
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.register_frame, VehicleRegistrationFragment.newInstance(this))
+                .commit();
     }
 
     @Override
     public void onVehicleRegistrationClick(int position) {
-//        VehicleRegistrationFragment fragment = VehicleRegistrationFragment.newInstance(this);
-//        myToolbar.setTitle("VEHICLES");
-//        Bundle bundle = new Bundle();
-//        bundle.putInt("POSITION", position);
-//        fragment.setArguments(bundle);
-//
-//        getSupportFragmentManager()
-//                .beginTransaction()
-//                .replace(R.id.register_frame, fragment)
-//                .commit();
+        VehicleRegistrationFragment fragment = VehicleRegistrationFragment.newInstance(this);
+        myToolbar.setTitle("VEHICLES");
+        Bundle bundle = new Bundle();
+        bundle.putInt("POSITION", position);
+        fragment.setArguments(bundle);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.register_frame, fragment)
+                .commit();
     }
 
     @Override
@@ -257,7 +257,7 @@ public class RegisterActivity
 
     @Override
     public void onVehicleMenuClick() {
-        // launchVehicleMenuFragment();
+        launchVehicleMenuFragment();
     }
 
     // OnNavigationItemSelected Listener from Navigation Bar Click
