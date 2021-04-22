@@ -260,4 +260,46 @@ public class NetworkUtil {
             return null;
         }
     }
+    // Sending Registration Request
+    public boolean sendRegistrationRequest(Driver driver)
+    {
+        JSONObject jsonObject = new JSONObject();
+        // Debugging Part
+        Driver testDriver = new Driver();
+        try {
+            String obj = objectMapper.writeValueAsString(testDriver);
+            try {
+                JSONObject tempJSON = new JSONObject(obj);
+                String result = sendPost(urlAddress + "jacksonTest", tempJSON);
+                if (result != null) {
+                    Log.d(TAG, "sendRegistrationRequest: Jackson Test: found something");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        // Debugging Part
+        try {
+            jsonObject.put("USER_ID", driver.getUserID());
+            jsonObject.put("FIRST_NAME", driver.getFirstName());
+            jsonObject.put("LAST_NAME", driver.getLastName());
+            jsonObject.put("PHONE_NO", driver.getPhoneNo());
+            jsonObject.put("CNIC", driver.getCNIC());
+            jsonObject.put("LICENSE_NUMBER", driver.getLicenseNumber());
+            Log.d(TAG, "sendRegistrationRequest: jsonObject = " + jsonObject.toString());
+            String result = sendPost(urlAddress + "/registerDriver", jsonObject);
+            if (result != null) {
+                jsonObject = new JSONObject(result);
+                return jsonObject.getInt("STATUS") == 200;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d(TAG, "sendRegistrationRequest: Exception thrown!");
+            return false;
+        }
+    }
 }

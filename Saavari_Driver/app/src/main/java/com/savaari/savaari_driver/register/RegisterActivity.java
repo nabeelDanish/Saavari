@@ -24,8 +24,8 @@ import com.savaari.savaari_driver.entity.Driver;
 import com.savaari.savaari_driver.entity.Vehicle;
 import com.savaari.savaari_driver.register.fragments.FragmentClickListener;
 import com.savaari.savaari_driver.register.fragments.driver.DriverRegistrationFragment;
-import com.savaari.savaari_driver.register.fragments.menu.VehicleMenuFragment;
-import com.savaari.savaari_driver.register.fragments.vehicle.VehicleRegistrationFragment;
+// import com.savaari.savaari_driver.register.fragments.menu.VehicleMenuFragment;
+// import com.savaari.savaari_driver.register.fragments.vehicle.VehicleRegistrationFragment;
 // import com.savaari.savaari_driver.ride.RideActivity;
 // import com.savaari.savaari_driver.settings.SettingsActivity;
 import com.google.android.material.navigation.NavigationView;
@@ -73,7 +73,7 @@ public class RegisterActivity
         navUsername = headerView.findViewById(R.id.header_nickname);
         navEmail = headerView.findViewById(R.id.header_email);
         myToolbar = findViewById(R.id.toolbar);
-        myToolbar.setTitle("Settings");
+        myToolbar.setTitle("Register");
         setSupportActionBar(myToolbar);
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         this.getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -196,14 +196,14 @@ public class RegisterActivity
 //                .replace(R.id.register_frame, VehicleMenuFragment.newInstance(this))
 //                .commit();
 //    }
-//    private void launchDocumentFragment() {
-//        myToolbar.setTitle("DOCUMENTS");
-//        // Driver needs to fill the form and send it
-//        getSupportFragmentManager()
-//                .beginTransaction()
-//                .replace(R.id.register_frame, DriverRegistrationFragment.newInstance(this))
-//                .commit();
-//    }
+    private void launchDocumentFragment() {
+        myToolbar.setTitle("DOCUMENTS");
+        // Driver needs to fill the form and send it
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.register_frame, DriverRegistrationFragment.newInstance(this))
+                .commit();
+    }
 
 //    private void launchRideActivity() {
 //        Log.d(LOG_TAG, "launchRideActivity: Launching Ride Activity");
@@ -227,26 +227,26 @@ public class RegisterActivity
 
     @Override
     public void onVehicleRegistrationClick() {
-        myToolbar.setTitle("VEHICLES");
-        // Driver needs to fill the form and send it
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.register_frame, VehicleRegistrationFragment.newInstance(this))
-                .commit();
+//        myToolbar.setTitle("VEHICLES");
+//        // Driver needs to fill the form and send it
+//        getSupportFragmentManager()
+//                .beginTransaction()
+//                .replace(R.id.register_frame, VehicleRegistrationFragment.newInstance(this))
+//                .commit();
     }
 
     @Override
     public void onVehicleRegistrationClick(int position) {
-        VehicleRegistrationFragment fragment = VehicleRegistrationFragment.newInstance(this);
-        myToolbar.setTitle("VEHICLES");
-        Bundle bundle = new Bundle();
-        bundle.putInt("POSITION", position);
-        fragment.setArguments(bundle);
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.register_frame, fragment)
-                .commit();
+//        VehicleRegistrationFragment fragment = VehicleRegistrationFragment.newInstance(this);
+//        myToolbar.setTitle("VEHICLES");
+//        Bundle bundle = new Bundle();
+//        bundle.putInt("POSITION", position);
+//        fragment.setArguments(bundle);
+//
+//        getSupportFragmentManager()
+//                .beginTransaction()
+//                .replace(R.id.register_frame, fragment)
+//                .commit();
     }
 
     @Override
@@ -257,7 +257,7 @@ public class RegisterActivity
 
     @Override
     public void onVehicleMenuClick() {
-        launchVehicleMenuFragment();
+        // launchVehicleMenuFragment();
     }
 
     // OnNavigationItemSelected Listener from Navigation Bar Click
@@ -275,7 +275,7 @@ public class RegisterActivity
                 launchDocumentFragment();
                 break;
             case (R.id.nav_your_vehicles):
-                launchVehicleMenuFragment();
+                // launchVehicleMenuFragment();
                 break;
             case (R.id.nav_settings):
 //                i = new Intent(com.savaari.savaari_driver.register.RegisterActivity.this, SettingsActivity.class);
