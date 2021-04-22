@@ -188,18 +188,18 @@ public class DriverRegistrationFragment extends Fragment
         ).get(DriverRegistrationViewModel.class);
 
         // Setting Action for Request Sent
-        mViewModel.getIsRequestSent().observe(getViewLifecycleOwner(), aBoolean -> {
-            if (aBoolean != null) {
-                loadingCircle.setVisibility(View.INVISIBLE);
-                if (aBoolean)
-                {
-                    fragmentClickListener.onVehicleRegistrationClick(-1);
-                } else {
-                    if (!dataLoaded)
-                        Toast.makeText(getContext(), "Request Sent Failed!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+//        mViewModel.getIsRequestSent().observe(getViewLifecycleOwner(), aBoolean -> {
+//            if (aBoolean != null) {
+//                loadingCircle.setVisibility(View.INVISIBLE);
+//                if (aBoolean)
+//                {
+//                    fragmentClickListener.onVehicleRegistrationClick(-1);
+//                } else {
+//                    if (!dataLoaded)
+//                        Toast.makeText(getContext(), "Request Sent Failed!", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
 
         // Setting Init
         mViewModel.getIsFirstTime().observe(getViewLifecycleOwner(), aBoolean -> {
