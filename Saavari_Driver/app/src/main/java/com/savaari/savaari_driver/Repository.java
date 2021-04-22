@@ -1,6 +1,6 @@
 package com.savaari.savaari_driver;
 
-// import com.example.savaari_driver.entity.*;
+import com.savaari.savaari_driver.entity.*;
 import com.savaari.savaari_driver.services.network.NetworkUtil;
 import com.savaari.savaari_driver.services.network.OnDataLoadedListener;
 
@@ -10,7 +10,7 @@ public class Repository
 {
     // Main Attributes
     private final Executor executor;
-    // private Driver driver;
+    private Driver driver;
 
     // Constructor
     Repository(Executor executor) {
@@ -36,5 +36,18 @@ public class Repository
     // Logout
     public void logout(OnDataLoadedListener callback, int userID) {
         executor.execute(() -> callback.onDataLoaded(NetworkUtil.getInstance().logout(userID)));
+    }
+    // Loading User Data
+    public void loadUserData(OnDataLoadedListener callback, int currentUserID) {
+        executor.execute(() -> callback.onDataLoaded(NetworkUtil.getInstance().loadUserData(currentUserID)));
+    }
+
+
+    // Getters and Setters
+    public Driver getDriver() {
+        return driver;
+    }
+    public void setDriver(Driver driver) {
+        this.driver = driver;
     }
 }
