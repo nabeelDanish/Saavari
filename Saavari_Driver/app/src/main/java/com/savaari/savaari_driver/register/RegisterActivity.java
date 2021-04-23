@@ -176,9 +176,13 @@ public class RegisterActivity
                 }
                 else
                 {
-                    if (registerViewModel.getDriver().getActiveVehicle().getVehicleID() != Vehicle.DEFAULT_ID) {
-                        // Goto Ride Activity
-                        // launchRideActivity();
+                    if (registerViewModel.getDriver().getActiveVehicle() != null) {
+                        if (registerViewModel.getDriver().getActiveVehicle().getVehicleID() != Vehicle.DEFAULT_ID) {
+                            // Goto Ride Activity
+                            // launchRideActivity();
+                        } else {
+                            launchVehicleMenuFragment();
+                        }
                     } else {
                         launchVehicleMenuFragment();
                     }

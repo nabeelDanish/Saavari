@@ -28,7 +28,7 @@ public class NetworkUtil {
     // Main Attributes
     private static NetworkUtil networkUtil = null;
     private static final String TAG = "NetworkUtil";
-    private static String urlAddress = "https://1105c3b03acf.ngrok.io/"; // remember to add a "/" at the end of the url
+    private static String urlAddress = "https://ddb379b6ae8a.ngrok.io/"; // remember to add a "/" at the end of the url
 
     // For Wrapping and Unwrapping
     private static final ObjectMapper objectMapper = new ObjectMapper();

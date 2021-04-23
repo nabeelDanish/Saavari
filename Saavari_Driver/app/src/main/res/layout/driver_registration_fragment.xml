@@ -12,10 +12,12 @@
         android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/first_form"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:id="@+id/first_form">
+            android:visibility="visible">
+
             <EditText
                 android:id="@+id/first_name"
                 android:layout_width="match_parent"
@@ -27,8 +29,7 @@
                 android:padding="18dp"
                 android:selectAllOnFocus="true"
                 android:textColor="?attr/textColor"
-                android:textColorHint="?attr/lightTextColor"
-                />
+                android:textColorHint="?attr/lightTextColor" />
 
             <EditText
                 android:id="@+id/last_name"
@@ -42,8 +43,8 @@
                 android:padding="18dp"
                 android:selectAllOnFocus="true"
                 android:textColor="?attr/textColor"
-                android:textColorHint="?attr/lightTextColor"
-                />
+                android:textColorHint="?attr/lightTextColor" />
+
             <EditText
                 android:id="@+id/dob"
                 android:layout_width="match_parent"
@@ -51,17 +52,17 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="24dp"
+                android:focusable="false"
                 android:hint="@string/date_of_birth"
                 android:imeActionLabel="@string/action_sign_in"
                 android:imeOptions="actionDone"
                 android:inputType="date"
                 android:padding="18dp"
-                android:focusable="false"
                 android:textColor="?attr/textColor"
                 android:textColorHighlight="?attr/textColor"
                 android:textColorHint="?attr/lightTextColor"
-                android:textIsSelectable="false"
-                />
+                android:textIsSelectable="false" />
+
             <EditText
                 android:id="@+id/phone_number"
                 android:layout_width="match_parent"
@@ -77,15 +78,16 @@
                 android:selectAllOnFocus="true"
                 android:textColor="?attr/textColor"
                 android:textColorHighlight="?attr/textColor"
-                android:textColorHint="?attr/lightTextColor"
-                />
+                android:textColorHint="?attr/lightTextColor" />
         </LinearLayout>
+
         <LinearLayout
-            android:visibility="gone"
+            android:id="@+id/second_form"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:id="@+id/second_form">
+            android:visibility="gone">
+
             <EditText
                 android:id="@+id/CNIC"
                 android:layout_width="match_parent"
@@ -94,12 +96,11 @@
                 android:layout_marginTop="96dp"
                 android:layout_marginEnd="24dp"
                 android:hint="@string/cnic"
-                android:padding="18dp"
                 android:inputType="number"
+                android:padding="18dp"
                 android:selectAllOnFocus="true"
                 android:textColor="?attr/textColor"
-                android:textColorHint="?attr/lightTextColor"
-                />
+                android:textColorHint="?attr/lightTextColor" />
 
             <EditText
                 android:id="@+id/licenseNumber"
@@ -113,8 +114,51 @@
                 android:padding="18dp"
                 android:selectAllOnFocus="true"
                 android:textColor="?attr/textColor"
-                android:textColorHint="?attr/lightTextColor"
-                />
+                android:textColorHint="?attr/lightTextColor" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/request_sent_msg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="80dp"
+                    android:layout_marginEnd="80dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:includeFontPadding="true"
+                    android:text="@string/request_sent"
+                    android:textAlignment="center"
+                    android:textAllCaps="false"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display4"
+                    android:textColor="@color/success_green"
+                    android:textSize="18sp"
+                    android:visibility="invisible" />
+
+                <ProgressBar
+                    android:id="@+id/form_sent_circle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginBottom="25dp"
+                    android:visibility="invisible" />
+
+                <Button
+                    android:id="@+id/driver_registration_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginBottom="48dp"
+                    android:enabled="true"
+                    android:text="@string/register_driver" />
+            </LinearLayout>
         </LinearLayout>
 
         <!-- Buttons -->
@@ -136,48 +180,6 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Display4"
             android:textColor="?attr/textColor"
             android:textSize="18sp"
-            />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/request_sent_msg"
-            android:visibility="invisible"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-medium"
-            android:includeFontPadding="true"
-            android:text="@string/request_sent"
-            android:layout_marginStart="80dp"
-            android:layout_marginEnd="80dp"
-            android:textAlignment="center"
-            android:textAllCaps="false"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display4"
-            android:textColor="@color/success_green"
-            android:textSize="18sp"
-            />
-        <ProgressBar
-            android:id="@+id/form_sent_circle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
-            android:layout_marginEnd="0dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="25dp"
-            android:visibility="invisible"/>
-        <Button
-            android:id="@+id/driver_registration_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/register_driver"
-            android:enabled="true"
-            android:layout_marginStart="0dp"
-            android:layout_marginEnd="0dp"
-            android:layout_marginBottom="48dp"
-            android:layout_gravity="center_horizontal"
             />
     </LinearLayout>
 </FrameLayout>
