@@ -10,4 +10,5 @@
     <attr name = "lightForegroundColor" format = "color"/>
     <attr name = "flatGray" format = "color"/>
     <attr name = "foregroundItemColor" format="color"/>
+    <attr name="themeName" format="string"/>
 </resources>

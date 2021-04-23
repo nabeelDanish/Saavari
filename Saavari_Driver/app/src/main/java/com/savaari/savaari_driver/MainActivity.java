@@ -19,9 +19,9 @@ public class MainActivity extends Util {
     {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-        ThemeVar.setData(preferences.getInt(getString(R.string.preference_theme_var), ThemeVar.getData()));
+        ThemeVar.getInstance().setData(preferences.getInt(getString(R.string.preference_theme_var), ThemeVar.getInstance().getData()));
 
-        switch (ThemeVar.getData())
+        switch (ThemeVar.getInstance().getData())
         {
             case(0):
                 setTheme(R.style.BlackTheme);

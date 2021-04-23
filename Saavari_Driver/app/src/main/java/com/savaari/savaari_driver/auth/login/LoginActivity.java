@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.savaari.savaari_driver.R;
 import com.savaari.savaari_driver.SavaariApplication;
+import com.savaari.savaari_driver.ThemeVar;
 import com.savaari.savaari_driver.Util;
 import com.savaari.savaari_driver.auth.signup.SignUpActivity;
 import com.savaari.savaari_driver.entity.Driver;
@@ -43,7 +44,7 @@ public class LoginActivity extends Util
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
-        themeSelect(this);
+        ThemeVar.getInstance().themeSelect(this);
 
         // Default Codes
         super.onCreate(savedInstanceState);

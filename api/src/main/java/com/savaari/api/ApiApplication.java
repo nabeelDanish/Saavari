@@ -313,9 +313,6 @@ public class ApiApplication {
 	@PostMapping("/driverRequests")
 	public String driverRequests(@RequestBody Map<String, String> allParams, HttpServletRequest request)
 	{
-		if (request.getSession(false) == null) {
-			return null;
-		}
 
 		AdminSystem adminSystem = getAttributeObject(request, AdminSystem.class, AdminSystem.class.getName());
 		if (adminSystem == null) { return null; }
@@ -338,9 +335,6 @@ public class ApiApplication {
 	@PostMapping("/vehicleRequests")
 	public String vehicleRequests(@RequestBody Map<String, String> allParams, HttpServletRequest request)
 	{
-		if (request.getSession(false) == null) {
-			return null;
-		}
 
 		AdminSystem adminSystem = getAttributeObject(request, AdminSystem.class, AdminSystem.class.getName());
 		if (adminSystem == null) { return null; }
@@ -448,10 +442,6 @@ public class ApiApplication {
 	@RequestMapping(value = "/respondToVehicleRequest", method = RequestMethod.POST)
 	public String respondToVehicleRequest(@RequestBody Map<String, String> allParams, HttpServletRequest request) {
 
-		if (request.getSession(false) == null) {
-			return null;
-		}
-
 		AdminSystem adminSystem = getAttributeObject(request, AdminSystem.class, AdminSystem.class.getName());
 		if (adminSystem == null) { return null; }
 
@@ -470,9 +460,6 @@ public class ApiApplication {
 	@RequestMapping(value = "/respondToDriverRequest", method = RequestMethod.POST)
 	public String respondToDriverRequest(@RequestBody Map<String, String> allParams, HttpServletRequest request)
 	{
-		if (request.getSession(false) == null) {
-			return null;
-		}
 
 		AdminSystem adminSystem = getAttributeObject(request, AdminSystem.class, AdminSystem.class.getName());
 		if (adminSystem == null) { return null; }

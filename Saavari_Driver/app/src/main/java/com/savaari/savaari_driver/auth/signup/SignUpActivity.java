@@ -26,6 +26,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.savaari.savaari_driver.R;
 import com.savaari.savaari_driver.SavaariApplication;
+import com.savaari.savaari_driver.ThemeVar;
 import com.savaari.savaari_driver.Util;
 
 import java.util.Objects;
@@ -70,7 +71,7 @@ public class SignUpActivity extends Util {
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
-        themeSelect(this);
+        ThemeVar.getInstance().themeSelect(this);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
