@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.savaari.savaari_driver.R;
 import com.savaari.savaari_driver.SavaariApplication;
+import com.savaari.savaari_driver.ThemeVar;
 import com.savaari.savaari_driver.Util;
 import com.savaari.savaari_driver.entity.Driver;
 import com.savaari.savaari_driver.entity.Vehicle;
@@ -61,7 +62,7 @@ public class RegisterActivity
     // ------------------------------------------------------------------------------------------
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        themeSelect(this);
+        ThemeVar.getInstance().themeSelect(this);
         super.onCreate(savedInstanceState);
 
         // Setting UI Elements

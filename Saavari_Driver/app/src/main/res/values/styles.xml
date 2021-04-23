@@ -15,6 +15,7 @@
         <item name = "android:statusBarColor">@android:color/transparent</item>
         <item name = "lightForegroundColor">#949494</item>
         <item name = "foregroundItemColor">#15FFFFFF</item>
+        <item name = "themeName">BlackTheme</item>
     </style>
 
     <style name="RedTheme" parent="Theme.AppCompat.NoActionBar">
@@ -28,6 +29,7 @@
         <item name = "android:statusBarColor">@android:color/transparent</item>
         <item name = "lightForegroundColor">#FFCCCB</item>
         <item name = "foregroundItemColor">#FFFFFF</item>
+        <item name = "themeName">RedTheme</item>
     </style>
 
     <style name="DimRedTheme" parent="Theme.AppCompat.NoActionBar">
@@ -41,6 +43,7 @@
         <item name = "android:statusBarColor">@android:color/transparent</item>
         <item name = "lightForegroundColor">#15FFFFFF</item>
         <item name = "foregroundItemColor">#15FFFFFF</item>
+        <item name = "themeName">DimRedTheme</item>
     </style>
 
     <style name="DarkBlueTheme" parent="Theme.AppCompat.NoActionBar">
@@ -54,6 +57,7 @@
         <item name = "android:statusBarColor">@android:color/transparent</item>
         <item name = "lightForegroundColor">#0DFFFFFF</item>
         <item name = "foregroundItemColor">#15FFFFFF</item>
+        <item name = "themeName">DarkBlueTheme</item>
     </style>
 
 
@@ -69,6 +73,7 @@
         <item name = "android:statusBarColor">@android:color/transparent</item>
         <item name = "lightForegroundColor">#87CEFA</item>
         <item name = "foregroundItemColor">#FFFFFF</item>
+        <item name = "themeName">TodoTheme</item>
     </style>
 
     <style name="BlueTheme" parent="Theme.AppCompat.NoActionBar">
@@ -82,6 +87,7 @@
         <item name = "android:statusBarColor">@android:color/transparent</item>
         <item name = "lightForegroundColor">#87CEFA</item>
         <item name = "foregroundItemColor">#FFFFFF</item>
+        <item name = "themeName">BlueTheme</item>
     </style>
     <!-- 87CEFA -->
 

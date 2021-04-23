@@ -77,32 +77,6 @@ public class Util extends AppCompatActivity
         return outToBottom;
     }
 
-    // Function for selection of theme
-    public static void themeSelect(final Context context) {
-
-        switch (ThemeVar.getData())
-        {
-            case(0):
-                context.setTheme(R.style.BlackTheme);
-                break;
-            case(1):
-                context.setTheme(R.style.RedTheme);
-                break;
-            case(2):
-                context.setTheme(R.style.DimRedTheme);
-                break;
-            case(4):
-                context.setTheme(R.style.DarkBlueTheme);
-                break;
-            case(5):
-                context.setTheme(R.style.TodoTheme);
-                break;
-            default:
-                context.setTheme(R.style.BlueTheme);
-                break;
-        }
-    }
-
     // Math Function
     public static double distance (double lat_a, double lng_a, double lat_b, double lng_b )
     {
