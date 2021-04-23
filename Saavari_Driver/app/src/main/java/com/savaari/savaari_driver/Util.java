@@ -104,7 +104,7 @@ public class Util extends AppCompatActivity
     }
 
     // Math Function
-    public static double distance (double lat_a, double lng_a, double lat_b, double lng_b )
+    public static double distance(double lat_a, double lng_a, double lat_b, double lng_b )
     {
         double earthRadius = 3958.75;
         double latDiff = Math.toRadians(lat_b-lat_a);
@@ -116,7 +116,6 @@ public class Util extends AppCompatActivity
         double distance = earthRadius * c;
 
         int meterConversion = 1609;
-
         return distance * meterConversion;
     }
 }
