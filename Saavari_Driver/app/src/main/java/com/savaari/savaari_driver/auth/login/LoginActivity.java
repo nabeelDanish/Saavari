@@ -27,7 +27,7 @@ import com.savaari.savaari_driver.auth.signup.SignUpActivity;
 import com.savaari.savaari_driver.entity.Driver;
 import com.savaari.savaari_driver.entity.Vehicle;
 import com.savaari.savaari_driver.register.RegisterActivity;
-// import com.savaari.savaari_driver.ride.RideActivity;
+import com.savaari.savaari_driver.ride.RideActivity;
 
 public class LoginActivity extends Util
 {
@@ -277,7 +277,7 @@ public class LoginActivity extends Util
                         Driver driver = loginViewModel.getDriver();
                         if (driver.getStatus() == Driver.DV_REQ_APPROVED && driver.getActiveVehicle().getVehicleID() == Vehicle.VH_REQ_ACCEPTED)
                         {
-                            // i = new Intent(com.savaari.savaari_driver.auth.login.LoginActivity.this, RideActivity.class);
+                            i = new Intent(com.savaari.savaari_driver.auth.login.LoginActivity.this, RideActivity.class);
                             Toast.makeText(getApplicationContext(), "Logged In! Can Ride!", Toast.LENGTH_LONG).show();
                         } else {
                             i = new Intent(com.savaari.savaari_driver.auth.login.LoginActivity.this, RegisterActivity.class);

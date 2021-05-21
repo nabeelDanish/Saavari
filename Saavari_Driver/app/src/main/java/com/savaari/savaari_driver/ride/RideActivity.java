@@ -44,6 +44,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.savaari.savaari_driver.R;
 import com.savaari.savaari_driver.SavaariApplication;
+import com.savaari.savaari_driver.ThemeVar;
 import com.savaari.savaari_driver.Util;
 import com.savaari.savaari_driver.entity.Driver;
 import com.savaari.savaari_driver.entity.RideRequest;
@@ -181,7 +182,7 @@ public class RideActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         // Setting UI Elements
-        themeSelect(this);
+        ThemeVar.getInstance().themeSelect(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ride);
 

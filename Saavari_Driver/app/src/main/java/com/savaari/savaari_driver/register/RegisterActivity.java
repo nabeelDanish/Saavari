@@ -27,7 +27,7 @@ import com.savaari.savaari_driver.register.fragments.FragmentClickListener;
 import com.savaari.savaari_driver.register.fragments.driver.DriverRegistrationFragment;
 import com.savaari.savaari_driver.register.fragments.menu.VehicleMenuFragment;
 import com.savaari.savaari_driver.register.fragments.vehicle.VehicleRegistrationFragment;
-// import com.savaari.savaari_driver.ride.RideActivity;
+import com.savaari.savaari_driver.ride.RideActivity;
 // import com.savaari.savaari_driver.settings.SettingsActivity;
 import com.google.android.material.navigation.NavigationView;
 
@@ -180,7 +180,7 @@ public class RegisterActivity
                     if (registerViewModel.getDriver().getActiveVehicle() != null) {
                         if (registerViewModel.getDriver().getActiveVehicle().getVehicleID() != Vehicle.DEFAULT_ID) {
                             // Goto Ride Activity
-                            // launchRideActivity();
+                            launchRideActivity();
                         } else {
                             launchVehicleMenuFragment();
                         }
@@ -212,14 +212,14 @@ public class RegisterActivity
                 .commit();
     }
 
-//    private void launchRideActivity() {
-//        Log.d(LOG_TAG, "launchRideActivity: Launching Ride Activity");
-//        Intent i = new Intent(com.savaari.savaari_driver.register.RegisterActivity.this, RideActivity.class);
-//        i.putExtra("API_CONNECTION", true);
-//        i.putExtra("USER_ID", registerViewModel.getDriver().getUserID());
-//        startActivity(i);
-//        finish();
-//    }
+    private void launchRideActivity() {
+        Log.d(LOG_TAG, "launchRideActivity: Launching Ride Activity");
+        Intent i = new Intent(com.savaari.savaari_driver.register.RegisterActivity.this, RideActivity.class);
+        i.putExtra("API_CONNECTION", true);
+        i.putExtra("USER_ID", registerViewModel.getDriver().getUserID());
+        startActivity(i);
+        finish();
+    }
 
     // Interface Implementation
     @Override
@@ -259,7 +259,7 @@ public class RegisterActivity
     @Override
     public void onBackToRideClick() {
         // Going back to Ride Activity
-        // launchRideActivity();
+        launchRideActivity();
     }
 
     @Override
