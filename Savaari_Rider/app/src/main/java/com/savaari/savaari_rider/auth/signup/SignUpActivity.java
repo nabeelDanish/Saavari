@@ -24,16 +24,17 @@ import androidx.core.app.NavUtils;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.example.savaari.R;
-import com.example.savaari.SavaariApplication;
-import com.example.savaari.utility.Util;
+import com.savaari.savaari_rider.R;
+import com.savaari.savaari_rider.SavaariApplication;
+import com.savaari.savaari_rider.utility.ThemeVar;
+import com.savaari.savaari_rider.utility.Util;
 
 import java.util.Objects;
 
 
 public class SignUpActivity extends Util {
 
-    private com.example.savaari.auth.signup.SignUpViewModel signUpViewModel;
+    private SignUpViewModel signUpViewModel;
     ProgressBar loadingProgressBar;
     EditText usernameEditText;
     EditText passwordEditText;
@@ -46,7 +47,7 @@ public class SignUpActivity extends Util {
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
-        themeSelect(this);
+        ThemeVar.getInstance().themeSelect(this);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);

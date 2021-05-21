@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.savaari.savaari_rider">
 
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,6 +11,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Savaari_Rider">
         <activity android:name=".MainActivity"></activity>
+        <activity android:name=".auth.login.LoginActivity" />
+        <activity
+            android:name=".auth.signup.SignUpActivity"
+            android:parentActivityName=".auth.login.LoginActivity" />
     </application>
 
 </manifest>

@@ -6,9 +6,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.savaari.R;
-import com.example.savaari.Repository;
-import com.example.savaari.auth.AuthInputValidator;
+import com.savaari.savaari_rider.R;
+import com.savaari.savaari_rider.Repository;
+import com.savaari.savaari_rider.auth.AuthInputValidator;
 
 public class SignUpViewModel extends ViewModel {
 
