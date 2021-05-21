@@ -194,6 +194,7 @@ public class RegisterActivity
     }
 
     private void launchVehicleMenuFragment() {
+        registerViewModel.loadUserData(registerViewModel.getDriver().getUserID());
         myToolbar.setTitle("VEHICLES");
         Log.d(LOG_TAG, "launchVehicleMenuFragment: launching Vehicle Menu Fragment");
         getSupportFragmentManager()
@@ -202,6 +203,7 @@ public class RegisterActivity
                 .commit();
     }
     private void launchDocumentFragment() {
+        registerViewModel.loadUserData(registerViewModel.getDriver().getUserID());
         myToolbar.setTitle("DOCUMENTS");
         // Driver needs to fill the form and send it
         getSupportFragmentManager()
