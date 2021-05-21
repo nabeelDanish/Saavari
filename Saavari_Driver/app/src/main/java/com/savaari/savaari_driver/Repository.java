@@ -50,6 +50,11 @@ public class Repository
     {
         executor.execute(() -> callback.onDataLoaded(NetworkUtil.getInstance().sendVehicleRegistrationRequest(driver, vehicle)));
     }
+    // Send Last Location
+    public void sendLastLocation(OnDataLoadedListener callback, int currentUserID, double latitude, double longitude) {
+        executor.execute(() ->
+                callback.onDataLoaded(NetworkUtil.getInstance().sendLastLocation(currentUserID, latitude, longitude)));
+    }
 
 
     // Getters and Setters

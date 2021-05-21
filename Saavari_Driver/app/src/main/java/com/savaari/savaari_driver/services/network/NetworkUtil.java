@@ -328,4 +328,29 @@ public class NetworkUtil {
             return false;
         }
     }
+    // Send Last Location
+    public int sendLastLocation(int currentUserID, double latitude, double longitude)
+    {
+        try
+        {
+            // TimeStamp
+            long tsLong = System.currentTimeMillis() / 1000;
+            String currentTimeStamp = Long.toString(tsLong);
+
+            // JSON
+            JSONObject jsonParam = new JSONObject();
+            jsonParam.put("USER_ID", currentUserID);
+            jsonParam.put("LATITUDE", latitude);
+            jsonParam.put("LONGITUDE", longitude);
+            jsonParam.put("TIMESTAMP", currentTimeStamp);
+
+            // Sending JSON
+            return sendPost(urlAddress + "saveDriverLocation", jsonParam) != null? 1 : 0;
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+            return -1;
+        }
+    }
 }
