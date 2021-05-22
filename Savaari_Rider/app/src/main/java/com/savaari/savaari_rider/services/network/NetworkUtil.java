@@ -4,6 +4,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.savaari.savaari_rider.ride.entity.Location;
 import com.savaari.savaari_rider.ride.entity.Rider;
 
 import org.json.JSONException;
@@ -213,6 +214,72 @@ public class NetworkUtil
             String resultString = sendPost(url, jsonParam, true);
             return ((resultString == null)? null : objectMapper.readValue(resultString, Rider.class));
         } catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // Send Last Location
+    public int sendLastLocation(String urlAddress, int currentUserID, double latitude, double longitude)
+    {
+        String url = urlAddress + "saveRiderLocation";
+        try
+        {
+            // TimeStamp
+            long tsLong = System.currentTimeMillis() / 1000;
+            String currentTimeStamp = Long.toString(tsLong);
+
+            // JSON
+            JSONObject jsonParam = new JSONObject();
+            jsonParam.put("USER_ID", currentUserID);
+            jsonParam.put("LATITUDE", latitude);
+            jsonParam.put("LONGITUDE", longitude);
+            jsonParam.put("TIMESTAMP", currentTimeStamp);
+
+            // Logging
+            Log.d(TAG, "sendLastLocation: User_ID: " + currentUserID);
+            Log.d(TAG, "sendLastLocation: Latitude: " + latitude);
+            Log.d(TAG, "sendLastLocation: Longitude: " + longitude);
+            Log.d(TAG, "sendLastLocation: TimeStamp: " + currentTimeStamp);
+
+            // Sending JSON
+            String resultString = sendPost(url, jsonParam, true);
+
+            if (resultString == null) {
+                return -1;
+            }
+            else {
+                return ((new JSONObject(resultString).getInt("STATUS") == 200)? 1 : 0);
+            }
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    // Get User Locations
+    public ArrayList<Location> getUserLocations(String urlAddress)
+    {
+        String url = urlAddress + "getRiderLocations";
+        JSONObject jsonParam = new JSONObject();
+        try
+        {
+            jsonParam.put("Dummy", 0);
+
+            String resultString = sendPost(url, jsonParam, true);
+
+            if (resultString == null) {
+                return null;
+            }
+            else {
+                return objectMapper.readValue(resultString,
+                        objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, Location.class));
+            }
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
             return null;

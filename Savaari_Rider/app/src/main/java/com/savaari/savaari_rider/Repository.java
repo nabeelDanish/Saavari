@@ -64,4 +64,15 @@ public class Repository {
     public void loadUserData(OnDataLoadedListener callback, int currentUserID) {
         executor.execute(() -> callback.onDataLoaded(NetworkUtil.getInstance().loadUserData(url, currentUserID)));
     }
+
+    // Get User Locations
+    public void getUserLocations(OnDataLoadedListener callback) {
+        executor.execute(() -> callback.onDataLoaded(NetworkUtil.getInstance().getUserLocations(url)));
+    }
+
+    // Send Last Location
+    public void sendLastLocation(int currentUserID, double latitude, double longitude) {
+        executor.execute(() ->
+                NetworkUtil.getInstance().sendLastLocation(url, currentUserID, latitude, longitude));
+    }
 }
