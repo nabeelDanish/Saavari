@@ -44,6 +44,7 @@ public class RideViewModel extends ViewModel {
     private final MutableLiveData<Ride> rideFound = new MutableLiveData<>();
     private final MutableLiveData<Boolean> endOfRideAcknowledged = new MutableLiveData<>();
     private final MutableLiveData<Boolean> rideStatusChanged = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> closeToPickup = new MutableLiveData<>();
 
     /* Get user data */
     public LatLng getUserCoordinates() {
@@ -191,6 +192,39 @@ public class RideViewModel extends ViewModel {
             ride.setRideStatus(Ride.END_ACKED);
             endOfRideAcknowledged.postValue(true);
         }, ride.getRideID(), ride.getRideParameters().getRider().getUserID());
+    }
+
+    public void fetchDriverLocation() {
+        Log.d(LOG_TAG, "fetchDriverLocation called!");
+        int driverID = ride.getRideParameters().getDriver().getUserID();
+
+        if (driverID > 0) {
+            repository.getDriverLocation(object -> {
+                if (object != null) {
+                    try {
+                        JSONObject result = (JSONObject) object;
+                        if (result.getInt("STATUS_CODE") == 200) {
+
+                            Log.d(LOG_TAG, " fetchDriverLocation: Got driver location!");
+                            ride.getRideParameters().getDriver().setCurrentLocation(new Location(result.getDouble("LATITUDE"),
+                                    result.getDouble("LONGITUDE"), null));
+                            driverLocationFetched.postValue(true);
+
+                            if (ride.closeToPickup()) {
+                                closeToPickup.postValue(true);
+                            }
+                        }
+                        else {
+                            Log.d(LOG_TAG, " fetchDriverLocation: Failed to fetch driver location");
+                        }
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                        Log.d(LOG_TAG, "fetchDriverLocation(): Exception");
+                    }
+                }
+            }, driverID);
+        }
     }
 
     public void loadRide() {

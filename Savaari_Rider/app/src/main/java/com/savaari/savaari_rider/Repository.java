@@ -84,6 +84,10 @@ public class Repository {
                 NetworkUtil.getInstance().sendLastLocation(url, currentUserID, latitude, longitude));
     }
 
+    public void getDriverLocation(OnDataLoadedListener callback, int driverID) {
+        callback.onDataLoaded(NetworkUtil.getInstance().getDriverLocation(url, driverID));
+    }
+
     public void getRide(OnDataLoadedListener callback, int riderID) {
         executor.execute(() -> callback.onDataLoaded(NetworkUtil.getInstance().getRide(url, riderID)));
     }
