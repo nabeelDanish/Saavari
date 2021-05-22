@@ -347,6 +347,27 @@ public class NetworkUtil {
         }
     }
 
+    public boolean giveFeedbackForDriver(String urlAddress, int rideID, int driverID, float rating) {
+        Log.d(TAG, " :giveFeedbackForDriver called!");
+        String url = urlAddress + "giveFeedbackForDriver";
+
+        JSONObject jsonParam = new JSONObject();
+
+        try {
+            jsonParam.put("RIDE_ID", rideID);
+            jsonParam.put("DRIVER_ID", driverID);
+            jsonParam.put("RATING", rating);
+
+            String resultString = sendPost(url, jsonParam, true);
+            return ((resultString != null) && new JSONObject(resultString).getInt("STATUS") == 200);
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+            Log.d(TAG, " :giveFeedbackForDriver() - JSONException");
+            return false;
+        }
+    }
+
     // Get paired driver Location
     public JSONObject getDriverLocation(String urlAddress, int driverID) {
         Log.d(TAG, " :getDriverLocation called!");
