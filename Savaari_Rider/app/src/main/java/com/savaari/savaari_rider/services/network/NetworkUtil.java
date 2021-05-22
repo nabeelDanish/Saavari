@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.savaari.savaari_rider.ride.entity.Location;
+import com.savaari.savaari_rider.ride.entity.Ride;
 import com.savaari.savaari_rider.ride.entity.Rider;
 
 import org.json.JSONException;
@@ -130,8 +131,35 @@ public class NetworkUtil
     }
 
     /*
-    *  END OF RIDER-SIDE MATCHMAKING FUNCTIONS -----------------------------------------------------
-    */
+     *   SET OF RIDER-SIDE MATCHMAKING FUNCTIONS ----------------------------------------------------
+     */
+    public Ride findDriver(String urlAddress, int currentUserID, double srcLatitude,
+                           double srcLongitude, double destLatitude, double destLongitude, int paymentMode, int rideType) {
+        String url = urlAddress + "findDriver";
+        try {
+            JSONObject jsonParam = new JSONObject();
+            jsonParam.put("USER_ID", currentUserID);
+            jsonParam.put("SOURCE_LAT", srcLatitude);
+            jsonParam.put("SOURCE_LONG", srcLongitude);
+            jsonParam.put("DEST_LAT", destLatitude);
+            jsonParam.put("DEST_LONG", destLongitude);
+            jsonParam.put("PAYMENT_MODE", paymentMode);
+            jsonParam.put("RIDE_TYPE_ID", rideType);
+
+            String resultString = sendPost(url, jsonParam, true);
+
+            return ((resultString == null)? null : objectMapper.readValue(resultString, Ride.class));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            Log.d("NetworkUtil: ", "findDriver() Exception");
+            return null;
+        }
+    }
+
+    /*
+     *  END OF RIDER-SIDE MATCHMAKING FUNCTIONS -----------------------------------------------------
+     */
 
     // Sign-Up
     public boolean signup(String urlAddress, String username, String emailAddress, String password)

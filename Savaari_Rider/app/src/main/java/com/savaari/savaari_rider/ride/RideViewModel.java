@@ -41,6 +41,7 @@ public class RideViewModel extends ViewModel {
     private final MutableLiveData<Boolean> userDataLoaded = new MutableLiveData<>();
     private final MutableLiveData<Boolean> userLocationsLoaded = new MutableLiveData<>();
     private final MutableLiveData<Boolean> driverLocationFetched = new MutableLiveData<>(false);
+    private final MutableLiveData<Ride> rideFound = new MutableLiveData<>();
 
     /* Get user data */
     public LatLng getUserCoordinates() {
@@ -66,6 +67,7 @@ public class RideViewModel extends ViewModel {
     }
     public LiveData<Boolean> isLiveUserLocationsLoaded() { return userLocationsLoaded; }
     public LiveData<Boolean> isDriverLocationFetched() { return driverLocationFetched; }
+    public LiveData<Ride> isRideFound() { return rideFound; }
 
     /* Need a setter since coordinates are received from activity */
     public void setUserCoordinates(double latitude, double longitude) {
@@ -123,6 +125,31 @@ public class RideViewModel extends ViewModel {
         else {
             userLocationsLoaded.postValue(true);
         }*/
+    }
+
+    /*
+     * sets driver status to:
+     * PAIRED -> If driver has been matched
+     * NOT_PAIRED -> If drivers available but all declined
+     * NOT_FOUND -> If drivers not available
+     * */
+    public void findDriver(int USER_ID, LatLng pickupLocation, LatLng dropoffLocation) {
+
+        repository.findDriver(object -> {
+
+                    if (object == null) {
+                        Log.d(LOG_TAG, "findDriver(): NOT FOUND");
+                        ride.getRideParameters().setFindStatus(RideRequest.STATUS_ERROR);
+                    }
+                    else {
+                        Log.d(LOG_TAG, "findDriver(): FOUND");
+                        ride = (Ride) object;
+                        ride.getRideParameters().setFindStatus(RideRequest.PAIRED);
+                    }
+                    rideFound.postValue(ride);
+
+                }, USER_ID, pickupLocation.latitude, pickupLocation.longitude, dropoffLocation.latitude,
+                dropoffLocation.longitude, ride.getRideParameters().getPaymentMethod(), ride.getRideParameters().getRideType().getTypeID());
     }
 
     private void setPreviousRide(Ride ride) {

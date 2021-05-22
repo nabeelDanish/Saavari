@@ -44,6 +44,14 @@ public class Repository {
         }
     }
 
+    //Find Driver
+    public void findDriver(OnDataLoadedListener callback, int currentUserID, double srcLatitude,
+                           double srcLongitude, double destLatitude, double destLongitude, int paymentMode, int rideType) {
+
+        executor.execute(() -> callback.onDataLoaded(NetworkUtil.getInstance().findDriver(url, currentUserID,
+                srcLatitude, srcLongitude, destLatitude, destLongitude, paymentMode, rideType)));
+    }
+
     // Sign-Up
     public void signup(OnDataLoadedListener callback, String nickname, String username, String password) {
         executor.execute(() -> callback.onDataLoaded(NetworkUtil.getInstance().signup(url, nickname, username, password)));
