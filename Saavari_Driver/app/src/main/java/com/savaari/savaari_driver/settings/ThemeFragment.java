@@ -129,27 +129,24 @@ public class ThemeFragment extends Fragment implements View.OnClickListener {
         SyncThemeCheckbox.setChecked(getArguments().getBoolean(PARAM_THEME_SYNCED));
         AutoDarkThemeCheckbox.setChecked(getArguments().getBoolean(PARAM_AUTO_DARK_THEME));
 
-        CompoundButton.OnCheckedChangeListener checkboxCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        CompoundButton.OnCheckedChangeListener checkboxCheckedChangeListener = (buttonView, isChecked) -> {
 
-                if (buttonView.getId() == R.id.sync_theme) {
-                    setSyncTheme(isChecked);
+            if (buttonView.getId() == R.id.sync_theme) {
+                setSyncTheme(isChecked);
 
-                    /*
-                    databaseReference.child("users").child(Objects.requireNonNull(mAuth.getUid()))
-                            .child("settings").child("syncTheme").setValue(isChecked);
+                /*
+                databaseReference.child("users").child(Objects.requireNonNull(mAuth.getUid()))
+                        .child("settings").child("syncTheme").setValue(isChecked);
 
-                    databaseReference.child("users").child(Objects.requireNonNull(mAuth.getUid()))
-                            .child("settings").child("themeVar").setValue(preferences.getInt(getString(R.string.preference_theme_var), 1));*/
-                }
-                else if (buttonView.getId() == R.id.auto_dark_theme){
+                databaseReference.child("users").child(Objects.requireNonNull(mAuth.getUid()))
+                        .child("settings").child("themeVar").setValue(preferences.getInt(getString(R.string.preference_theme_var), 1));*/
+            }
+            else if (buttonView.getId() == R.id.auto_dark_theme){
 
-                    setAutoDarkTheme(isChecked);
+                setAutoDarkTheme(isChecked);
 
-                    /*databaseReference.child("users").child(Objects.requireNonNull(mAuth.getUid()))
-                            .child("settings").child("autoDarkTheme").setValue(isChecked);*/
-                }
+                /*databaseReference.child("users").child(Objects.requireNonNull(mAuth.getUid()))
+                        .child("settings").child("autoDarkTheme").setValue(isChecked);*/
             }
         };
 

@@ -17,6 +17,8 @@ import com.savaari.savaari_driver.Util;
 import com.savaari.savaari_driver.auth.login.LoginActivity;
 import com.savaari.savaari_driver.services.location.LocationUpdateUtil;
 
+import java.util.Objects;
+
 public class SettingsActivity extends Util implements SettingsClickListener {
 
     // -----------------------------------------------------------
@@ -56,7 +58,7 @@ public class SettingsActivity extends Util implements SettingsClickListener {
         myToolbar = findViewById(R.id.toolbar);
         myToolbar.setTitle("Settings");
         setSupportActionBar(myToolbar);
-        this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(this.getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         this.getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         userSettings = new UserSettings();
