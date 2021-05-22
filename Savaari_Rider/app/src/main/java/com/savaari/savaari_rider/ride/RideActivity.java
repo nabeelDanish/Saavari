@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.location.Location;
+
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -75,6 +75,12 @@ import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
 import com.savaari.savaari_rider.R;
 import com.savaari.savaari_rider.SavaariApplication;
+import com.savaari.savaari_rider.ride.adapter.ItemClickListener;
+import com.savaari.savaari_rider.ride.adapter.PaymentMethodAdapter;
+import com.savaari.savaari_rider.ride.adapter.PaymentMethodItem;
+import com.savaari.savaari_rider.ride.adapter.RideTypeAdapter;
+import com.savaari.savaari_rider.ride.adapter.RideTypeItem;
+import com.savaari.savaari_rider.ride.entity.Location;
 import com.savaari.savaari_rider.ride.entity.Ride;
 import com.savaari.savaari_rider.ride.entity.RideRequest;
 import com.savaari.savaari_rider.ride.entity.Vehicle;
@@ -175,7 +181,7 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
     private RideViewModel rideViewModel = null;
     /* State variables - references to ViewModel variables */
     private int USER_ID = -1;
-    private ArrayList<com.example.savaari.ride.entity.Location> mUserLocations;
+    private ArrayList<Location> mUserLocations;
 
     /* User Objects, driver & rider references to instances belonging to Ride Object*/
     private Ride ride = null;
@@ -190,7 +196,7 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
     // Main onCreate Function to override
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        themeSelect(this);
+        ThemeVar.getInstance().themeSelect(this);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ride);
@@ -216,7 +222,7 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
         }
 
         if (USER_ID == -1) {
-            Toast.makeText(com.example.savaari.ride.RideActivity.this, "Sorry. We can not authenticate you", Toast.LENGTH_LONG).show();
+            Toast.makeText(RideActivity.this, "Sorry. We can not authenticate you", Toast.LENGTH_LONG).show();
         }
         else {
             centerGPSButton = findViewById(R.id.user_location);
@@ -278,7 +284,7 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
             // Testing Code
             Log.d(TAG, "loadUserLocations: mUserLocations.size(): " + mUserLocations.size());
 
-            for (com.example.savaari.ride.entity.Location userLocation : mUserLocations) {
+            for (Location userLocation : mUserLocations) {
                 Log.d(TAG, "loadUserLocations: setting Markers");
                 MarkerOptions option = new MarkerOptions()
                         .position(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()));
@@ -297,7 +303,7 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
         Log.d(TAG, "findDriver() called!");
 
         if (FIND_DRIVER_ATTEMPTS > FIND_DRIVER_ATTEMPTS_LIMIT) {
-            Toast.makeText(com.example.savaari.ride.RideActivity.this, "Sorry, we could not find a driver", Toast.LENGTH_SHORT).show();
+            Toast.makeText(RideActivity.this, "Sorry, we could not find a driver", Toast.LENGTH_SHORT).show();
         }
         else { // Attempt to find a driver
             rideViewModel.findDriver(USER_ID, ride.getRideParameters().getPickupLocation(), ride.getRideParameters().getDropoffLocation());
@@ -418,14 +424,14 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
                 return;
         }
 
-        Toast.makeText(com.example.savaari.ride.RideActivity.this, findStatusMessage, Toast.LENGTH_SHORT).show();
+        Toast.makeText(RideActivity.this, findStatusMessage, Toast.LENGTH_SHORT).show();
     }
 
     private void watchRideStatus() {
         Log.d(TAG, "watchRideStatus() called!");
         future = ((SavaariApplication) getApplication()).scheduledExecutor.scheduleWithFixedDelay(() -> rideViewModel.getRideStatus(),
                 0L, 4L, TimeUnit.SECONDS);
-        rideViewModel.isRideStatusChanged().observe(com.example.savaari.ride.RideActivity.this, this::onRideStatusChanged);
+        rideViewModel.isRideStatusChanged().observe(RideActivity.this, this::onRideStatusChanged);
     }
 
     private void onRideStatusChanged(Boolean statusChanged) {
@@ -482,7 +488,7 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
                 .title("Driver: " + ride.getRideParameters().getDriver().getUsername());
         driverMarker = googleMap.addMarker(options);
 
-        rideViewModel.isDriverLocationFetched().observe(com.example.savaari.ride.RideActivity.this, isFetched -> {
+        rideViewModel.isDriverLocationFetched().observe(RideActivity.this, isFetched -> {
             if (isFetched) {
                 driverMarker.setPosition(rideViewModel.getRide().getRideParameters().getDriver().getCurrentLocation());
             }
@@ -526,7 +532,7 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
             ride.getRideParameters().setPickupLocation(userLocation, "Current location");
         }
         if (ride.getRideParameters().getDropoffLocation() == null) {
-            Toast.makeText(com.example.savaari.ride.RideActivity.this, "Add dropoff location!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(RideActivity.this, "Add dropoff location!", Toast.LENGTH_SHORT).show();
         }
         else {
             setRoute(null, null, "");
@@ -534,7 +540,7 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
             toggleRideSearchBar(false, true);
             progressBar.setVisibility(View.VISIBLE);
 
-            LocationUpdateUtil.stopLocationService(com.example.savaari.ride.RideActivity.this);
+            LocationUpdateUtil.stopLocationService(RideActivity.this);
 
             FIND_DRIVER_ATTEMPTS = 0;
             findDriver();
@@ -571,12 +577,13 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
     /* Callback for when permissions have been granted/denied */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         locationPermissionGranted = false;
 
-        switch(requestCode) {
+        switch (requestCode) {
             case LOCATION_PERMISSION_REQUEST_CODE: {
                 if (grantResults.length > 0) {
-                    for (int permissionIndex = 0 ; permissionIndex < grantResults.length ; ++permissionIndex) {
+                    for (int permissionIndex = 0; permissionIndex < grantResults.length; ++permissionIndex) {
                         if (grantResults[permissionIndex] != PackageManager.PERMISSION_GRANTED) {
                             locationPermissionGranted = false;
                             return;
@@ -598,7 +605,7 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
         assert mapFragment != null;
-        mapFragment.getMapAsync(com.example.savaari.ride.RideActivity.this);
+        mapFragment.getMapAsync(RideActivity.this);
 
         if (geoApiContext == null) {
             geoApiContext = new GeoApiContext.Builder()
@@ -613,9 +620,9 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
      * */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Toast.makeText(com.example.savaari.ride.RideActivity.this, "Map is ready", Toast.LENGTH_SHORT).show();
+        Toast.makeText(RideActivity.this, "Map is ready", Toast.LENGTH_SHORT).show();
         this.googleMap = googleMap;
-        if (ThemeVar.getData()%2 == 0 || ThemeVar.getData() == 1) {
+        if (ThemeVar.getInstance().getData()%2 == 0 || ThemeVar.getInstance().getData() == 1) {
             googleMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
                             this, R.raw.map_style));
@@ -735,7 +742,7 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
 
             @Override
             public void onError(@NonNull Status status) {
-                Toast.makeText(com.example.savaari.ride.RideActivity.this, "Could not navigate from selected place", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RideActivity.this, "Could not navigate from selected place", Toast.LENGTH_SHORT).show();
                 Log.d("init(): ", "Source: onPlaceSelectedListener(): An error occurred: " + status);
             }
         });
@@ -757,7 +764,7 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
             @Override
             public void onError(@NonNull Status status) {
                 // TODO: Handle the error.
-                Toast.makeText(com.example.savaari.ride.RideActivity.this, "Could not navigate to selected place", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RideActivity.this, "Could not navigate to selected place", Toast.LENGTH_SHORT).show();
                 Log.d("init(): ", "Dest: onPlaceSelectedListener(): An error occurred: " + status);
             }
         });
@@ -826,7 +833,7 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
                 startActivity(intent);
             }
             else {
-                Toast.makeText(com.example.savaari.ride.RideActivity.this, "Driver phone number not available", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RideActivity.this, "Driver phone number not available", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -1065,11 +1072,11 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
                         {
                             userLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
                             rideViewModel.setUserCoordinates(userLocation.latitude, userLocation.longitude);
-                            LocationUpdateUtil.saveUserLocation(userLocation, com.example.savaari.ride.RideActivity.this);
+                            LocationUpdateUtil.saveUserLocation(userLocation, RideActivity.this);
 
                             // Starting Background Location Service
                             ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-                            LocationUpdateUtil.startLocationService(manager, com.example.savaari.ride.RideActivity.this);
+                            LocationUpdateUtil.startLocationService(manager, RideActivity.this);
 
                         } catch (Exception e)
                         {
@@ -1078,7 +1085,7 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
 
                     } else {
                         Log.d(TAG, "onComplete: current location is null");
-                        Toast.makeText(com.example.savaari.ride.RideActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RideActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -1186,7 +1193,7 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
                 }
 
                 destinationPolyline = googleMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
-                destinationPolyline.setColor(ContextCompat.getColor(com.example.savaari.ride.RideActivity.this, R.color.maps_blue));
+                destinationPolyline.setColor(ContextCompat.getColor(RideActivity.this, R.color.maps_blue));
                 dropoffDuration = route.legs[0].duration.humanReadable;
                 destinationMarker.setSnippet("Duration: " + route.legs[0].duration);
                 destinationMarker.showInfoWindow();
@@ -1198,7 +1205,7 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
                 }*/
                 removePolyline(pickupPolyline);
                 pickupPolyline = googleMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
-                pickupPolyline.setColor(ContextCompat.getColor(com.example.savaari.ride.RideActivity.this, R.color.success_green));
+                pickupPolyline.setColor(ContextCompat.getColor(RideActivity.this, R.color.success_green));
                 pickupDuration = route.legs[0].duration.humanReadable;
                 pickupMarker.setSnippet("Duration: " + route.legs[0].duration);
                 pickupMarker.showInfoWindow();
@@ -1223,7 +1230,7 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(com.example.savaari.ride.RideActivity.this);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(RideActivity.this);
         builder.setMessage("Open Google Maps?")
                 .setCancelable(true)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -1235,12 +1242,12 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
                         mapIntent.setPackage("com.google.android.apps.maps");
 
                         try{
-                            if (mapIntent.resolveActivity(com.example.savaari.ride.RideActivity.this.getPackageManager()) != null) {
+                            if (mapIntent.resolveActivity(RideActivity.this.getPackageManager()) != null) {
                                 startActivity(mapIntent);
                             }
                         }catch (NullPointerException e){
                             Log.e(TAG, "onClick: NullPointerException: Couldn't open map." + e.getMessage() );
-                            Toast.makeText(com.example.savaari.ride.RideActivity.this, "Couldn't open map", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RideActivity.this, "Couldn't open map", Toast.LENGTH_SHORT).show();
                         }
 
                     }
@@ -1258,7 +1265,7 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
     public boolean isServicesOK() {
         Log.d("isServicesOK: ", "checking google services version");
 
-        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(com.example.savaari.ride.RideActivity.this);
+        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(RideActivity.this);
 
         if (available == ConnectionResult.SUCCESS) {
             Log.d("PLAY SERVICES: ", "WORKING");
@@ -1267,7 +1274,7 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
         else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
             Log.d("PLAY SERVICES", "ERROR, BUT FIXABLE");
 
-            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(com.example.savaari.ride.RideActivity.this, available, ERROR_DIALOG_REQUEST);
+            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(RideActivity.this, available, ERROR_DIALOG_REQUEST);
             dialog.show();
             return true;
         }
@@ -1298,7 +1305,7 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
             case (R.id.nav_wallet):
                 break;
             case (R.id.nav_settings):
-                Intent i = new Intent(com.example.savaari.ride.RideActivity.this, SettingsActivity.class);
+                Intent i = new Intent(RideActivity.this, SettingsActivity.class);
                 startActivity(i);
                 break;
         }

@@ -7,8 +7,8 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.Log;
 
-import com.example.savaari.Repository;
 import com.google.android.gms.maps.model.LatLng;
+import com.savaari.savaari_rider.Repository;
 
 public class LocationUpdateUtil
 {

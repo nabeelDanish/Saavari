@@ -23,7 +23,7 @@ import static android.content.ContentValues.TAG;
 public class RideViewModel extends ViewModel {
 
     private static String LOG_TAG = RideViewModel.class.getSimpleName();
-    private final Repository repository = null;
+    private Repository repository = null;
 
     /* Credentials for netowrk operations */
     private int USER_ID = -1;
@@ -73,6 +73,13 @@ public class RideViewModel extends ViewModel {
     public LiveData<Ride> isRideFound() { return rideFound; }
     public LiveData<Boolean> isEndOfRideAcknowledged() { return endOfRideAcknowledged; }
     public LiveData<Boolean> isRideStatusChanged() { return rideStatusChanged; }
+
+    public RideViewModel(int USER_ID, Repository repository) {
+        this.USER_ID = USER_ID;
+        this.repository = repository;
+        ride = new Ride();
+        ride.getRideParameters().getRider().setUserID(USER_ID);
+    }
 
     /* Need a setter since coordinates are received from activity */
     public void setUserCoordinates(double latitude, double longitude) {
