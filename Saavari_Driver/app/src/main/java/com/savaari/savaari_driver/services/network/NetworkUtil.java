@@ -1,10 +1,14 @@
 package com.savaari.savaari_driver.services.network;
 
-// Imports
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.savaari.savaari_driver.entity.*;
+import com.savaari.savaari_driver.entity.Driver;
+import com.savaari.savaari_driver.entity.Location;
+import com.savaari.savaari_driver.entity.Payment;
+import com.savaari.savaari_driver.entity.Ride;
+import com.savaari.savaari_driver.entity.RideRequest;
+import com.savaari.savaari_driver.entity.Vehicle;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -24,11 +28,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
 
-public class NetworkUtil {
+// This class holds static functions for interacting with the API Layer
+public class NetworkUtil
+{
     // Main Attributes
     private static NetworkUtil networkUtil = null;
     private static final String TAG = "NetworkUtil";
-    private static String urlAddress = "https://82a779a3877b.ngrok.io/"; // remember to add a "/" at the end of the url
+    private static String urlAddress = "https://68eeaa6e4524.ngrok.io/"; // remember to add a "/" at the end of the url
 
     // For Wrapping and Unwrapping
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -45,7 +51,7 @@ public class NetworkUtil {
     // Private Constructor
     private NetworkUtil() {
         // Empty
-        // urlAddress = loadDataSourceUrl();
+        urlAddress = loadDataSourceUrl();
     }
     public static NetworkUtil getInstance() {
         if (networkUtil == null) {
@@ -78,6 +84,7 @@ public class NetworkUtil {
             return "";
         }
     }
+
     // -------------------------------------------------------------------------------
     //                                 Main Methods
     // -------------------------------------------------------------------------------
@@ -159,6 +166,37 @@ public class NetworkUtil {
                 conn.disconnect();
         }
     }
+
+    // -------------------------------------------------------------------------------
+    //                                 NETWORK OPERATIONS
+    // -------------------------------------------------------------------------------
+
+    // Send Last Location
+    public int sendLastLocation(int currentUserID, double latitude, double longitude)
+    {
+        try
+        {
+            // TimeStamp
+            long tsLong = System.currentTimeMillis() / 1000;
+            String currentTimeStamp = Long.toString(tsLong);
+
+            // JSON
+            JSONObject jsonParam = new JSONObject();
+            jsonParam.put("USER_ID", currentUserID);
+            jsonParam.put("LATITUDE", latitude);
+            jsonParam.put("LONGITUDE", longitude);
+            jsonParam.put("TIMESTAMP", currentTimeStamp);
+
+            // Sending JSON
+            return sendPost(urlAddress + "saveDriverLocation", jsonParam) != null? 1 : 0;
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
     /*
      *   SET OF DRIVER-SIDE MATCHMAKING FUNCTIONS ----------------------------------------------------
      */
@@ -243,6 +281,7 @@ public class NetworkUtil {
             return false;
         }
     }
+
     // Loading User Data
     public Driver loadUserData(int currentUserID)
     {
@@ -258,6 +297,220 @@ public class NetworkUtil {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    // Get User Locations
+    public ArrayList<Location> getUserLocations()
+    {
+        JSONObject jsonParam = new JSONObject();
+        try {
+            jsonParam.put("Dummy", 0);
+            String resultString = sendPost(urlAddress + "getDriverLocations", jsonParam);
+            if (resultString == null) {
+                return null;
+            } else {
+                return objectMapper.readValue(resultString,
+                        objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, Location.class));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    // Set Mark Active
+    public boolean setMarkActive(int userID, int active_status)
+    {
+        JSONObject jsonParam = new JSONObject();
+        try
+        {
+            jsonParam.put("USER_ID", userID);
+            jsonParam.put("ACTIVE_STATUS", active_status == 1);
+            return sendPost(urlAddress + "setMarkActive", jsonParam) != null;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            Log.d(TAG, "setMarkActive(): Exception thrown!");
+            return false;
+        }
+    }
+    // Check Ride Request Status
+    public RideRequest startMatchmaking(int userID) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("USER_ID", userID);
+            String result = sendPost(urlAddress + "startMatchmaking", jsonObject);
+            if (result != null) {
+                return objectMapper.readValue(result, RideRequest.class);
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // Check Ride Request Status
+    public RideRequest checkRideRequestStatus(int userID) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("USER_ID", userID);
+            String result = sendPost(urlAddress + "checkRideRequestStatus", jsonObject);
+            if (result != null) {
+                return objectMapper.readValue(result, RideRequest.class);
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // Check Ride Status
+    public Ride checkRideStatus(int userID, int riderID, int rideTypeID)
+    {
+        JSONObject jsonParam = new JSONObject();
+        try {
+            jsonParam.put("USER_ID", userID);
+            jsonParam.put("RIDER_ID", riderID);
+            jsonParam.put("RIDE_TYPE_ID", rideTypeID);
+            String result = sendPost(urlAddress + "checkRideStatus", jsonParam);
+            if (result != null) {
+                return objectMapper.readValue(result, Ride.class);
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d(TAG, "checkRideStatus(): Exception thrown!");
+            return null;
+        }
+    }
+    // Confirming Ride Request
+    public boolean confirmRideRequest(int userID, int found_status, int riderID)
+    {
+        JSONObject jsonParam = new JSONObject();
+        try {
+            jsonParam.put("USER_ID", userID);
+            jsonParam.put("FOUND_STATUS", found_status);
+            jsonParam.put("RIDER_ID", riderID);
+            Log.d(TAG, "confirmRideRequest(): " + jsonParam.toString());
+
+            String result = sendPost(urlAddress + "confirmRideRequest", jsonParam);
+            if (result != null) {
+                JSONObject returnObj = new JSONObject(result);
+                return returnObj.getInt("STATUS") == 200;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d(TAG, "confirmRideRequest(): Exception thrown!");
+            return false;
+        }
+    }
+
+    // Marking Arrival
+    public boolean markArrival(int rideID) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("RIDE_ID", rideID);
+            Log.d(TAG, "markArrival(): " + jsonObject.toString());
+            String result = sendPost(urlAddress + "markArrival", jsonObject);
+            if (result != null) {
+                JSONObject returnObj = new JSONObject(result);
+                return returnObj.getInt("STATUS") == 200;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d(TAG, "markArrival(): Exception thrown!");
+            return false;
+        }
+    }
+
+    // Starting Ride
+    public boolean startRide(int rideID) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("RIDE_ID", rideID);
+            Log.d(TAG, "startRide(): " + jsonObject.toString());
+            String result = sendPost(urlAddress + "startRideDriver", jsonObject);
+            if (result != null) {
+                JSONObject returnObj = new JSONObject(result);
+                return returnObj.getInt("STATUS") == 200;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d(TAG, "startRide(): Exception thrown!");
+            return false;
+        }
+    }
+
+    // Ending Ride
+    public double markDriverAtDestination(Ride ride, double dist_travelled, int driverID) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            // Preparing
+            jsonObject.put("RIDE_ID", ride.getRideID());
+            jsonObject.put("DIST_TRAVELLED", dist_travelled);
+            jsonObject.put("DRIVER_ID", driverID);
+            jsonObject.put("POLICY_ID", ride.getPolicy().getPolicyID());
+            jsonObject.put("START_TIME", ride.getStartTime());
+            jsonObject.put("END_TIME", System.currentTimeMillis());
+
+            jsonObject.put("RIDE_TYPE_ID", ride.getRideParameters().getRideType().getTypeID());
+            jsonObject.put("NAME", ride.getRideParameters().getRideType().getName());
+            jsonObject.put("MAX_PASSENGERS", ride.getRideParameters().getRideType().getMaxPassengers());
+            jsonObject.put("BASE_FARE", ride.getRideParameters().getRideType().getBaseFare());
+            jsonObject.put("PER_KM_CHARGE", ride.getRideParameters().getRideType().getPerKMCharge());
+            jsonObject.put("PER_MIN_CHARGE", ride.getRideParameters().getRideType().getPerMinuteCharge());
+            jsonObject.put("MIN_FARE", ride.getRideParameters().getRideType().getMinimumFare());
+
+            // Sending Object
+            String result =  sendPost(urlAddress + "markArrivalAtDestination", jsonObject);
+
+            // Parsing Result
+            if (result != null) {
+                jsonObject = new JSONObject(result);
+                return jsonObject.getDouble("FARE");
+            } else {
+                return -1;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d(TAG, "endRide(): Exception thrown!");
+            return -1;
+        }
+    }
+
+    // Ending Ride with Payment
+    public boolean endRideWithPayment(int rideID, Payment payment, int driverID) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("RIDE_ID", rideID);
+            jsonObject.put("AMNT_PAID", payment.getAmountPaid());
+            jsonObject.put("CHANGE", payment.getChange());
+            jsonObject.put("PAYMENT_MODE", payment.getPaymentMode());
+            jsonObject.put("DRIVER_ID", driverID);
+
+            String result = sendPost(urlAddress + "endRideWithPayment", jsonObject);
+            if (result != null) {
+                jsonObject = new JSONObject(result);
+                return jsonObject.getInt("STATUS") == 200;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d(TAG, "endRideWithPayment: Exception thrown!");
+            return false;
         }
     }
     // Sending Registration Request
@@ -302,8 +555,6 @@ public class NetworkUtil {
             return false;
         }
     }
-
-    // Sending Vehicle Registration Request
     public boolean sendVehicleRegistrationRequest(Driver driver, Vehicle vehicle)
     {
         JSONObject jsonObject = new JSONObject();
@@ -328,29 +579,45 @@ public class NetworkUtil {
             return false;
         }
     }
-    // Send Last Location
-    public int sendLastLocation(int currentUserID, double latitude, double longitude)
+
+    // Selecting Vehicle
+    public boolean selectActiveVehicle(int driverID, int vehicleID)
     {
-        try
-        {
-            // TimeStamp
-            long tsLong = System.currentTimeMillis() / 1000;
-            String currentTimeStamp = Long.toString(tsLong);
-
-            // JSON
-            JSONObject jsonParam = new JSONObject();
-            jsonParam.put("USER_ID", currentUserID);
-            jsonParam.put("LATITUDE", latitude);
-            jsonParam.put("LONGITUDE", longitude);
-            jsonParam.put("TIMESTAMP", currentTimeStamp);
-
-            // Sending JSON
-            return sendPost(urlAddress + "saveDriverLocation", jsonParam) != null? 1 : 0;
-        }
-        catch (JSONException e)
-        {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("USER_ID", driverID);
+            jsonObject.put("ACTIVE_VEHICLE_ID", vehicleID);
+            String result = sendPost(urlAddress + "selectActiveVehicle", jsonObject);
+            if (result != null) {
+                jsonObject = new JSONObject(result);
+                return jsonObject.getInt("STATUS") == 200;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
             e.printStackTrace();
-            return -1;
+            return false;
         }
     }
-}
+    // Give Feedback for Rider
+    public boolean giveFeedbackForRider(Ride ride, float rating)
+    {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("RIDE_ID", ride.getRideID());
+            jsonObject.put("RIDER_ID", ride.getRideParameters().getRider().getUserID());
+            jsonObject.put("RATING", rating);
+            String result = sendPost(urlAddress + "giveFeedbackForRider", jsonObject);
+            if (result != null) {
+                jsonObject = new JSONObject(result);
+                return jsonObject.getInt("STATUS") == 200;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    /*  END OF CLASS */
+} // End of Class
