@@ -28,10 +28,10 @@
 
         <activity android:name="com.savaari.savaari_driver.ride.RideActivity" />
 
-<!--        <activity-->
-<!--            android:name="com.example.savaari_driver.settings.SettingsActivity"-->
-<!--            android:label="@string/title_activity_settings"-->
-<!--            android:parentActivityName="com.example.savaari_driver.ride.RideActivity"/>-->
+        <activity
+            android:name="com.savaari.savaari_driver.settings.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName="com.savaari.savaari_driver.ride.RideActivity"/>
 
         <activity android:name="com.savaari.savaari_driver.auth.login.LoginActivity"/>
         <activity
@@ -46,9 +46,9 @@
         </activity>
         <activity android:name=".register.RegisterActivity" />
 
-<!--        <service-->
-<!--            android:name="com.example.savaari_driver.services.location.LocationUpdateService"-->
-<!--            android:stopWithTask="true" />-->
+        <service
+            android:name="com.savaari.savaari_driver.services.location.LocationUpdateService"
+            android:stopWithTask="true" />
 
     </application>
 </manifest>
