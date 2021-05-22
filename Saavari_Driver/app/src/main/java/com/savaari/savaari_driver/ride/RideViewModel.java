@@ -164,8 +164,10 @@ public class RideViewModel extends ViewModel {
     // Function to load user locations
     public void loadUserLocations()
     {
-        if (!userLocationsLoaded.getValue())
-            repository.getUserLocations(this::onUserLocationsLoaded);
+        if (userLocationsLoaded.getValue() != null) {
+            if (!userLocationsLoaded.getValue())
+                repository.getUserLocations(this::onUserLocationsLoaded);
+        }
     }
     // Function on User Locations Loaded
     public void onUserLocationsLoaded(Object r)
