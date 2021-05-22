@@ -83,4 +83,16 @@ public class Repository {
         executor.execute(() ->
                 NetworkUtil.getInstance().sendLastLocation(url, currentUserID, latitude, longitude));
     }
+
+    public void getRide(OnDataLoadedListener callback, int riderID) {
+        executor.execute(() -> callback.onDataLoaded(NetworkUtil.getInstance().getRide(url, riderID)));
+    }
+
+    public void getRideStatus(OnDataLoadedListener callback, int rideID) {
+        callback.onDataLoaded(NetworkUtil.getInstance().getRideStatus(url, rideID));
+    }
+
+    public void acknowledgeEndOfRide(OnDataLoadedListener callback, int rideID, int riderID) {
+        executor.execute(() -> callback.onDataLoaded(NetworkUtil.getInstance().acknowledgeEndOfRide(url, rideID, riderID)));
+    }
 }

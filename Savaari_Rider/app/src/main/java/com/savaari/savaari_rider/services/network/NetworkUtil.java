@@ -3,6 +3,7 @@ package com.savaari.savaari_rider.services.network;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.savaari.savaari_rider.ride.entity.Location;
 import com.savaari.savaari_rider.ride.entity.Ride;
@@ -315,4 +316,65 @@ public class NetworkUtil
     }
 
     /* End of section */
+
+    /* In-ride methods */
+
+    public Ride getRide(String urlAddress, int riderID) {
+        Log.d(TAG, ":getRide() called!");
+        String url = urlAddress + "getRideForRider";
+
+        JSONObject jsonParam = new JSONObject();
+
+        try {
+            jsonParam.put("USER_ID", riderID);
+
+            String resultString = sendPost(url, jsonParam, true);
+            return ((resultString == null)? null : objectMapper.readValue(resultString, Ride.class));
+        }
+        catch (JSONException | JsonProcessingException e) {
+            e.printStackTrace();
+            Log.d(TAG, " :getRide() - JSONException");
+            return null;
+        }
+    }
+
+    public JSONObject getRideStatus(String urlAddress, int rideID) {
+        Log.d(TAG, " :getRideStatus called!");
+        String url = urlAddress + "getRideStatus";
+
+        JSONObject jsonParam = new JSONObject();
+
+        try {
+            jsonParam.put("RIDE_ID", rideID);
+
+            String resultString = sendPost(url, jsonParam, true);
+            return ((resultString == null)? null : new JSONObject(resultString));
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+            Log.d(TAG, " :getRideStatus() - JSONException");
+            return null;
+        }
+    }
+
+    public boolean acknowledgeEndOfRide(String urlAddress, int rideID, int riderID) {
+        Log.d(TAG, " :acknowledgeEndOfRide called!");
+        String url = urlAddress + "acknowledgeEndOfRide";
+
+        JSONObject jsonParam = new JSONObject();
+
+        try {
+            /*
+            jsonParam.put("RIDE_ID", rideID);
+            jsonParam.put("RIDER_ID", riderID);*/
+
+            String resultString = sendPost(url, jsonParam, true);
+            return ((resultString != null) && new JSONObject(resultString).getInt("STATUS_CODE") == 200);
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+            Log.d(TAG, " :acknowledgeEndOfRide() - JSONException");
+            return false;
+        }
+    }
 }

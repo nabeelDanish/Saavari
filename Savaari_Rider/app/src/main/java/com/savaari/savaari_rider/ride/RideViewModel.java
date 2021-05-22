@@ -42,6 +42,8 @@ public class RideViewModel extends ViewModel {
     private final MutableLiveData<Boolean> userLocationsLoaded = new MutableLiveData<>();
     private final MutableLiveData<Boolean> driverLocationFetched = new MutableLiveData<>(false);
     private final MutableLiveData<Ride> rideFound = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> endOfRideAcknowledged = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> rideStatusChanged = new MutableLiveData<>();
 
     /* Get user data */
     public LatLng getUserCoordinates() {
@@ -68,6 +70,8 @@ public class RideViewModel extends ViewModel {
     public LiveData<Boolean> isLiveUserLocationsLoaded() { return userLocationsLoaded; }
     public LiveData<Boolean> isDriverLocationFetched() { return driverLocationFetched; }
     public LiveData<Ride> isRideFound() { return rideFound; }
+    public LiveData<Boolean> isEndOfRideAcknowledged() { return endOfRideAcknowledged; }
+    public LiveData<Boolean> isRideStatusChanged() { return rideStatusChanged; }
 
     /* Need a setter since coordinates are received from activity */
     public void setUserCoordinates(double latitude, double longitude) {
@@ -150,6 +154,69 @@ public class RideViewModel extends ViewModel {
 
                 }, USER_ID, pickupLocation.latitude, pickupLocation.longitude, dropoffLocation.latitude,
                 dropoffLocation.longitude, ride.getRideParameters().getPaymentMethod(), ride.getRideParameters().getRideType().getTypeID());
+    }
+
+    public void getRideStatus() {
+        Log.d(LOG_TAG, "getRideStatus called!");
+
+        if (ride.getRideID() > 0) {
+            repository.getRideStatus(object -> {
+                if (object == null) {
+                    Log.d(LOG_TAG, "getRideStatus: null recieved");
+                }
+                else {
+                    JSONObject result = (JSONObject) object;
+
+                    try {
+                        if (ride.getRideStatus() != result.getInt("RIDE_STATUS")) {
+                            ride.setRideStatus(result.getInt("RIDE_STATUS"));
+
+                            if (ride.getRideStatus() == Ride.ARRIVED_AT_DEST) {
+                                ride.setFare(result.getInt("FARE"));
+                            }
+                            rideStatusChanged.postValue(true);
+                        }
+                    }
+                    catch (JSONException e) {
+                        Log.d(LOG_TAG, ":getRideStatus: JSONException");
+                    }
+                }
+            }, ride.getRideID());
+
+        }
+    }
+
+    public void acknowledgeEndOfRide() {
+        repository.acknowledgeEndOfRide(object -> {
+            ride.setRideStatus(Ride.END_ACKED);
+            endOfRideAcknowledged.postValue(true);
+        }, ride.getRideID(), ride.getRideParameters().getRider().getUserID());
+    }
+
+    public void loadRide() {
+        Log.d(LOG_TAG, ":loadRide() called!");
+
+        if (USER_ID > 0) {
+            repository.getRide(object -> {
+                try {
+                    if (object == null) {
+                        Log.d(LOG_TAG, " getRide: Failed to fetch ride");
+                        ride.getRideParameters().setFindStatus(Ride.RS_DEFAULT);
+                    }
+                    else {
+                        ride = (Ride) object;
+
+                        Log.d(LOG_TAG, " getRide: Is taking a ride!");
+                        ride.getRideParameters().setFindStatus(RideRequest.ALREADY_PAIRED);
+                    }
+                    rideFound.postValue(ride);
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    Log.d(LOG_TAG, "loadRide(): Exception");
+                }
+            }, USER_ID);
+        }
     }
 
     private void setPreviousRide(Ride ride) {
