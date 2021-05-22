@@ -2,6 +2,7 @@ package com.savaari.api.controllers;
 
 import com.savaari.api.database.DBHandlerFactory;
 import com.savaari.api.entity.Driver;
+import com.savaari.api.entity.Rider;
 import com.savaari.api.entity.User;
 import com.savaari.api.entity.Vehicle;
 import org.json.JSONObject;
@@ -11,6 +12,7 @@ public class CRUDController
     // Main Attributes
     private static final String LOG_TAG = CRUDController.class.getSimpleName();
     Driver driver;
+    Rider rider;
 
     public CRUDController()
     {
@@ -25,7 +27,19 @@ public class CRUDController
         this.driver = driver;
     }
 
+    public Rider getRider() { return rider; }
+
     /* User CRUD methods */
+
+    public Integer loginRider(Rider rider) {
+        rider.login();
+        this.rider = rider;
+        return this.rider.getUserID();
+    }
+
+    public void persistRiderLogin(Rider rider) {
+        this.rider = rider;
+    }
 
     // Login Driver
     public Integer loginDriver(Driver driver) {
@@ -38,16 +52,36 @@ public class CRUDController
         this.driver = driver;
     }
 
+    // Adding a new Rider Account
+    public boolean addRider(String username, String email_address, String password)
+    {
+        return DBHandlerFactory.getInstance().createDBHandler().addRider(username, email_address,
+                User.hashPassword(password));
+    }
+
     // Add a new inactive Driver method
     public boolean addDriver(String username, String email_address, String password) {
         return DBHandlerFactory.getInstance().createDBHandler().addDriver(username, email_address,
                 User.hashPassword(password));
     }
 
+    public Rider riderData() {
+        if (rider.fetchData()) {
+            return rider;
+        }
+        else {
+            return null;
+        }
+    }
+
     public Driver driverData() {
         if (driver.fetchData()) {
             return driver;
         }
+        return null;
+    }
+
+    public JSONObject deleteRider() {
         return null;
     }
 

@@ -1,9 +1,6 @@
 package com.savaari.api.database;
 
-import com.savaari.api.entity.Administrator;
-import com.savaari.api.entity.Driver;
-import com.savaari.api.entity.User;
-import com.savaari.api.entity.Vehicle;
+import com.savaari.api.entity.*;
 import org.apache.commons.dbutils.DbUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -81,6 +78,19 @@ public class OracleDBHandler implements DBHandler {
         }
     }
 
+    //Add a new Rider, TODO: replace last param with riderequest.NOT_SENT
+    @Override
+    public Boolean addRider(String username, String emailAddress, String password) {
+
+        String q = String.format("INSERT INTO `RIDER_DETAILS` (`USER_ID`, `" +
+                        "USER_NAME`, `PASSWORD`, `EMAIL_ADDRESS`, `FIND_STATUS`, `DRIVER_ID`) " +
+                        " VALUES(%d, '%s', '%s', '%s', %d, %d)",
+                0, username, password, emailAddress, 0,
+                Driver.DEFAULT_ID);
+        System.out.println(q);
+        return (executeUpdate(q)) > 0;
+    }
+
     @Override
     public Boolean addDriver(String username, String emailAddress, String password) {
 
@@ -90,6 +100,35 @@ public class OracleDBHandler implements DBHandler {
                 username,
                 password,
                 emailAddress))) > 0;
+    }
+
+    @Override
+    public Integer loginRider(Rider rider) {
+
+        Connection connect = null;
+        ResultSet resultSet = null;
+        try {
+            String sqlQuery = "SELECT USER_ID, PASSWORD FROM RIDER_DETAILS WHERE EMAIL_ADDRESS = '" + rider.getEmailAddress() + "'";
+
+            connect = DBCPDataSource.getConnection();
+            resultSet = connect.createStatement().executeQuery(sqlQuery);
+
+            // If email address & password verified
+            if (resultSet.next() && User.verifyPassword(resultSet.getString(2), rider.getPassword())) {
+                return resultSet.getInt("USER_ID");
+            }
+            else {
+                return -1;
+            }
+        }
+        catch (Exception e) {
+            System.out.println("Exception in DBHandler:loginRider()");
+            e.printStackTrace();
+            return null;
+        }
+        finally {
+            closeAll(connect, null, resultSet);
+        }
     }
 
     @Override
@@ -117,6 +156,42 @@ public class OracleDBHandler implements DBHandler {
             System.out.println("Exception in DBHandler:loginDriver()");
             e.printStackTrace();
             return Driver.DEFAULT_ID;
+        }
+        finally {
+            closeAll(connect, null, resultSet);
+        }
+    }
+
+    /* CRUD Operations on User Object */
+    @Override
+    public JSONArray riderDetails() {
+        Connection connect = null;
+        ResultSet resultSet = null;
+
+        try {
+            String sqlQuery = "SELECT USER_ID, USER_NAME, PASSWORD, EMAIL_ADDRESS FROM RIDER_DETAILS";
+
+            connect = DBCPDataSource.getConnection();
+            resultSet = connect.createStatement().executeQuery(sqlQuery);
+
+            JSONArray result = new JSONArray();
+            JSONObject row = new JSONObject();
+
+            while (resultSet.next()) {
+                row.put("USER_ID", resultSet.getInt(1));
+                row.put("USER_NAME", resultSet.getString(2));
+                row.put("PASSWORD", resultSet.getString(3));
+                row.put("EMAIL_ADDRESS", resultSet.getString(4));
+                result.put(row);
+                row = new JSONObject();
+            }
+            System.out.println("RESULT: " + result.toString());
+            return result;
+        }
+        catch (Exception e) {
+            System.out.println("Exception in DBHandler:riderDetails()");
+            e.printStackTrace();
+            return null;
         }
         finally {
             closeAll(connect, null, resultSet);
@@ -152,6 +227,37 @@ public class OracleDBHandler implements DBHandler {
             System.out.println("Exception in DBHandler:driverDetails()");
             e.printStackTrace();
             return null;
+        }
+        finally {
+            closeAll(connect, null, resultSet);
+        }
+    }
+
+    @Override
+    public boolean fetchRiderData(Rider rider) {
+        Connection connect = null;
+        ResultSet resultSet = null;
+
+        try {
+            String sqlQuery = "SELECT USER_NAME, EMAIL_ADDRESS FROM RIDER_DETAILS WHERE USER_ID = " + rider.getUserID();
+
+            connect = DBCPDataSource.getConnection();
+            resultSet = connect.createStatement().executeQuery(sqlQuery);
+
+            if (resultSet.next()) {
+                rider.setUserID(rider.getUserID());
+                rider.setUsername(resultSet.getString(1));
+                rider.setEmailAddress(resultSet.getString(2));
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch (Exception e) {
+            System.out.println("Exception in DBHandler:riderData()");
+            e.printStackTrace();
+            return false;
         }
         finally {
             closeAll(connect, null, resultSet);
@@ -250,6 +356,11 @@ public class OracleDBHandler implements DBHandler {
         finally {
             closeAll(connect, null, resultSet);
         }
+    }
+
+    @Override
+    public Boolean deleteRider() {
+        return null;
     }
 
     @Override

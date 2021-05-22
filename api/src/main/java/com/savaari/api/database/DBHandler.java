@@ -1,9 +1,6 @@
 package com.savaari.api.database;
 
-import com.savaari.api.entity.Administrator;
-import com.savaari.api.entity.Driver;
-import com.savaari.api.entity.Location;
-import com.savaari.api.entity.Vehicle;
+import com.savaari.api.entity.*;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -11,8 +8,11 @@ import java.util.ArrayList;
 public interface DBHandler {
 
     /* CRUD Methods*/
+    Boolean addRider(String username, String emailAddress, String password);
     Boolean addDriver(String username, String emailAddress, String password);
+    Integer loginRider(Rider rider);
     int loginDriver(Driver driver);
+    boolean fetchRiderData(Rider rider);
     boolean fetchDriverData(Driver driver);
 
     /* Registration Methods */
@@ -23,7 +23,9 @@ public interface DBHandler {
     boolean respondToVehicleRegistrationRequest(Vehicle currentVehicleRequest);
 
     /* Unused CRUD methods */
+    JSONArray riderDetails();
     JSONArray driverDetails();
+    Boolean deleteRider();
     Boolean deleteDriver();
 
     boolean respondToDriverRegistrationRequest(Driver driver);

@@ -7,6 +7,7 @@ import com.savaari.api.controllers.AdminSystem;
 import com.savaari.api.controllers.CRUDController;
 import com.savaari.api.entity.Administrator;
 import com.savaari.api.entity.Driver;
+import com.savaari.api.entity.Rider;
 import com.savaari.api.entity.Vehicle;
 import org.json.JSONObject;
 import org.springframework.boot.SpringApplication;
@@ -109,6 +110,25 @@ public class ApiApplication {
 
 
 	/* Add new user methods */
+	@RequestMapping(value = "/add_rider", method = RequestMethod.POST)
+	public String addRider(@RequestBody Map<String, String> allParams)
+	{
+		System.out.println(allParams.toString());
+		String username = allParams.get("username");
+		String email_address = allParams.get("email_address");
+		String password = allParams.get("password");
+
+		JSONObject result = new JSONObject();
+
+		if (new CRUDController().addRider(username, email_address, password)) {
+			result.put("STATUS_CODE", 200);
+		}
+		else {
+			result.put("STATUS_CODE", 404);
+		}
+		return result.toString();
+	}
+
 	// Sign-up for Driver
 	@RequestMapping(value = "/add_driver", method = RequestMethod.POST)
 	public String addDriver(@RequestBody Map<String, Object> allParams)
@@ -131,6 +151,61 @@ public class ApiApplication {
 	/* End of section */
 
 	/* Authenticate user methods */
+
+	/* Authenticate user methods */
+	@RequestMapping(value = "/login_rider", method = RequestMethod.POST)
+	public String loginRider(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		Rider rider = new Rider();
+		rider.setEmailAddress(allParams.get("username"));
+		rider.setPassword(allParams.get("password"));
+
+		CRUDController crudController = getAttributeObject(request, CRUDController.class, CRUDController.class.getName());
+		if (crudController == null) { crudController = new CRUDController(); }
+
+		Integer userID = crudController.loginRider(rider);
+
+		// Package response
+		JSONObject result = new JSONObject();
+
+		if (userID == null) {
+			result.put("STATUS_CODE", 404);
+			result.put("USER_ID", -1);
+		}
+		else {
+			result.put("STATUS_CODE", 200);
+			result.put("USER_ID", userID);
+
+			if (request.getSession(false) == null) {
+				request.getSession(true);
+			}
+
+			storeObjectAsAttribute(request, CRUDController.class.getName(), crudController);
+		}
+
+		return result.toString();
+	}
+
+	// Persist Login for Rider
+	@RequestMapping(value = "/persistRiderLogin", method = RequestMethod.POST)
+	public String persistRiderLogin(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			request.getSession(true);
+
+			Rider rider = new Rider();
+			rider.setUserID(Integer.parseInt(allParams.get("USER_ID")));
+
+			CRUDController crudController = getAttributeObject(request, CRUDController.class, CRUDController.class.getName());
+			if (crudController == null) { crudController = new CRUDController(); }
+
+			crudController.persistRiderLogin(rider);
+			storeObjectAsAttribute(request, CRUDController.class.getName(), crudController);
+			return new JSONObject().put("STATUS_CODE", 200).toString();
+		}
+
+		return new JSONObject().put("STATUS_CODE", 200).toString();
+	}
 
 	// Login for Driver
 	@RequestMapping(value = "/login_driver", method = RequestMethod.POST)
@@ -200,6 +275,15 @@ public class ApiApplication {
 		return result.toString();
 	}
 
+	// Logout Rider
+	// TODO: Add layer that checks user is logged out in database
+	@RequestMapping(value = "/logout_rider", method = RequestMethod.POST)
+	public String logoutRider(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		request.getSession().invalidate();
+		return new JSONObject().put("STATUS_CODE", 200).toString();
+	}
+
 	// Logout Driver
 	// TODO: Add layer that checks user is logged out in database
 	@RequestMapping(value = "/logout_driver", method = RequestMethod.POST)
@@ -209,6 +293,33 @@ public class ApiApplication {
 		return new JSONObject().put("STATUS_CODE", 200).toString();
 	}
 	/* End of section*/
+
+	@RequestMapping(value = "/rider_data", method = RequestMethod.POST)
+	public String riderData(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			System.out.println("Driver data: Invalid session");
+			return null;
+		}
+
+		CRUDController crudController = getAttributeObject(request, CRUDController.class, CRUDController.class.getName());
+		if (crudController == null) { return null; }
+
+		String result = null;
+		Rider rider = crudController.riderData();
+		if (rider != null) {
+			try {
+				result = objectMapper.writeValueAsString(rider);
+			}
+			catch (JsonProcessingException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+
+		storeObjectAsAttribute(request, CRUDController.class.getName(), crudController);
+		return result;
+	}
 
 	// Fetching Driver Data
 	@RequestMapping(value = "/driver_data", method = RequestMethod.POST)
