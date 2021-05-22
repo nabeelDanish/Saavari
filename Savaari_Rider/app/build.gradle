@@ -36,12 +36,16 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    implementation "com.google.android.gms:play-services-location:17.1.0"
+    implementation "com.google.android.gms:play-services-location:18.0.0"
 
     //Google Maps & Places API
-    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation 'com.google.android.gms:play-services-maps:17.0.1'
     implementation 'com.google.android.libraries.places:places:2.4.0'
-    implementation 'androidx.navigation:navigation-ui:2.3.1'
+    implementation 'androidx.navigation:navigation-ui:2.3.5'
+
+    //Google Maps Services for Routing API
+    implementation 'com.google.maps:google-maps-services:0.14.0'
+    implementation 'org.slf4j:slf4j-simple:1.7.25'
 
     // Jackson dependencies
     implementation 'com.fasterxml.jackson.core:jackson-core:2.11.3'

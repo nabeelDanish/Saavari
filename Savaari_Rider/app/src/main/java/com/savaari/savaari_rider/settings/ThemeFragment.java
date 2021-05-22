@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.savaari.savaari_rider.R;
+import com.savaari.savaari_rider.ride.RideActivity;
 import com.savaari.savaari_rider.utility.ThemeVar;
 
 /**
@@ -292,6 +293,9 @@ public class ThemeFragment extends Fragment implements View.OnClickListener {
         Intent i = getActivity().getIntent();
         i.putExtra("themeChange", true);
 
-        //TODO: Create backstack with RideActivity as base
+        TaskStackBuilder.create(getActivity())
+                .addNextIntent(new Intent(getActivity(), RideActivity.class))
+                .addNextIntent(i)
+                .startActivities();
     }
 }
