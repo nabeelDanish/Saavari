@@ -22,4 +22,16 @@ public class Rider extends User {
     public boolean fetchData() {
         return DBHandlerFactory.getInstance().createDBHandler().fetchRiderData(this);
     }
+
+    /* Rider location methods */
+
+    public boolean saveLocation() {
+        return DBHandlerFactory.getInstance().createDBHandler().saveRiderLocation(this);
+    }
+
+    public void fetchLocation() {
+        setCurrentLocation(DBHandlerFactory.getInstance().createDBHandler().getRiderLocation(this));
+    }
+
+    /* End of section*/
 }

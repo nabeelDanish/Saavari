@@ -113,4 +113,20 @@ public class Driver extends User
 		}
 		return true;
 	}
+
+	/* Location methods */
+
+	// Saving Driver Location
+	public boolean saveDriverLocation()
+	{
+		return DBHandlerFactory.getInstance().createDBHandler().saveDriverLocation(this);
+	}
+
+	// Getting Driver Location
+	public void getDriverLocation()
+	{
+		setCurrentLocation(DBHandlerFactory.getInstance().createDBHandler().getDriverLocation(this));
+	}
+
+	/* End of section */
 }

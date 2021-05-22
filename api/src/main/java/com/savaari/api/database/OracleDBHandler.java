@@ -664,4 +664,161 @@ public class OracleDBHandler implements DBHandler {
             closeConnection(connect);
         }
     }
+
+
+    /* Location update methods*/
+    @Override
+    public boolean saveRiderLocation(Rider rider) {
+
+        return (executeUpdate("UPDATE RIDER_DETAILS SET LATITUDE = " + rider.getCurrentLocation().getLatitude()
+                + ", LONGITUDE = " + rider.getCurrentLocation().getLongitude() +
+                ", TIMESTAMP = CURRENT_TIME() WHERE USER_ID = " + rider.getUserID()) > 0);
+    }
+
+    @Override
+    public boolean saveDriverLocation(Driver driver) {
+        return (executeUpdate("UPDATE DRIVER_DETAILS SET LATITUDE = " + driver.getCurrentLocation().getLatitude()
+                + ", LONGITUDE = " + driver.getCurrentLocation().getLongitude() +
+                ", TIMESTAMP = CURRENT_TIME() WHERE USER_ID = " + driver.getUserID()) > 0);
+    }
+
+    @Override
+    public Location getRiderLocation(Rider rider) {
+
+        Connection connect = null;
+        ResultSet resultSet = null;
+        try {
+            connect = DBCPDataSource.getConnection();
+            String sqlQuery = "SELECT CAST(LATITUDE AS CHAR(12)) AS LATITUDE, CAST(LONGITUDE AS CHAR(12)) AS LONGITUDE" +
+                    " FROM RIDER_DETAILS WHERE USER_ID = " + rider.getUserID();
+
+            resultSet = connect.createStatement().executeQuery(sqlQuery);
+
+            Location fetchedLocation = null;
+
+            if (resultSet.next()) {
+                fetchedLocation = new Location(resultSet.getDouble(1),
+                        resultSet.getDouble(2), null);
+            }
+
+            return fetchedLocation;
+        }
+        catch (Exception e) {
+            System.out.println(LOG_TAG + "Exception:getRiderLocation()");
+            e.printStackTrace();
+            return null;
+        }
+        finally {
+            closeAll(connect, null, resultSet);
+        }
+    }
+
+    @Override
+    public Location getDriverLocation(Driver driver) {
+
+        Connection connect = null;
+        ResultSet resultSet = null;
+
+        try {
+            connect = DBCPDataSource.getConnection();
+            String sqlQuery = "SELECT CAST(LATITUDE AS CHAR(12)) AS LATITUDE, CAST(LONGITUDE AS CHAR(12)) AS LONGITUDE" +
+                    " FROM DRIVER_DETAILS WHERE USER_ID = " + driver.getUserID();
+
+            resultSet = connect.createStatement().executeQuery(sqlQuery);
+
+            Location location;
+
+            if (resultSet.next()) {
+                location = new Location(resultSet.getDouble(1),
+                        resultSet.getDouble(2), null);
+            }
+            else {
+                location = null;
+            }
+
+            return location;
+        }
+        catch (Exception e) {
+            System.out.println(LOG_TAG + "Exception:getDriverLocation()");
+            e.printStackTrace();
+            return null;
+        }
+        finally {
+            closeAll(connect, null, resultSet);
+        }
+    }
+
+    @Override
+    public ArrayList<Location> getRiderLocations() {
+
+        Connection connect = null;
+        ResultSet resultSet = null;
+
+        try {
+            String sqlQuery = "SELECT CAST(LATITUDE AS CHAR(12)) AS LATITUDE, CAST(LONGITUDE AS CHAR(12)) AS LONGITUDE" +
+                    ", TIMESTAMP FROM RIDER_DETAILS";
+
+            // Find list of Rider Locations //TODO: Add criteria later
+
+            connect = DBCPDataSource.getConnection();
+            resultSet = connect.createStatement().executeQuery(sqlQuery);
+
+            ArrayList<Location> locations = new ArrayList<>();
+            Location currentLocation;
+
+            while (resultSet.next()) {
+                currentLocation = new Location(resultSet.getDouble(1),
+                        resultSet.getDouble(2),
+                        null);
+                locations.add(currentLocation);
+            }
+
+            return locations;
+        }
+        catch (Exception e) {
+            System.out.println(LOG_TAG + "Exception:getRiderLocations()");
+            e.printStackTrace();
+            return null;
+        }
+        finally {
+            closeAll(connect, null, resultSet);
+        }
+    }
+
+    @Override
+    public ArrayList<Location> getDriverLocations() {
+
+        Connection connect = null;
+        ResultSet resultSet = null;
+
+        try {
+            String sqlQuery = "SELECT CAST(LATITUDE AS CHAR(12)) AS LATITUDE, CAST(LONGITUDE AS CHAR(12)) AS LONGITUDE" +
+                    ", TIMESTAMP FROM DRIVER_DETAILS";
+
+            // Find list of Driver Locations //TODO: Add criteria later
+            connect = DBCPDataSource.getConnection();
+            resultSet = connect.createStatement().executeQuery(sqlQuery);
+
+            ArrayList<Location> locations = new ArrayList<>();
+            Location currentLocation;
+
+            while (resultSet.next()) {
+                currentLocation = new Location(resultSet.getDouble(1),
+                        resultSet.getDouble(2),
+                        resultSet.getTimestamp(3).getTime());
+                locations.add(currentLocation);
+            }
+
+            return locations;
+        }
+        catch (Exception e) {
+            System.out.println(LOG_TAG + "Exception:getDriverLocations()");
+            e.printStackTrace();
+            return null;
+        }
+        finally {
+            closeAll(connect, null, resultSet);
+        }
+    }
+    /* End of section */
 }

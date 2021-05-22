@@ -5,10 +5,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.savaari.api.controllers.AdminSystem;
 import com.savaari.api.controllers.CRUDController;
-import com.savaari.api.entity.Administrator;
-import com.savaari.api.entity.Driver;
-import com.savaari.api.entity.Rider;
-import com.savaari.api.entity.Vehicle;
+import com.savaari.api.controllers.LocationController;
+import com.savaari.api.entity.*;
 import org.json.JSONObject;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,6 +20,7 @@ import java.util.Map;
 @RestController
 public class ApiApplication {
 
+	private static LocationController locationController;
 	private static ObjectMapper objectMapper;
 
 	/* MAIN METHOD */
@@ -592,5 +591,147 @@ public class ApiApplication {
 		}
 		return jsonObject.toString();
 	}
+
+
+	/*
+	 * -------------------------------------------
+	 *  DRIVER & RIDER LOCATION REQUESTS
+	 * -------------------------------------------
+	 * */
+
+	@RequestMapping(value = "/saveDriverLocation", method = RequestMethod.POST)
+	public String saveDriverLocation(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		Driver driver = new Driver();
+		driver.setUserID(Integer.parseInt(allParams.get("USER_ID")));
+		driver.setCurrentLocation(new Location(Double.valueOf(allParams.get("LATITUDE")), Double.valueOf(allParams.get("LONGITUDE")),
+				Long.parseLong(allParams.get("TIMESTAMP"))));
+
+		boolean locationSaved = locationController.saveDriverLocation(driver);
+
+		JSONObject result = new JSONObject();
+		result.put("STATUS", ((locationSaved)? 200 : 404));
+		return result.toString();
+	}
+
+	@RequestMapping(value = "/saveRiderLocation", method = RequestMethod.POST)
+	public String saveRiderLocation(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		Rider rider = new Rider();
+		rider.setUserID(Integer.parseInt(allParams.get("USER_ID")));
+		rider.setCurrentLocation(new Location(Double.valueOf(allParams.get("LATITUDE")), Double.valueOf(allParams.get("LONGITUDE")),
+				Long.parseLong(allParams.get("TIMESTAMP"))));
+
+		boolean locationSaved = locationController.saveRiderLocation(rider);
+
+		JSONObject result = new JSONObject();
+		result.put("STATUS", ((locationSaved)? 200 : 404));
+		return result.toString();
+	}
+
+	@RequestMapping(value = "/getDriverLocations", method = RequestMethod.POST)
+	public String getDriverLocations(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		try {
+			ArrayList<Location> locations = locationController.getDriverLocations();
+
+			if (locations == null) {
+				return null;
+			} else {
+				return objectMapper.writeValueAsString(locations);
+			}
+		}
+		catch (Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@RequestMapping(value = "/getRiderLocations", method = RequestMethod.POST)
+	@ResponseBody
+	public String getRiderLocations(HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		try {
+			ArrayList<Location> locations = locationController.getRiderLocations();
+
+			if (locations == null) {
+				return null;
+			} else {
+				return objectMapper.writeValueAsString(locations);
+			}
+		}
+		catch (Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@RequestMapping(value = "/getDriverLocation", method = RequestMethod.POST)
+	public String getDriverLocation(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		Driver driver = new Driver();
+		driver.setUserID(Integer.parseInt(allParams.get("USER_ID")));
+
+		locationController.getDriverLocation(driver);
+
+		JSONObject result = new JSONObject();
+
+		if (driver.getCurrentLocation() == null) {
+			result.put("STATUS_CODE", 404);
+		}
+		else {
+			result.put("STATUS_CODE", 200);
+			result.put("LATITUDE", driver.getCurrentLocation().getLatitude());
+			result.put("LONGITUDE", driver.getCurrentLocation().getLongitude());
+		}
+		return result.toString();
+	}
+
+	@RequestMapping(value = "/getRiderLocation", method = RequestMethod.POST)
+	public String getRiderLocation(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		Rider rider = new Rider();
+		rider.setUserID(Integer.parseInt(allParams.get("USER_ID")));
+
+		locationController.getRiderLocation(rider);
+
+		JSONObject result = new JSONObject();
+
+		if (rider.getCurrentLocation() == null) {
+			result.put("STATUS_CODE", 404);
+		}
+		else {
+			result.put("STATUS_CODE", 200);
+			result.put("LATITUDE", rider.getCurrentLocation().getLatitude());
+			result.put("LONGITUDE", rider.getCurrentLocation().getLongitude());
+		}
+		return result.toString();
+	}
+
+	/* End of section */
 
 }

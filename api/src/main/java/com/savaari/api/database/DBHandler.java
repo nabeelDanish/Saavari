@@ -34,4 +34,12 @@ public interface DBHandler {
     boolean loginAdmin(Administrator admin);
     ArrayList<Vehicle> getVehicleRequests();
     ArrayList<Driver> getDriverRequests();
+
+    /* Location method calls */
+    boolean saveRiderLocation(Rider rider);
+    boolean saveDriverLocation(Driver driver);
+    Location getRiderLocation(Rider rider);
+    Location getDriverLocation(Driver driver);
+    ArrayList<Location> getRiderLocations();
+    ArrayList<Location> getDriverLocations();
 }
