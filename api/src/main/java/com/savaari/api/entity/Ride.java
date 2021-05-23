@@ -179,4 +179,14 @@ public class Ride {
             return false;
         }
     }
+
+    /* Feedback methods */
+
+    public boolean giveFeedbackForDriver(float rating) {
+        return DBHandlerFactory.getInstance().createDBHandler().giveFeedbackForDriver(this, rating);
+    }
+
+    public boolean giveFeedbackForRider(float rating) {
+        return DBHandlerFactory.getInstance().createDBHandler().giveFeedbackForRider(this, rating);
+    }
 }

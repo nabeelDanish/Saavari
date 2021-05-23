@@ -55,6 +55,8 @@ public interface DBHandler {
     boolean acknowledgeEndOfRide(Ride ride);
     boolean resetDriver(Driver driver);
     boolean resetRider(Rider rider, boolean checkForResponse);
+    boolean giveFeedbackForDriver(Ride ride, float rating);
+    boolean giveFeedbackForRider(Ride ride, float rating);
 
     boolean respondToDriverRegistrationRequest(Driver driver);
 

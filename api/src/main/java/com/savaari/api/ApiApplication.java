@@ -964,6 +964,51 @@ public class ApiApplication {
 
 	/*
 	 * -------------------------------------------
+	 *  DRIVER & RIDER PROVIDE FEEDBACK CALLS
+	 * -------------------------------------------
+	 * */
+
+	@RequestMapping(value = "/giveFeedbackForDriver", method = RequestMethod.POST)
+	public String giveFeedbackForDriver(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		Ride ride = new Ride();
+		ride.setRideID(Integer.parseInt(allParams.get("RIDE_ID")));
+		ride.getRideParameters().getDriver().setUserID(Integer.parseInt(allParams.get("DRIVER_ID")));
+
+		JSONObject result = new JSONObject();
+		boolean feedbackSubmitted = new MatchmakingController().giveFeedbackForDriver(ride, Float.parseFloat(allParams.get("RATING")));
+
+		result.put("STATUS", ((feedbackSubmitted)? 200 : 404));
+		return result.toString();
+	}
+
+	@RequestMapping(value = "/giveFeedbackForRider", method = RequestMethod.POST)
+	public String giveFeedbackForRider(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		Ride ride = new Ride();
+		ride.setRideID(Integer.parseInt(allParams.get("RIDE_ID")));
+		ride.getRideParameters().getRider().setUserID(Integer.parseInt(allParams.get("RIDER_ID")));
+
+		JSONObject result = new JSONObject();
+		boolean feedbackSubmitted = new MatchmakingController().giveFeedbackForRider(ride, Float.parseFloat(allParams.get("RATING")));
+
+		result.put("STATUS", ((feedbackSubmitted)? 200 : 404));
+		return result.toString();
+	}
+
+	/* End of section */
+
+
+	/*
+	 * -------------------------------------------
 	 *  DRIVER & RIDER LOCATION REQUESTS
 	 * -------------------------------------------
 	 * */

@@ -44,6 +44,14 @@ public class MatchmakingController {
         ride.fetchRideStatus();
     }
 
+    public boolean giveFeedbackForDriver(Ride ride, float rating) {
+        return ride.giveFeedbackForDriver(rating);
+    }
+
+    public boolean giveFeedbackForRider(Ride ride, float rating) {
+        return ride.giveFeedbackForRider(rating);
+    }
+
     /* End of section */
 
 

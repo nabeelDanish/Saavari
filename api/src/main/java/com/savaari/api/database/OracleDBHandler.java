@@ -1076,6 +1076,34 @@ public class OracleDBHandler implements DBHandler {
 
     /*
      * ---------------------------------------------
+     *  DRIVER & RIDER FEEDBACK METHODS
+     * ---------------------------------------------
+     */
+
+    /* TODO: Keep track of ratings in ride later? */
+    @Override
+    public boolean giveFeedbackForDriver(Ride ride, float rating) {
+
+        return (executeUpdate("UPDATE DRIVER_DETAILS D" +
+                " SET D.RATING = D.RATING*(cast(D.NUM_RATINGS as DECIMAL)/CAST(D.NUM_RATINGS+1 AS DECIMAL)) + ("
+                + rating +"/CAST(D.NUM_RATINGS+1 AS DECIMAL)), " +
+                " D.NUM_RATINGS = D.NUM_RATINGS + 1" +
+                " WHERE D.USER_ID = " + ride.getRideParameters().getDriver().getUserID()) > 0);
+    }
+
+    @Override
+    public boolean giveFeedbackForRider(Ride ride, float rating) {
+
+        return (executeUpdate("UPDATE RIDER_DETAILS R" +
+                " SET R.RATING = R.RATING*(cast(R.NUM_RATINGS as DECIMAL)/CAST(R.NUM_RATINGS+1 AS DECIMAL)) + ("
+                + rating +"/CAST(R.NUM_RATINGS+1 AS DECIMAL)), " +
+                " R.NUM_RATINGS = R.NUM_RATINGS + 1" +
+                " WHERE R.USER_ID = " + ride.getRideParameters().getRider().getUserID()) > 0);
+    }
+
+
+    /*
+     * ---------------------------------------------
      *  CREATE & LOG INTO ADMINISTRATOR ACCOUNT
      * ---------------------------------------------
      */
