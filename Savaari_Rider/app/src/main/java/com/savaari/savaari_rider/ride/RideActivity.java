@@ -577,7 +577,6 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
     /* Callback for when permissions have been granted/denied */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         locationPermissionGranted = false;
 
         switch (requestCode) {
@@ -1063,7 +1062,7 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
                 location.addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "onComplete: found location!");
-                        Location currentLocation = (Location) task.getResult();
+                        android.location.Location currentLocation = (android.location.Location) task.getResult();
 
                         moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM, "");
 

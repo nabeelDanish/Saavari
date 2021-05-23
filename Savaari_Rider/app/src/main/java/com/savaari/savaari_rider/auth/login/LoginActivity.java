@@ -30,6 +30,7 @@ import com.savaari.savaari_rider.SavaariApplication;
 import com.savaari.savaari_rider.auth.biometric.BiometricCallback;
 import com.savaari.savaari_rider.auth.biometric.BiometricCallbackV28;
 import com.savaari.savaari_rider.auth.signup.SignUpActivity;
+import com.savaari.savaari_rider.ride.RideActivity;
 import com.savaari.savaari_rider.utility.ThemeVar;
 import com.savaari.savaari_rider.utility.Util;
 
@@ -282,7 +283,9 @@ public class LoginActivity extends Util implements BiometricCallback {
             myEdit.putInt("USER_ID", USER_ID);
             myEdit.commit();
 
-            // TODO: launch Ride Activity
+            Intent i = new Intent(LoginActivity.this, RideActivity.class);
+            startActivity(i);
+            finish();
         }
     }
 

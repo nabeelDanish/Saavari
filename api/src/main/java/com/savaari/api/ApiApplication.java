@@ -34,6 +34,8 @@ public class ApiApplication {
 				.withSetterVisibility(JsonAutoDetect.Visibility.NONE)
 				.withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
 
+		locationController = new LocationController();
+
 		SpringApplication.run(ApiApplication.class, args);
 	}
 
