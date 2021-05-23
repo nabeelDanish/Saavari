@@ -756,6 +756,13 @@ public class ApiApplication {
 		return result;
 	}
 
+
+	/*
+	 * -------------------------------------------
+	 *  DRIVER & RIDER TAKE TRIP CALLS
+	 * -------------------------------------------
+	 * */
+
 	// Confirming Ride Request
 	@RequestMapping(value = "/confirmRideRequest", method = RequestMethod.POST)
 	public String confirmRideRequest(@RequestBody Map<String, String> allParams, HttpServletRequest request)
@@ -779,6 +786,180 @@ public class ApiApplication {
 	}
 
 	/* END OF SECTION */
+
+
+	// Marking Arrival at Pickup
+	@RequestMapping(value = "/markArrival", method = RequestMethod.POST)
+	public String markArrivalAtPickup(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		MatchmakingController matchmakingController = getAttributeObject(request, MatchmakingController.class,
+				MatchmakingController.class.getName());
+		if (matchmakingController == null) { return null; }
+
+		JSONObject jsonObject = new JSONObject();
+		if (matchmakingController.markArrivalAtPickup()) {
+			jsonObject.put("STATUS", 200);
+		} else {
+			jsonObject.put("STATUS", 404);
+		}
+
+		storeObjectAsAttribute(request, MatchmakingController.class.getName(), matchmakingController);
+		return jsonObject.toString();
+	}
+
+	// Starting Ride from Ride
+	@RequestMapping(value = "/startRideDriver", method = RequestMethod.POST)
+	public String startRide(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		MatchmakingController matchmakingController = getAttributeObject(request, MatchmakingController.class, MatchmakingController.class.getName());
+
+		JSONObject jsonObject = new JSONObject();
+		if (matchmakingController.startRide()) {
+			jsonObject.put("STATUS", 200);
+		} else {
+			jsonObject.put("STATUS", 404);
+		}
+
+		storeObjectAsAttribute(request, MatchmakingController.class.getName(), matchmakingController);
+		return jsonObject.toString();
+	}
+
+	// Marking Arrival Destination
+	@RequestMapping(value = "/markArrivalAtDestination", method = RequestMethod.POST)
+	public String markArrivalAtDestination(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		System.out.println("MARK ARRIVAL CALLED");
+		MatchmakingController matchmakingController = getAttributeObject(request, MatchmakingController.class, MatchmakingController.class.getName());
+
+		long endTime = (Long.parseLong(allParams.get("END_TIME")));
+		double distanceTravelled = (Double.parseDouble(allParams.get("DIST_TRAVELLED")));
+
+		JSONObject result;
+		double fare = matchmakingController.markArrivalAtDestination(endTime, distanceTravelled);
+		storeObjectAsAttribute(request, MatchmakingController.class.getName(), matchmakingController);
+
+		if (fare > 0) {
+			result = new JSONObject();
+			result.put("FARE", fare);
+			return result.toString();
+		}
+		else {
+			return null;
+		}
+	}
+
+	//TODO: send payment, not change and package into ride
+	@RequestMapping(value = "/endRideWithPayment", method = RequestMethod.POST)
+	public String endRideWithPayment(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		MatchmakingController matchmakingController = getAttributeObject(request, MatchmakingController.class, MatchmakingController.class.getName());
+		JSONObject jsonObject = new JSONObject();
+		double amountPaid = Double.parseDouble(allParams.get("AMNT_PAID"));
+		double change = Double.parseDouble(allParams.get("CHANGE"));
+
+		if (matchmakingController.endRideWithPayment(amountPaid, change)) {
+			jsonObject.put("STATUS", 200);
+		}
+		else {
+			jsonObject.put("STATUS", 404);
+		}
+		return jsonObject.toString();
+	}
+
+	/* End of section */
+
+
+	/* Ride system calls */
+
+	@RequestMapping(value = "/getRideForRider", method = RequestMethod.POST)
+	public String getRideForRider(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		CRUDController crudController = getAttributeObject(request, CRUDController.class, CRUDController.class.getName());
+		MatchmakingController matchmakingController = getAttributeObject(request, MatchmakingController.class,
+				MatchmakingController.class.getName());
+
+		if (crudController == null || matchmakingController == null) {
+			return null;
+		}
+
+		Ride fetchedRide = matchmakingController.getRideForRider(crudController.getRider());
+
+		if (fetchedRide != null) {
+			try {
+				storeObjectAsAttribute(request, MatchmakingController.class.getName(), matchmakingController);
+				return objectMapper.writeValueAsString(fetchedRide);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		return null;
+	}
+
+	@RequestMapping(value = "/getRideStatus", method = RequestMethod.POST)
+	public String getRideStatus(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+		MatchmakingController matchmakingController = getAttributeObject(request, MatchmakingController.class,
+				MatchmakingController.class.getName());
+
+		if (matchmakingController == null) {
+			return null;
+		}
+
+		matchmakingController.getRideStatus();
+
+		if (matchmakingController.getRide().getRideStatus() != RideRequest.DEFAULT) {
+
+			storeObjectAsAttribute(request, MatchmakingController.class.getName(), matchmakingController);
+			JSONObject result = new JSONObject();
+			result.put("RIDE_STATUS", matchmakingController.getRide().getRideStatus());
+			result.put("FARE", matchmakingController.getRide().getFare());
+			return result.toString();
+		}
+		else {
+			return null;
+		}
+	}
+
+	@RequestMapping(value = "/acknowledgeEndOfRide", method = RequestMethod.POST)
+	public String acknowledgeEndOfRide(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		MatchmakingController matchmakingController = getAttributeObject(request, MatchmakingController.class,
+				MatchmakingController.class.getName());
+
+		JSONObject result = new JSONObject();
+		result.put("STATUS_CODE", ((matchmakingController.acknowledgeEndOfRide())? 200 : 404));
+
+		deleteAttribute(request, MatchmakingController.class.getName());
+		return result.toString();
+	}
 
 
 	/*
