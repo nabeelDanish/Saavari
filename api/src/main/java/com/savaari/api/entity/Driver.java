@@ -149,4 +149,39 @@ public class Driver extends User
 		activeVehicle = vehicle;
 		return DBHandlerFactory.getInstance().createDBHandler().setActiveVehicle(this);
 	}
+
+	// Check Ride Request Status
+	public RideRequest checkRideRequestStatus() {
+		return DBHandlerFactory.getInstance().createDBHandler().checkRideRequestStatus(this, 20000);
+	}
+
+	// Start Matchmaking service in Server
+	public RideRequest startMatchmaking() {
+		// TODO: Implement policy of checking rides
+		while(true)
+		{
+			RideRequest ride = DBHandlerFactory.getInstance().createDBHandler().checkRideRequestStatus(this, 20000);
+
+			// NULL means exception or timeout
+			if (ride != null) {
+				// 33 means something happened: logout or deactivated
+				if (ride.getFindStatus() != 33) {
+					return ride;
+				} else {
+					return null;
+				}
+			}
+		} // end while
+	}
+
+	// Get Ride for Driver
+	public Ride getRideForDriver(RideRequest rideRequest)
+	{
+		return getRide(rideRequest);
+	}
+
+	// Reset Driver
+	public boolean resetDriver() {
+		return DBHandlerFactory.getInstance().createDBHandler().resetDriver(this);
+	}
 }

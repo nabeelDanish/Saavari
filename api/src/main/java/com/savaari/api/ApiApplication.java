@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.savaari.api.controllers.AdminSystem;
 import com.savaari.api.controllers.CRUDController;
 import com.savaari.api.controllers.LocationController;
+import com.savaari.api.controllers.MatchmakingController;
 import com.savaari.api.entity.*;
 import org.json.JSONObject;
 import org.springframework.boot.SpringApplication;
@@ -591,6 +592,193 @@ public class ApiApplication {
 		}
 		return jsonObject.toString();
 	}
+
+
+	/*
+	 * -------------------------------------------
+	 *  DRIVER & RIDER BOOK A TRIP CALLS
+	 * -------------------------------------------
+	 * */
+
+	// Selecting Active Vehicle
+	@RequestMapping(value = "/selectActiveVehicle", method = RequestMethod.POST)
+	public String selectActiveVehicle(@RequestBody Map<String, String> allParams, HttpServletRequest request) {
+
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		CRUDController crudController = getAttributeObject(request, CRUDController.class, CRUDController.class.getName());
+		if (crudController == null) { return null; }
+
+		Vehicle vehicle = new Vehicle(Integer.parseInt(allParams.get("ACTIVE_VEHICLE_ID")));
+
+		JSONObject result = new JSONObject();
+		boolean vehicleSet = crudController.setActiveVehicle(vehicle);
+
+		storeObjectAsAttribute(request, CRUDController.class.getName(), crudController);
+		result.put("STATUS", ((vehicleSet)? 200 : 404));
+		return result.toString();
+	}
+
+	// Marking Active Status of Driver
+	@RequestMapping(value = "/setMarkActive", method = RequestMethod.POST)
+	public String setMarkActive(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		CRUDController crudController = getAttributeObject(request, CRUDController.class, CRUDController.class.getName());
+		JSONObject json = new JSONObject();
+		try {
+			boolean isDone = crudController.setMarkActive(Boolean.parseBoolean(allParams.get("ACTIVE_STATUS")));
+			if (isDone) {
+				json.put("STATUS", 200);
+			} else {
+				json.put("STATUS", 404);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		storeObjectAsAttribute(request, CRUDController.class.getName(), crudController);
+		return json.toString();
+	}
+
+	/* Rider-side matchmaking method*/
+	@RequestMapping(value = "/findDriver", method = RequestMethod.POST)
+	public String searchForRide(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		CRUDController crudController = getAttributeObject(request, CRUDController.class, CRUDController.class.getName());
+		MatchmakingController matchmakingController = getAttributeObject(request, MatchmakingController.class,
+				MatchmakingController.class.getName());
+		if (crudController == null || matchmakingController == null) { return null; }
+
+		RideType rideType = new RideType(Integer.parseInt(allParams.get("RIDE_TYPE_ID")));
+
+		Ride fetchedRide = matchmakingController.searchForRide(crudController.getRider(),
+				new Location(Double.parseDouble(allParams.get("SOURCE_LAT")),
+						Double.parseDouble(allParams.get("SOURCE_LONG")), null),
+				new Location(Double.parseDouble(allParams.get("DEST_LAT")),
+						Double.parseDouble(allParams.get("DEST_LONG")), null),
+				Integer.parseInt(allParams.get("PAYMENT_MODE")), rideType);
+
+		String result = null;
+
+		if (fetchedRide != null) {
+			try {
+				result = objectMapper.writeValueAsString(fetchedRide);
+				storeObjectAsAttribute(request, MatchmakingController.class.getName(), matchmakingController);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+
+		return result;
+	}
+
+	@RequestMapping(value = "/startMatchmaking", method = RequestMethod.POST)
+	public String startMatchmaking(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+		CRUDController crudController = getAttributeObject(request, CRUDController.class, CRUDController.class.getName());
+		Driver driver = crudController.getDriver();
+		MatchmakingController matchmakingController = getAttributeObject(request, MatchmakingController.class, MatchmakingController.class.getName());
+
+		RideRequest rideRequest = matchmakingController.startMatchmaking(driver);
+		String result = null;
+
+		if (rideRequest != null) {
+			try {
+				result = objectMapper.writeValueAsString(rideRequest);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		storeObjectAsAttribute(request, MatchmakingController.class.getName(), matchmakingController);
+		return result;
+	}
+
+	// Checking for Ride Request Status
+	@RequestMapping(value = "/checkRideRequestStatus", method = RequestMethod.POST)
+	public String checkRideRequestStatus(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+		MatchmakingController matchmakingController = getAttributeObject(request, MatchmakingController.class, MatchmakingController.class.getName());
+
+		RideRequest rideRequest = matchmakingController.checkRideRequestStatus();
+		String result = null;
+
+		if (rideRequest != null) {
+			try {
+				result = objectMapper.writeValueAsString(rideRequest);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		storeObjectAsAttribute(request, MatchmakingController.class.getName(), matchmakingController);
+		return result;
+	}
+
+	// Checking for Ride Status
+	@RequestMapping(value = "/checkRideStatus", method = RequestMethod.POST)
+	public String checkRideStatus(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+		MatchmakingController matchmakingController = getAttributeObject(request, MatchmakingController.class, MatchmakingController.class.getName());
+
+		Ride ride = matchmakingController.getRideForDriver();
+		String result = null;
+		if (ride != null) {
+			try {
+				result = objectMapper.writeValueAsString(ride);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		storeObjectAsAttribute(request, MatchmakingController.class.getName(), matchmakingController);
+		return result;
+	}
+
+	// Confirming Ride Request
+	@RequestMapping(value = "/confirmRideRequest", method = RequestMethod.POST)
+	public String confirmRideRequest(@RequestBody Map<String, String> allParams, HttpServletRequest request)
+	{
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		MatchmakingController matchmakingController = getAttributeObject(request, MatchmakingController.class, MatchmakingController.class.getName());
+
+		int found_status = (Integer.parseInt(allParams.get("FOUND_STATUS")));
+
+		JSONObject jsonObject = new JSONObject();
+		if (matchmakingController.confirmRideRequest(found_status)) {
+			jsonObject.put("STATUS", 200);
+		} else {
+			jsonObject.put("STATUS", 404);
+		}
+		storeObjectAsAttribute(request, MatchmakingController.class.getName(), matchmakingController);
+		return jsonObject.toString();
+	}
+
+	/* END OF SECTION */
 
 
 	/*

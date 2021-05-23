@@ -1,5 +1,6 @@
 package com.savaari.api.entity;
 
+import com.savaari.api.database.DBHandlerFactory;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 
@@ -100,5 +101,13 @@ public class User {
 
     public void setRating(float rating) {
         this.rating = rating;
+    }
+
+    // Methods for system interactions
+
+    public Ride getRide(RideRequest rideRequest) {
+
+        return DBHandlerFactory.getInstance().createDBHandler().getRide(rideRequest);
+        //result.put("IS_TAKING_RIDE", (result.getInt("STATUS_CODE") == 200));
     }
 }
