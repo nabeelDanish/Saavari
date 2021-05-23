@@ -1,6 +1,7 @@
 package com.savaari.api.database;
 
 import com.savaari.api.entity.*;
+import com.savaari.api.entity.policy.PolicyFactory;
 import org.apache.commons.dbutils.DbUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -75,6 +76,51 @@ public class OracleDBHandler implements DBHandler {
             System.out.println("Exception in OracleDBHandler: executeUpdate");
             e.printStackTrace();
             return -1;
+        }
+    }
+
+    @Override
+    public boolean loadRideTypes(ArrayList<RideType> rideTypes) {
+
+        if (rideTypes == null) {
+            rideTypes = new ArrayList<>();
+        }
+        Connection connect = null;
+        ResultSet resultSet = null;
+        RideType fetchedRideType;
+
+        try {
+            connect = DBCPDataSource.getConnection();
+
+            String query = "SELECT TYPE_ID, NAME, MAX_PASSENGERS, BASE_FARE, PER_KM_CHARGE, PER_MIN_CHARGE, MIN_FARE" +
+                    " FROM RIDE_TYPES";
+
+            resultSet = connect.createStatement().executeQuery(query);
+
+            while (resultSet.next()) {
+                fetchedRideType = new RideType(
+                        resultSet.getInt(1),
+                        resultSet.getString(2),
+                        resultSet.getInt(3),
+                        resultSet.getDouble(4),
+                        resultSet.getDouble(5),
+                        resultSet.getDouble(6),
+                        resultSet.getDouble(7)
+
+                );
+
+                rideTypes.add(fetchedRideType);
+            }
+
+            return true;
+        }
+        catch (Exception e) {
+            System.out.println("Exception in OracleDBHandler: loadRideTypes");
+            e.printStackTrace();
+            return false;
+        }
+        finally {
+            closeAll(connect, null, resultSet);
         }
     }
 
@@ -359,6 +405,23 @@ public class OracleDBHandler implements DBHandler {
     }
 
     @Override
+    public boolean resetRider(Rider rider, boolean checkForResponse) {
+        return (executeUpdate(
+                "UPDATE RIDER_DETAILS SET FIND_STATUS = " + RideRequest.NOT_SENT +", DRIVER_ID = " + Driver.DEFAULT_ID +
+                        " WHERE USER_ID = " + rider.getUserID() +
+                        ((checkForResponse)? " AND FIND_STATUS <> " + RideRequest.FOUND : ""))) > 0;
+    }
+
+    @Override
+    public boolean resetDriver(Driver driver) {
+
+        return (executeUpdate(
+                "UPDATE DRIVER_DETAILS SET RIDE_STATUS = "  + RideRequest.MS_DEFAULT + ", RIDER_ID = " +
+                        User.DEFAULT_ID + ", SOURCE_LAT = 0, SOURCE_LONG = 0, DEST_LAT = 0, DEST_LONG = 0, " +
+                        " PAYMENT_MODE = -1, RIDE_TYPE = 0 WHERE USER_ID = " + driver.getUserID()) > 0);
+    }
+
+    @Override
     public Boolean deleteRider() {
         return null;
     }
@@ -368,6 +431,647 @@ public class OracleDBHandler implements DBHandler {
         return null;
     }
     /* End of section */
+
+    /* Rider-side matchmaking DB calls */
+    @Override
+    public Integer checkFindStatus(Rider rider) {
+
+        Connection connect = null;
+        ResultSet resultSet = null;
+
+        String sqlQuery = "SELECT R.FIND_STATUS " +
+                "FROM RIDER_DETAILS R " +
+                "WHERE R.FIND_STATUS IN (" + RideRequest.REJECTED + "," + RideRequest.FOUND + ") AND R.USER_ID = " + rider.getUserID();
+
+        int findStatus;
+        long currentTime = System.currentTimeMillis();
+        long endTime = currentTime + 36000;
+
+        try {
+            connect = DBCPDataSource.getConnection();
+
+            while (currentTime < endTime) {
+                resultSet = connect.createStatement().executeQuery(sqlQuery);
+
+                if (resultSet.next()) {
+                    findStatus = resultSet.getInt(1);
+
+                    switch (findStatus) {
+                        // Request not sent or response received
+                        case -1:
+                            return RideRequest.NOT_SENT;
+                        case 1:
+                            return RideRequest.NOT_PAIRED;
+                        case 2:
+                            return RideRequest.PAIRED;
+
+                        // Default: do nothing
+                    }
+                }
+
+                try {
+                    Thread.sleep(2000);
+                }
+                catch (Exception e) {
+                    System.out.println("DBHandler: checkFindStatus: Thread.sleep() exception");
+                }
+
+                currentTime = System.currentTimeMillis();
+            }
+
+            return RideRequest.NO_CHANGE;
+        }
+        catch (Exception e) {
+            System.out.println(LOG_TAG + "Exception in DBHandler:checkFindStatus()");
+            e.printStackTrace();
+
+            return RideRequest.STATUS_ERROR;
+        }
+        finally {
+            closeAll(connect, null, resultSet);
+        }
+    }
+
+
+    @Override
+    public ArrayList<Driver> searchDriverForRide(RideRequest rideRequest) {
+
+        Connection connect = null;
+        ResultSet resultSet = null;
+
+        try {
+            String sqlQuery = "SELECT USER_ID, USER_NAME, CAST(LATITUDE AS CHAR(12)) AS LATITUDE, " +
+                    "CAST(LONGITUDE AS CHAR(12)) AS LONGITUDE FROM DRIVER_DETAILS D" +
+                    " INNER JOIN DRIVERS_VEHICLES DV ON DV.DRIVER_ID = D.USER_ID AND D.ACTIVE_VEHICLE_ID = DV.VEHICLE_ID" +
+                    " INNER JOIN VEHICLE_TYPES VT ON DV.VEHICLE_TYPE_ID = VT.VEHICLE_TYPE_ID" +
+                    " WHERE VT.RIDE_TYPE_ID = " + rideRequest.getRideType().getTypeID();
+
+            connect = DBCPDataSource.getConnection();
+            resultSet = connect.createStatement().executeQuery(sqlQuery);
+
+            ArrayList<Driver> results = new ArrayList<>();
+            Driver currentDriver;
+
+            while(resultSet.next()) {
+                currentDriver = new Driver();
+                currentDriver.setUserID(resultSet.getInt(1));
+                currentDriver.setUsername(resultSet.getString(2));
+                currentDriver.setCurrentLocation(new Location(resultSet.getDouble(3),
+                        resultSet.getDouble(4), null));
+                results.add(currentDriver);
+
+                /*
+                row.put("USER_ID", );
+                row.put("USER_NAME", resultSet.getString(2));
+                row.put("LATITUDE", resultSet.getDouble(3));
+                row.put("LONGITUDE", resultSet.getDouble(4));
+                results.put(row);
+                row = new JSONObject();*/
+            }
+
+            return results;
+        }
+        catch (Exception e) {
+            System.out.println("Exception in DBHandler:searchDriverForRide()");
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+        finally {
+            closeAll(connect, null, resultSet);
+        }
+    }
+
+    //TODO: add check for driver's vehicle's ride type
+    @Override
+    public boolean sendRideRequest(RideRequest rideRequest) {
+
+        Connection connect = null;
+        PreparedStatement sqlStatement = null;
+
+        boolean requestSent = false;
+
+        try {
+            connect = DBCPDataSource.getConnection();
+            sqlStatement = connect.prepareStatement(
+                    "UPDATE DRIVER_DETAILS SET RIDER_ID = ?, RIDE_STATUS = 1, SOURCE_LAT = ?, SOURCE_LONG = ?," +
+                            "DEST_LAT = ?, DEST_LONG = ?, PAYMENT_MODE = ?, RIDE_TYPE = ?, SPLIT_FARE = ? WHERE USER_ID = ? AND IS_ACTIVE = 1 AND RIDE_STATUS = 0");
+
+            sqlStatement.setInt(1, rideRequest.getRider().getUserID());
+            sqlStatement.setDouble(2, rideRequest.getPickupLocation().getLatitude());
+            sqlStatement.setDouble(3, rideRequest.getPickupLocation().getLongitude());
+            sqlStatement.setDouble(4, rideRequest.getDropoffLocation().getLatitude());
+            sqlStatement.setDouble(5, rideRequest.getDropoffLocation().getLongitude());
+            sqlStatement.setInt(6, rideRequest.getPaymentMethod());
+            sqlStatement.setInt(7, rideRequest.getRideType().getTypeID());
+            sqlStatement.setBoolean(8, rideRequest.isSplittingFare());
+            sqlStatement.setInt(9, rideRequest.getDriver().getUserID());
+
+            int numRowsUpdated = sqlStatement.executeUpdate();
+            if (numRowsUpdated == 1) {
+                System.out.println(LOG_TAG +  ":sendRideRequest: 1 row updated -> Request sent!");
+
+                sqlStatement = connect.prepareStatement("UPDATE RIDER_DETAILS SET FIND_STATUS = " + RideRequest.NO_CHANGE +
+                        ", DRIVER_ID = " + rideRequest.getDriver().getUserID() + " WHERE USER_ID = ?");
+                sqlStatement.setInt(1, rideRequest.getRider().getUserID());
+
+                numRowsUpdated = sqlStatement.executeUpdate();
+
+                if (numRowsUpdated == 1) {
+                    System.out.println(LOG_TAG +  ":sendRideRequest: 1 row updated -> Rider marked as NO_CHANGE!");
+                    requestSent = true;
+                }
+                else {
+                    System.out.println(LOG_TAG +  ":sendRideRequest: 1 row updated -> failure: Rider NOT marked as NO_CHANGE!");
+                    requestSent = false;
+                }
+            }
+            else {
+                System.out.println(LOG_TAG + ":sendRideRequest: " + numRowsUpdated + " row updated -> FAILURE!");
+                requestSent = false;
+            }
+            return requestSent;
+        }
+        catch (Exception e) {
+            System.out.println("Exception in DBHandler:sendRideRequest()");
+            e.printStackTrace();
+            return requestSent;
+        }
+        finally {
+            closeAll(connect, sqlStatement, null);
+        }
+    }
+    /* End of section */
+
+
+    /* Driver-side matchmaking DB calls*/
+    @Override
+    public boolean markDriverActive(Driver driver)
+    {
+        return (executeUpdate(String.format("UPDATE DRIVER_DETAILS SET IS_ACTIVE = %s WHERE USER_ID = %d AND STATUS = %d",
+                driver.isActive(), driver.getUserID(), Driver.DV_REQ_APPROVED)) > 0);
+    }
+
+    @Override
+    public RideRequest checkRideRequestStatus(Driver driver, int timeout)
+    {
+        Connection connect = null;
+        PreparedStatement sqlStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connect = DBCPDataSource.getConnection();
+            sqlStatement = connect.prepareStatement(
+                    "SELECT D.RIDE_STATUS, D.RIDER_ID, R.USER_NAME, D.SOURCE_LAT, D.SOURCE_LONG, D.DEST_LAT, " +
+                            " D.DEST_LONG, D.PAYMENT_MODE, D.RIDE_TYPE, D.SPLIT_FARE"
+                            + " FROM DRIVER_DETAILS D LEFT JOIN RIDER_DETAILS R ON D.RIDER_ID = R.USER_ID"
+                            + " WHERE D.USER_ID = ? AND D.IS_ACTIVE = 1");
+
+            sqlStatement.setInt(1, driver.getUserID());
+
+            // Preparing the Loop
+            long currentTime = System.currentTimeMillis();
+            long endTime = currentTime + timeout;
+            while (currentTime <= endTime)
+            {
+                // Close result set before executing if appropriate
+                resultSet = sqlStatement.executeQuery();
+
+                //TODO: why is it returning this when a request isn't present
+                RideRequest rideRequest = new RideRequest();
+                rideRequest.setFindStatus(33);
+
+                // If Rows were found
+                if (resultSet.next())
+                {
+                    if (resultSet.getInt(1) == 0) {
+                        System.out.println("db:checkRideReqStat: Ride not found!");
+                        try {
+                            Thread.sleep(2000);
+                        }
+                        catch (Exception e) {
+                            System.out.println("Rider: findDriver: Thread.sleep() exception");
+                        }
+                        currentTime = System.currentTimeMillis();
+                    }
+                    if (resultSet.getInt(1) > 0) {
+                        System.out.println("db:checkRideReqStat: op2");
+                        rideRequest = new RideRequest();
+
+                        rideRequest.setPaymentMethod(resultSet.getInt(8));
+                        rideRequest.setFindStatus(resultSet.getInt(1));
+
+                        Rider rider = new Rider();
+                        rider.setUserID(resultSet.getInt(2));
+                        rider.setUsername(resultSet.getString(3));
+
+                        Location pickLocation = new Location();
+                        Location destLocation = new Location();
+
+                        pickLocation.setLatitude(resultSet.getDouble(4));
+                        pickLocation.setLongitude(resultSet.getDouble(5));
+
+                        destLocation.setLatitude(resultSet.getDouble(6));
+                        destLocation.setLongitude(resultSet.getDouble(7));
+
+                        rideRequest.setRideType(new RideType(resultSet.getInt(9)));
+                        rideRequest.setSplittingFare(resultSet.getBoolean(10));
+
+                        rideRequest.setPickupLocation(pickLocation);
+                        rideRequest.setDropoffLocation(destLocation);
+
+                        rideRequest.setRider(rider);
+                        rideRequest.setDriver(driver);
+                        return rideRequest;
+                    }
+                } // End if: Rows found
+                else {
+                    System.out.println("db:checkRideReqStat: op3");
+                    return rideRequest;
+                }
+
+                closeResultSet(resultSet);
+            } // End while
+
+            return null;
+        } // End of Try block
+        catch (Exception e) {
+            System.out.println("Exception in DBHandler: checkRideRequestStatus()");
+            e.printStackTrace();
+            return null;
+        }
+        finally {
+            closeAll(connect, sqlStatement, resultSet);
+        }
+    }
+
+
+    @Override
+    public boolean rejectRideRequest(RideRequest rideRequest) {
+
+        //TODO: Add multiple queries functionality
+
+        int numRowsUpdated = executeUpdate("UPDATE RIDER_DETAILS SET FIND_STATUS = " + RideRequest.REJECTED + ", DRIVER_ID = " + Driver.DEFAULT_ID
+                + " WHERE USER_ID = " + rideRequest.getRider().getUserID() + " AND FIND_STATUS = " + RideRequest.NO_CHANGE
+                + " AND DRIVER_ID = " + rideRequest.getDriver().getUserID());
+
+        System.out.println("rejectRideRequest: numRowsUpdated: " + numRowsUpdated);
+        return (resetDriver(rideRequest.getDriver()));
+    }
+
+    /*
+     * Confirms ride request (signal to corresponding rider)
+     * Records ride
+     * */
+    @Override
+    public boolean confirmRideRequest(Ride ride) {
+
+        Connection connect = null;
+        PreparedStatement sqlStatement = null;
+
+        try {
+            connect = DBCPDataSource.getConnection();
+
+            // Notify rider query
+            sqlStatement = connect.prepareStatement(
+                    "UPDATE RIDER_DETAILS SET FIND_STATUS = ?, DRIVER_ID = ? WHERE USER_ID = ? AND FIND_STATUS = "
+                            + RideRequest.NO_CHANGE + " AND DRIVER_ID = " + ride.getRideParameters().getDriver().getUserID());
+
+            sqlStatement.setInt(1, RideRequest.FOUND);
+            sqlStatement.setInt(2, ride.getRideParameters().getDriver().getUserID());
+            sqlStatement.setInt(3, ride.getRideParameters().getRider().getUserID());
+
+            int numRowsUpdated = sqlStatement.executeUpdate();
+            if (numRowsUpdated <= 0) {
+                resetDriver(ride.getRideParameters().getDriver());
+                return false;
+            }
+            closeStatement(sqlStatement);
+
+            // Notify driver query
+            sqlStatement = connect.prepareStatement("UPDATE DRIVER_DETAILS SET RIDE_STATUS = ? WHERE USER_ID = ?");
+            sqlStatement.setInt(1, RideRequest.MS_REQ_ACCEPTED);
+            sqlStatement.setInt(2, ride.getRideParameters().getDriver().getUserID());
+
+            numRowsUpdated = sqlStatement.executeUpdate();
+
+            // Returning the confirmation of this query and recording the ride in the DB
+            return (numRowsUpdated > 0 && recordRide(ride));
+        }
+        catch (Exception e) {
+            System.out.println("Exception in DBHandler: confirmRideRequest()");
+            e.printStackTrace();
+            resetDriver(ride.getRideParameters().getDriver());
+            return false;
+        }
+        finally {
+            closeAll(connect, sqlStatement, null);
+        }
+    }
+
+    @Override
+    public boolean markArrivalAtPickup(Ride ride) {
+        return (executeUpdate(String.format("UPDATE RIDES SET STATUS = " + Ride.DRIVER_ARRIVED + " WHERE RIDE_ID = %d",
+                ride.getRideID())) > 0);
+    }
+
+    // Starting the Ride from Driver side
+    @Override
+    public boolean startRide(Ride ride) {
+        return (executeUpdate(String.format("UPDATE RIDES SET STATUS = %d WHERE RIDE_ID = %d",
+                Ride.STARTED,
+                ride.getRideID())) > 0);
+    }
+
+    @Override
+    public boolean markArrivalAtDestination(Ride ride) {
+        return (executeUpdate("UPDATE RIDES SET STATUS = " + Ride.ARRIVED_AT_DEST + ", DIST_TRAVELLED = " +
+                ride.getDistanceTravelled() + ", FARE = " + ride.getFare()
+                + ", FINISH_TIME = CURRENT_TIME() WHERE RIDE_ID = " + ride.getRideID()) > 0);
+    }
+
+    /* End of section*/
+
+    @Override
+    public void recordPayment(Payment payment) {
+
+        Connection connect = null;
+        PreparedStatement sqlStatement = null;
+        ResultSet generatedKeys = null;
+        String insertPaymentQuery = "INSERT INTO PAYMENTS VALUES(NULL, ?, ?, TIMESTAMP = CURRENT_TIME(), ?)";
+        String generatedColumns[] = {"PAYMENT_ID"};
+
+        int numRowsUpdated;
+
+        try {
+            connect = DBCPDataSource.getConnection();
+            sqlStatement = connect.prepareStatement(insertPaymentQuery, generatedColumns);
+            sqlStatement.setDouble(1, payment.getAmountPaid());
+            sqlStatement.setDouble(2, payment.getChange());
+            sqlStatement.setInt(3, payment.getPaymentMode());
+
+            numRowsUpdated = sqlStatement.executeUpdate();
+
+            if (numRowsUpdated == 0) {
+                System.out.println(LOG_TAG + ":recordPayment: creating payment failed, no rows updated");
+            }
+            else {
+                generatedKeys = sqlStatement.getGeneratedKeys();
+
+                if (generatedKeys.next()) {
+                    payment.setPaymentID(generatedKeys.getInt(1));
+                }
+                else {
+                    System.out.println(LOG_TAG + ":recordPayment: creating payment failed, no payment id obtained");
+                }
+            }
+        }
+        catch (Exception e) {
+            System.out.println(LOG_TAG + ":recordPayment: SQLException");
+            e.printStackTrace();
+        }
+        finally {
+            closeAll(connect, sqlStatement, generatedKeys);
+        }
+    }
+
+
+    // Store new Ride
+    @Override
+    public boolean recordRide(Ride ride) {
+
+        String query = "INSERT INTO RIDES " +
+                "SELECT 0, R.USER_ID AS RIDER_ID, D.USER_ID AS DRIVER_ID, D.ACTIVE_VEHICLE_ID AS VEHICLE_ID, NULL AS PAYMENT_ID, " +
+                "D.SOURCE_LAT, D.SOURCE_LONG, D.DEST_LAT, D.DEST_LONG, CURRENT_TIME(), NULL AS FINISH_TIME, 0 AS DIST_TRAVELLED, " +
+                "D.RIDE_TYPE AS RIDE_TYPE, " + ride.getPolicy().getPolicyID() + " AS POLICY_ID, "
+                + ride.getEstimatedFare() + " AS ESTIMATED_FARE, 0 AS FARE, " + Ride.PICKUP + " AS STATUS " +
+                "FROM DRIVER_DETAILS AS D, RIDER_DETAILS AS R " +
+                "WHERE D.RIDER_ID = R.USER_ID AND D.USER_ID = " + ride.getRideParameters().getDriver().getUserID() +
+                " AND D.RIDER_ID = " + ride.getRideParameters().getRider().getUserID();
+
+        return (executeUpdate(query) > 0);
+    }
+
+    @Override
+    public RideRequest checkRideRequestStatus(Rider rider) {
+
+        Connection connect = null;
+        ResultSet resultSet  =null;
+
+        String sqlQuery = "SELECT R.FIND_STATUS, R.DRIVER_ID, D.RIDE_TYPE FROM RIDER_DETAILS R" +
+                " INNER JOIN DRIVER_DETAILS D ON R.DRIVER_ID = D.USER_ID" +
+                " WHERE R.USER_ID = " + rider.getUserID();
+        //TODO: make constants for ride request status
+
+        try {
+            connect = DBCPDataSource.getConnection();
+            resultSet = connect.createStatement().executeQuery(sqlQuery);
+            RideRequest rideRequest = null;
+
+            if (resultSet.next()) {
+
+                int findStatus = resultSet.getInt(1);
+
+                rideRequest = new RideRequest();
+                rideRequest.setRider(rider);
+                rideRequest.setDriver(new Driver());
+
+                rideRequest.setFindStatus(findStatus);
+                rideRequest.getDriver().setUserID(resultSet.getInt(2));
+
+                rideRequest.setRideType(new RideType(resultSet.getInt(3)));
+            }
+            // No active request or request rejected
+            return rideRequest;
+        }
+        catch (Exception e) {
+            System.out.println("Exception in DBHandler: getRideRequestStatus(rider)");
+            e.printStackTrace();
+            return null;
+        }
+        finally {
+            closeAll(connect, null, resultSet);
+        }
+    }
+    public Ride getRide(RideRequest rideRequest) {
+
+        Connection connect = null;
+        ResultSet resultSet = null;
+
+        String sqlQuery = "SELECT RD.RIDE_ID, R.USER_NAME, D.USER_NAME, RD.PAYMENT_ID, RD.SOURCE_LAT, RD.SOURCE_LONG, " +
+                "RD.DEST_LAT, RD.DEST_LONG, RD.START_TIME, RD.RIDE_TYPE, RD.ESTIMATED_FARE, RD.STATUS, D.LATITUDE, D.LONGITUDE, " +
+                "RD.FARE, D.ACTIVE_VEHICLE_ID, V.MAKE, V.MODEL, V.YEAR, DV.NUMBER_PLATE, DV.COLOR, R.RATING, D.RATING," +
+                " D.FIRST_NAME, D.LAST_NAME, D.PHONE_NO, RD.POLICY_ID," +
+                " RT.NAME, RT.MAX_PASSENGERS, RT.BASE_FARE, RT.PER_KM_CHARGE, RT.PER_MIN_CHARGE, RT.MIN_FARE, D.PAYMENT_MODE" +
+                " FROM RIDES RD\n" +
+                " INNER JOIN RIDER_DETAILS R ON RD.RIDER_ID = R.USER_ID" +
+                " INNER JOIN DRIVER_DETAILS D ON RD.DRIVER_ID = D.USER_ID" +
+                " INNER JOIN DRIVERS_VEHICLES DV ON D.USER_ID = DV.DRIVER_ID AND D.ACTIVE_VEHICLE_ID = DV.VEHICLE_ID" +
+                " INNER JOIN VEHICLE_TYPES V ON DV.VEHICLE_TYPE_ID = V.VEHICLE_TYPE_ID" +
+                " INNER JOIN RIDE_TYPES RT ON RT.TYPE_ID = RD.RIDE_TYPE" +
+                " WHERE RD.RIDER_ID = " + rideRequest.getRider().getUserID() +
+                " AND RD.DRIVER_ID = " + rideRequest.getDriver().getUserID() +
+                " AND RD.STATUS <> " + Ride.END_ACKED;
+
+        System.out.println("getRide(): " + sqlQuery);
+
+        //JSONObject result = new JSONObject();
+        Ride ride = null;
+
+        try {
+            connect = DBCPDataSource.getConnection();
+            resultSet = connect.createStatement().executeQuery(sqlQuery);
+
+            // Package results into ride object
+            if (resultSet.next()) {
+
+                ride = new Ride();
+                ride.setRideID(resultSet.getInt(1));
+
+                ride.setPolicy(PolicyFactory.getInstance().determinePolicy(resultSet.getInt(27)));
+
+                // Set rider attributes
+                ride.getRideParameters().getRider().setUserID(rideRequest.getRider().getUserID());
+                ride.getRideParameters().getRider().setUsername(resultSet.getString(2));
+
+                // Set driver attributes
+                ride.getRideParameters().getDriver().setUserID(rideRequest.getDriver().getUserID());
+                ride.getRideParameters().getDriver().setUsername(resultSet.getString(3));
+                ride.getRideParameters().getDriver().setCurrentLocation(new Location(resultSet.getDouble(13),
+                        resultSet.getDouble(14)));
+
+                // Set ride attributes
+                ride.getRideParameters().setRideType(new RideType(resultSet.getInt(10),
+                        resultSet.getString(28),
+                        resultSet.getInt(29),
+                        resultSet.getDouble(30),
+                        resultSet.getDouble(31),
+                        resultSet.getDouble(32),
+                        resultSet.getDouble(33)));
+
+                ride.getPayment().setPaymentID(resultSet.getInt(4));
+                ride.getRideParameters().setPaymentMethod(resultSet.getInt(34));
+
+                ride.getRideParameters().setPickupLocation(new Location(resultSet.getDouble(5), resultSet.getDouble(6)));
+                ride.getRideParameters().setDropoffLocation(new Location(resultSet.getDouble(7), resultSet.getDouble(8)));
+                ride.setStartTime(resultSet.getTimestamp(9).getTime());
+                ride.setEstimatedFare(resultSet.getInt(11));
+                ride.setRideStatus(resultSet.getInt(12));
+                ride.setFare(resultSet.getDouble(15));
+                ride.getRideParameters().setFindStatus(RideRequest.PAIRED);
+
+                Vehicle vehicle = new Vehicle();
+                vehicle.setVehicleID(resultSet.getInt(16));
+                vehicle.setMake(resultSet.getString(17));
+                vehicle.setModel(resultSet.getString(18));
+                vehicle.setYear(resultSet.getString(19));
+                vehicle.setNumberPlate(resultSet.getString(20));
+                vehicle.setColor(resultSet.getString(21));
+
+                ride.getRideParameters().getRider().setRating(resultSet.getFloat(22));
+                ride.getRideParameters().getDriver().setRating(resultSet.getFloat(23));
+                ride.getRideParameters().getDriver().setFirstName(resultSet.getString(24));
+                ride.getRideParameters().getDriver().setLastName(resultSet.getString(25));
+                ride.getRideParameters().getDriver().setPhoneNo(resultSet.getString(26));
+
+                ride.getRideParameters().getDriver().setActiveVehicle(vehicle);
+            }
+            //result.put("STATUS_CODE", 300);
+
+            return ride;
+        }
+        catch (Exception e) {
+            System.out.println("Exception in DBHandler: getRide()");
+            e.printStackTrace();
+            //result.put("STATUS_CODE", 304);
+            return null;
+        }
+        finally {
+            closeAll(connect, null, resultSet);
+        }
+    }
+
+    @Override
+    public void fetchRideStatus(Ride ride) {
+
+        Connection connect = null;
+        ResultSet resultSet = null;
+
+        ride.setRideStatus(RideRequest.DEFAULT);
+        String sqlQuery = "SELECT STATUS, FARE FROM RIDES WHERE RIDE_ID = " + ride.getRideID();
+
+        try {
+            connect = DBCPDataSource.getConnection();
+            resultSet = connect.createStatement().executeQuery(sqlQuery);
+
+            if (resultSet.next()) {
+                ride.setRideStatus(resultSet.getInt(1));
+                ride.setFare(resultSet.getDouble(2));
+            }
+        }
+        catch (Exception e) {
+            System.out.println("Exception in DBHandler: getRide()");
+            e.printStackTrace();
+        }
+        finally {
+            closeAll(connect, null, resultSet);
+        }
+    }
+
+    /*
+     * Param: Ride with Payment - paymentID must be initialized
+     * Adds reference from ride to payment, persists payment information
+     */
+    @Override
+    public boolean endRideWithPayment(Ride ride)
+    {
+        Connection connect = null;
+        PreparedStatement sqlStatement = null;
+        try {
+            if (ride.getPayment().getPaymentID() < 0) {
+                return false;
+            }
+
+            connect = DBCPDataSource.getConnection();
+            sqlStatement = connect.prepareStatement(
+                    "UPDATE RIDES SET PAYMENT_ID  = " + ride.getPayment().getPaymentID() +
+                            ", STATUS = " + Ride.PAYMENT_MADE +
+                            " WHERE RIDE_ID = ?");
+            sqlStatement.setInt(1, ride.getRideID());
+            int numRowsUpdated = sqlStatement.executeUpdate();
+
+            closeStatement(sqlStatement);
+
+            if (numRowsUpdated > 0) {
+                sqlStatement = connect.prepareStatement("UPDATE PAYMENTS P INNER JOIN RIDES RD ON RD.PAYMENT_ID = P.PAYMENT_ID SET P.AMOUNT_PAID = ?, P.CHANGE = ? - RD.FARE WHERE RD.RIDE_ID = ?");
+
+                sqlStatement.setDouble(1, ride.getPayment().getAmountPaid());
+                sqlStatement.setDouble(2, ride.getPayment().getAmountPaid());
+                sqlStatement.setInt(3, ride.getRideID());
+
+                numRowsUpdated = sqlStatement.executeUpdate();
+
+                return (numRowsUpdated > 0 && resetDriver(ride.getRideParameters().getDriver()));
+
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            System.out.println("Exception in DBHandler: endRideWitPayment");
+            e.printStackTrace();
+            return false;
+        }
+        finally {
+            closeAll(connect, sqlStatement, null);
+        }
+    }
+
+    @Override
+    public boolean acknowledgeEndOfRide(Ride ride) {
+
+        return (executeUpdate(String.format("UPDATE RIDES SET STATUS = %d WHERE RIDE_ID = %d",
+                Ride.END_ACKED,
+                ride.getRideID())) > 0);
+    }
 
 
     /*
@@ -662,6 +1366,45 @@ public class OracleDBHandler implements DBHandler {
             closeStatement(deleteVehicleRequestStatement);
             closeStatement(rejectVehicleRequestStatement);
             closeConnection(connect);
+        }
+    }
+
+    @Override
+    public boolean setActiveVehicle(Driver driver) {
+
+        Connection connect = null;
+        PreparedStatement setActiveVehicleStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            // Check if vehicle still approved
+            String checkVehicleApprovedQuery =
+                    "SELECT STATUS FROM DRIVERS_VEHICLES WHERE DRIVER_ID = " + driver.getUserID() + " AND VEHICLE_ID = "
+                            + driver.getActiveVehicle().getVehicleID();
+
+            connect = DBCPDataSource.getConnection();
+            resultSet = connect.createStatement().executeQuery(checkVehicleApprovedQuery);
+
+            // If approved, set as driver's active vehicle
+            if (resultSet.next() && resultSet.getInt(1) == Vehicle.VH_ACCEPTANCE_ACK) {
+                setActiveVehicleStatement = connect.prepareStatement("UPDATE DRIVER_DETAILS SET ACTIVE_VEHICLE_ID = "
+                        + driver.getActiveVehicle().getVehicleID() +
+                        " WHERE USER_ID  = " + driver.getUserID());
+
+                // Return true if a row is updated
+                return (setActiveVehicleStatement.executeUpdate() > 0);
+            }
+            else {
+                return false;
+            }
+        }
+        catch (Exception e) {
+            System.out.println(LOG_TAG + "Exception:setActiveVehicle()");
+            e.printStackTrace();
+            return false;
+        }
+        finally {
+            closeAll(connect, setActiveVehicleStatement, resultSet);
         }
     }
 

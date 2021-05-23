@@ -81,6 +81,12 @@ public class CRUDController
         return null;
     }
 
+    public boolean setMarkActive(boolean activeStatus)
+    {
+        driver.setActive(activeStatus);
+        return driver.setMarkActive();
+    }
+
     public JSONObject deleteRider() {
         return null;
     }
@@ -89,6 +95,10 @@ public class CRUDController
         return null;
     }
     /* End of section */
+
+    public boolean setActiveVehicle(Vehicle vehicle) {
+        return driver.selectActiveVehicle(vehicle);
+    }
 
 
     /* Send Registration Request methods */

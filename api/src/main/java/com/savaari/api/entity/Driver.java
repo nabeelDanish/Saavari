@@ -16,6 +16,7 @@ public class Driver extends User
 
 	// Main Attributes
 	private static final String LOG_TAG = Driver.class.getSimpleName();
+	private Boolean active;
 
 	@JsonProperty("CNIC")
 	private String CNIC;
@@ -34,6 +35,14 @@ public class Driver extends User
 	}
 	
 	// Getters and Setters
+
+	public Boolean isActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
 
 	public String getCNIC() {
 		return CNIC;
@@ -91,6 +100,12 @@ public class Driver extends User
 		return DBHandlerFactory.getInstance().createDBHandler().fetchDriverData(this);
 	}
 
+	// Set Mark Active
+	public boolean setMarkActive()
+	{
+		return DBHandlerFactory.getInstance().createDBHandler().markDriverActive(this);
+	}
+
 	public ArrayList<Vehicle> getVehicles() {
 		return vehicles;
 	}
@@ -129,4 +144,9 @@ public class Driver extends User
 	}
 
 	/* End of section */
+
+	public boolean selectActiveVehicle(Vehicle vehicle) {
+		activeVehicle = vehicle;
+		return DBHandlerFactory.getInstance().createDBHandler().setActiveVehicle(this);
+	}
 }

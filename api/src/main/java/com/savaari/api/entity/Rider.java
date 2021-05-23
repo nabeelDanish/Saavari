@@ -19,6 +19,10 @@ public class Rider extends User {
         setUserID(DBHandlerFactory.getInstance().createDBHandler().loginRider(this));
     }
 
+    public boolean reset(boolean checkForResponse) {
+        return DBHandlerFactory.getInstance().createDBHandler().resetRider(this, false);
+    }
+
     public boolean fetchData() {
         return DBHandlerFactory.getInstance().createDBHandler().fetchRiderData(this);
     }

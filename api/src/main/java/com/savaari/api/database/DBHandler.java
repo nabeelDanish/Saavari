@@ -7,6 +7,8 @@ import java.util.ArrayList;
 
 public interface DBHandler {
 
+    boolean loadRideTypes(ArrayList<RideType> rideTypes);
+
     /* CRUD Methods*/
     Boolean addRider(String username, String emailAddress, String password);
     Boolean addDriver(String username, String emailAddress, String password);
@@ -21,12 +23,38 @@ public interface DBHandler {
     /*Driver-Vehicle methods*/
     boolean sendVehicleRegistrationRequest(Driver driver, Vehicle currentVehicleRequest);
     boolean respondToVehicleRegistrationRequest(Vehicle currentVehicleRequest);
+    boolean setActiveVehicle(Driver driver);
 
     /* Unused CRUD methods */
     JSONArray riderDetails();
     JSONArray driverDetails();
     Boolean deleteRider();
     Boolean deleteDriver();
+
+    /* Driver Side Matchmaking Database Calls*/
+    boolean markDriverActive(Driver driver);
+    RideRequest checkRideRequestStatus(Driver driver, int timeout);
+    boolean rejectRideRequest(RideRequest rideRequest);
+    boolean confirmRideRequest(Ride ride);
+    boolean markArrivalAtPickup(Ride ride);
+    boolean startRide(Ride ride);
+    boolean markArrivalAtDestination(Ride ride);
+
+    /* Rider-side matchmaking DB calls*/
+    ArrayList<Driver> searchDriverForRide(RideRequest rideRequest);
+    boolean sendRideRequest(RideRequest rideRequest);
+    Integer checkFindStatus(Rider rider);
+    boolean recordRide(Ride ride);
+    void recordPayment(Payment payment);
+
+    /* In-ride DB calls */
+    RideRequest checkRideRequestStatus(Rider rider);
+    Ride getRide(RideRequest rideRequest);
+    void fetchRideStatus(Ride ride);
+    boolean endRideWithPayment(Ride ride);
+    boolean acknowledgeEndOfRide(Ride ride);
+    boolean resetDriver(Driver driver);
+    boolean resetRider(Rider rider, boolean checkForResponse);
 
     boolean respondToDriverRegistrationRequest(Driver driver);
 
