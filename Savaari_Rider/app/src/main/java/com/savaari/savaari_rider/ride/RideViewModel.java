@@ -2,6 +2,7 @@ package com.savaari.savaari_rider.ride;
 
 import android.util.Log;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -41,7 +42,7 @@ public class RideViewModel extends ViewModel {
     private final MutableLiveData<Boolean> userDataLoaded = new MutableLiveData<>();
     private final MutableLiveData<Boolean> userLocationsLoaded = new MutableLiveData<>();
     private final MutableLiveData<Boolean> driverLocationFetched = new MutableLiveData<>(false);
-    private final MutableLiveData<Ride> rideFound = new MutableLiveData<>();
+    private MutableLiveData<Ride> rideFound = new MutableLiveData<>();
     private final MutableLiveData<Boolean> endOfRideAcknowledged = new MutableLiveData<>();
     private final MutableLiveData<Boolean> rideStatusChanged = new MutableLiveData<>();
     private final MutableLiveData<Boolean> closeToPickup = new MutableLiveData<>();
@@ -55,8 +56,18 @@ public class RideViewModel extends ViewModel {
     }
     public Ride getRide() { return ride; }
 
+    @VisibleForTesting
+    public void setRide(Ride ride) {
+        this.ride = ride;
+        rideFound.postValue(ride);
+    }
+
     public void resetRide() {
         setPreviousRide(ride);
+        initBasicRide();
+    }
+
+    public void initBasicRide() {
         ride = new Ride();
         ride.getRideParameters().getRider().setUserID(USER_ID);
     }
@@ -256,11 +267,15 @@ public class RideViewModel extends ViewModel {
                         Log.d(LOG_TAG, " getRide: Is taking a ride!");
                         ride.getRideParameters().setFindStatus(RideRequest.ALREADY_PAIRED);
                     }
-                    rideFound.postValue(ride);
                 }
                 catch (Exception e) {
+                    ride.getRideParameters().setFindStatus(Ride.RS_DEFAULT);
                     e.printStackTrace();
                     Log.d(LOG_TAG, "loadRide(): Exception");
+                }
+                finally {
+                    Log.d(LOG_TAG, " getRide: POSTING RIDE VAL");
+                    rideFound.postValue(ride);
                 }
             }, USER_ID);
         }

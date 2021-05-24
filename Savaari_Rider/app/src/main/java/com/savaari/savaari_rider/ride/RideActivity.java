@@ -34,6 +34,7 @@ import android.widget.Toast;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -175,10 +176,12 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
     private LinearLayout paymentOptionReminderConfig;
     private ImageView paymentOptionReminderImage;
     private TextView paymentOptionReminderTextView;
-    private RatingBar feedbackRatingBar;
+
+    @VisibleForTesting
+    public RatingBar feedbackRatingBar;
     private Button submitRating;
 
-    private RideViewModel rideViewModel = null;
+    public RideViewModel rideViewModel = null;
     /* State variables - references to ViewModel variables */
     private int USER_ID = -1;
     private ArrayList<Location> mUserLocations;
@@ -316,6 +319,7 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
     }
 
     private void setRideDetailsInPanel() {
+        Log.d(TAG, "ATTENTION: " + rideViewModel.getRide().getRideParameters().getDriver().getFirstName());
         driverName.setText(rideViewModel.getRide().getRideParameters().getDriver().getFirstName() + " " + rideViewModel.getRide().getRideParameters().getDriver().getLastName());
         Vehicle rideVehicle = rideViewModel.getRide().getRideParameters().getDriver().getActiveVehicle();
         carNameTextView.setText(rideVehicle.getColor() + " " + rideVehicle.getMake() + " " + rideVehicle.getModel());
@@ -323,7 +327,9 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
     }
 
     // Called if a ride is found, forwards new rides to newRideFoundAction()
-    private void rideFoundAction(Ride ride) {
+    @VisibleForTesting
+    public void rideFoundAction(Ride ride) {
+        Log.d(TAG, "Ride found action with find status " + ride.getRideParameters().getFindStatus());
 
         this.ride = ride;
 
@@ -495,7 +501,8 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
         });
     }
 
-    private void endOfRideAcknowledgedAction(Boolean endOfRideAcknowledged) {
+    @VisibleForTesting
+    public void endOfRideAcknowledgedAction(Boolean endOfRideAcknowledged) {
         if (endOfRideAcknowledged) {
 
             // Stop repeating get driver location & get ride status
@@ -528,13 +535,15 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
 
     private void onSearchRideAction() {
         Log.d(TAG, "onSearchRideAction called");
-        if (ride.getRideParameters().getPickupLocation() == null) {
-            ride.getRideParameters().setPickupLocation(userLocation, "Current location");
-        }
+
         if (ride.getRideParameters().getDropoffLocation() == null) {
             Toast.makeText(RideActivity.this, "Add dropoff location!", Toast.LENGTH_SHORT).show();
         }
         else {
+            if (ride.getRideParameters().getPickupLocation() == null) {
+                ride.getRideParameters().setPickupLocation(userLocation, "Current location");
+            }
+
             setRoute(null, null, "");
 
             toggleRideSearchBar(false, true);
@@ -870,15 +879,19 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
         feedbackRatingBar.setNumStars(5);
         feedbackRatingBar.setRating(5f);
 
-        submitRating.setOnClickListener(v -> {
-            v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+        submitRating.setOnClickListener(this::onRatingSubmittedAction);
+    }
 
-            Log.d(TAG, "submitted rating: " + feedbackRatingBar.getRating());
-            rideViewModel.giveFeedbackForDriver(feedbackRatingBar.getRating());
 
-            toggleEndOfRideDetailsPanel();
-            backToSearchRide();
-        });
+    @VisibleForTesting
+    public void onRatingSubmittedAction(View v) {
+        v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+
+        Log.d(TAG, "submitted rating: " + feedbackRatingBar.getRating());
+        rideViewModel.giveFeedbackForDriver(feedbackRatingBar.getRating());
+
+        toggleEndOfRideDetailsPanel();
+        backToSearchRide();
     }
 
     /*
@@ -895,6 +908,7 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
         //toggleRideDetailsBar(false, false);
 
         // Set observer for ViewModel:driverPaired
+        Log.d(TAG, "RideActivity is observing ride now");
         rideViewModel.isRideFound().observe(this, this::rideFoundAction);
 
         // Load complete user data
@@ -915,7 +929,9 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
     }
 
     // Set visibility of Ride Search bar
-    private void toggleRideSearchBar(boolean visibility, boolean withAnimation) {
+    @VisibleForTesting
+    public void toggleRideSearchBar(boolean visibility, boolean withAnimation) {
+        Log.d(TAG, "toggleRideSearchBar called with visibility " + visibility);
         if (visibility) {
             if (withAnimation) {
                 rideSelectPanel.setAnimation(inFromBottomAnimation(400));
@@ -991,7 +1007,8 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
         }
     }
 
-    private void toggleEndOfRideDetailsPanel() {
+    @VisibleForTesting
+    public void toggleEndOfRideDetailsPanel() {
         if (rideViewModel.getRide().getRideStatus() == Ride.ARRIVED_AT_DEST) {
             // Show Ride Fare
             endOfRideDetailsPanel.setAnimation(inFromBottomAnimation(400));
@@ -1064,11 +1081,11 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
                         Log.d(TAG, "onComplete: found location!");
                         android.location.Location currentLocation = (android.location.Location) task.getResult();
 
-                        moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM, "");
-
                         // Calling User Location Save Function
                         try
                         {
+                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM, "");
+
                             userLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
                             rideViewModel.setUserCoordinates(userLocation.latitude, userLocation.longitude);
                             LocationUpdateUtil.saveUserLocation(userLocation, RideActivity.this);
@@ -1343,5 +1360,15 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
 
         paymentOptionReminderImage.setImageResource(paymentMethodItems.get(position).getPaymentImage());
         paymentOptionReminderTextView.setText(paymentMethodItems.get(position).getPaymentText());
+    }
+
+    @VisibleForTesting
+    public ArrayList<RideTypeItem> getRideTypeItems() {
+        return rideTypeItems;
+    }
+
+    @VisibleForTesting
+    public ArrayList<PaymentMethodItem> getPaymentMethodItems() {
+        return paymentMethodItems;
     }
 }
