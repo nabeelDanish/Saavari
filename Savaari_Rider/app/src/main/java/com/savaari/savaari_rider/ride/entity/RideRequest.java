@@ -73,7 +73,12 @@ public class RideRequest {
     }
 
     public void setPickupLocation(LatLng pickupLocation, String pickupTitle) {
-        this.pickupLocation = new Location(pickupLocation);
+        if (pickupLocation == null) {
+            this.pickupLocation = null;
+        }
+        else {
+            this.pickupLocation = new Location(pickupLocation);
+        }
         this.pickupTitle = pickupTitle;
     }
 
@@ -90,7 +95,12 @@ public class RideRequest {
     }
 
     public void setDropoffLocation(LatLng dropoffLocation, String dropoffTitle) {
-        this.dropoffLocation = new Location(dropoffLocation);
+        if (dropoffLocation == null) {
+            this.dropoffLocation = null;
+        }
+        else {
+            this.dropoffLocation = new Location(dropoffLocation);
+        }
         this.dropoffTitle = dropoffTitle;
     }
 

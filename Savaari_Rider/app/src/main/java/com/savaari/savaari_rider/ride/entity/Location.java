@@ -15,8 +15,14 @@ public class Location
 	}
 
 	public Location(LatLng latLng) {
-		this.latitude = latLng.latitude;
-		this.longitude = latLng.longitude;
+		if (latLng == null) {
+			this.latitude = null;
+			this.longitude = null;
+		}
+		else {
+			this.latitude = latLng.latitude;
+			this.longitude = latLng.longitude;
+		}
 		this.timestamp = null;
 	}
 	public Location(Double latitude, Double longitude) {

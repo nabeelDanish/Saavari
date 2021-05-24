@@ -38,6 +38,7 @@
             android:orientation="vertical"
             android:padding="8dp"
             android:shadowColor="?attr/textColor">
+            android:shadowColor="?attr/textColor">
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/autocomplete_fragment_src"
