@@ -2,7 +2,7 @@ package com.savaari.savaari_driver;
 
 import android.app.Application;
 
-// import com.example.savaari_driver.services.location.LocationUpdateUtil;
+import com.savaari.savaari_driver.services.location.LocationUpdateUtil;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,7 +23,7 @@ public class SavaariApplication extends Application
         executorService = Executors.newFixedThreadPool(numThreads);
         repository = new com.savaari.savaari_driver.Repository(executorService);
         scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(2);
-        // LocationUpdateUtil.setRepository(repository);
+        LocationUpdateUtil.setRepository(repository);
     }
 
     // Getters

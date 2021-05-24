@@ -1,4 +1,4 @@
-package com.savaari.savaari_driver;
+package com.savaari.savaari_driver.tests;
 
 import static org.junit.Assert.*;
 
@@ -7,6 +7,9 @@ import android.util.TypedValue;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
+
+import com.savaari.savaari_driver.R;
+import com.savaari.savaari_driver.ThemeVar;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

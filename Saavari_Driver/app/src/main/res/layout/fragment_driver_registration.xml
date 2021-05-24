@@ -29,7 +29,9 @@
                 android:padding="18dp"
                 android:selectAllOnFocus="true"
                 android:textColor="?attr/textColor"
-                android:textColorHint="?attr/lightTextColor" />
+                android:textColorHint="?attr/lightTextColor"
+                android:inputType="textPersonName|textCapWords"
+                android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"/>
 
             <EditText
                 android:id="@+id/last_name"
@@ -39,7 +41,8 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="24dp"
                 android:hint="@string/last_name"
-                android:inputType="text"
+                android:inputType="textPersonName|textCapWords"
+                android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 android:padding="18dp"
                 android:selectAllOnFocus="true"
                 android:textColor="?attr/textColor"
@@ -100,7 +103,8 @@
                 android:padding="18dp"
                 android:selectAllOnFocus="true"
                 android:textColor="?attr/textColor"
-                android:textColorHint="?attr/lightTextColor" />
+                android:textColorHint="?attr/lightTextColor"
+                android:maxLength="13"/>
 
             <EditText
                 android:id="@+id/licenseNumber"
@@ -110,11 +114,12 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="24dp"
                 android:hint="@string/license_number"
-                android:inputType="number"
+                android:inputType="textNoSuggestions"
                 android:padding="18dp"
                 android:selectAllOnFocus="true"
                 android:textColor="?attr/textColor"
-                android:textColorHint="?attr/lightTextColor" />
+                android:textColorHint="?attr/lightTextColor"
+                android:maxLength="13"/>
 
             <LinearLayout
                 android:layout_width="match_parent"

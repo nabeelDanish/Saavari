@@ -34,7 +34,7 @@ public class NetworkUtil
     // Main Attributes
     private static NetworkUtil networkUtil = null;
     private static final String TAG = "NetworkUtil";
-    private static String urlAddress = "https://68eeaa6e4524.ngrok.io/"; // remember to add a "/" at the end of the url
+    private static String urlAddress = "https://8eb3b7c2dcfe.ngrok.io/"; // remember to add a "/" at the end of the url
 
     // For Wrapping and Unwrapping
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -459,7 +459,7 @@ public class NetworkUtil
         try {
             // Preparing
             jsonObject.put("RIDE_ID", ride.getRideID());
-            jsonObject.put("DIST_TRAVELLED", dist_travelled);
+            jsonObject.put("DIST_TRAVELLED", (int) dist_travelled);
             jsonObject.put("DRIVER_ID", driverID);
             jsonObject.put("POLICY_ID", ride.getPolicy().getPolicyID());
             jsonObject.put("START_TIME", ride.getStartTime());

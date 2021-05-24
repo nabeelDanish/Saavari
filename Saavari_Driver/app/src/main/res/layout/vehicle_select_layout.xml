@@ -13,5 +13,5 @@
         android:layout_marginStart="25dp"
         android:layout_marginBottom="25dp"
         android:layout_marginEnd="25dp"
-        tools:listitem="@layout/ride_type_card"/>
+        tools:listitem="@layout/card_ride_type"/>
 </LinearLayout>

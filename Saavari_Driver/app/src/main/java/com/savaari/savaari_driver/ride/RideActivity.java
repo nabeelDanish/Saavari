@@ -100,7 +100,7 @@ public class RideActivity
     // ---------------------------------------------------------------------------------------------
 
     // View Model
-    private com.savaari.savaari_driver.ride.RideViewModel rideViewModel = null;
+    public com.savaari.savaari_driver.ride.RideViewModel rideViewModel = null;
     private com.savaari.savaari_driver.entity.Location driverLocation;
 
     // Data Related Variables
@@ -111,7 +111,7 @@ public class RideActivity
 
     // Flags
     boolean canLoadUserData = false;
-    boolean isUserDataLoaded = false;
+    public boolean isUserDataLoaded = false;
     boolean matchMakingStarted = false;
     boolean isTakingRide = false;
     boolean isActive = false;
@@ -484,8 +484,10 @@ public class RideActivity
         int i = 0;
         for (Vehicle vehicle : vehicles)
         {
+            Log.d(TAG, "selectVehicle: We Have some Vehicles!");
             if (vehicle.getStatus() == Vehicle.VH_ACCEPTANCE_ACK)
             {
+                Log.d(TAG, "selectVehicle: Found a Vehicle");
                 int rideType = vehicle.getRideTypeID() - 1;
                 String type = ride_types[rideType];
                 Log.d(TAG, "selectVehicle: Recycler View: rideType = " + type);
@@ -787,7 +789,7 @@ public class RideActivity
         final String[] m_Text = {""};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Ride Completed");
-        builder.setMessage("Please Take Payment of " + rideViewModel.getRide().getFare() + " RS");
+        builder.setMessage("Please Take Payment of " + (int) rideViewModel.getRide().getFare() + " RS");
 
         // Set up the input
         final EditText input = new EditText(this);
@@ -812,6 +814,7 @@ public class RideActivity
         // UI
         progressBar.setVisibility(View.INVISIBLE);
         removeMarkersPolyline();
+
         // Setting UI
         rateRideCard.setAnimation(Util.inFromBottomAnimation(400));
         rateRideCard.setVisibility(View.VISIBLE);
@@ -841,7 +844,8 @@ public class RideActivity
     private void onFeedbackSuccess() {
         // Setting UI
         progressBar.setVisibility(View.INVISIBLE);
-        rateRideCard.setAnimation(Util.inFromBottomAnimation(400));
+        rateRideCard.setAnimation(Util.outToBottomAnimation());
+        rateRideCard.setVisibility(View.INVISIBLE);
 
         // Flags
         rideViewModel.resetFlags();
@@ -849,7 +853,8 @@ public class RideActivity
     private void onFeedbackFailure() {
         // Setting UI
         progressBar.setVisibility(View.INVISIBLE);
-        rateRideCard.setAnimation(Util.inFromBottomAnimation(400));
+        rateRideCard.setAnimation(Util.outToBottomAnimation());
+        rateRideCard.setVisibility(View.INVISIBLE);
 
         // Flags
         rideViewModel.resetFlags();
@@ -881,7 +886,7 @@ public class RideActivity
         navEmail.setText(rideViewModel.getDriver().getEmailAddress());
         matchmakingControllerBtn.setEnabled(true);
         matchmakingControllerBtn.setText("SELECT VEHICLE");
-        rideStatusBar.setText("You're Offline");
+        rideStatusBar.setText("You're Online");
         progressBar.setVisibility(View.INVISIBLE);
         Toast.makeText(com.savaari.savaari_driver.ride.RideActivity.this, "User data loaded!", Toast.LENGTH_SHORT).show();
 
@@ -909,13 +914,14 @@ public class RideActivity
     private void checkFlags() {
         // Main Function for Checking all Flags
         Driver tempDriver = rideViewModel.getDriver();
-        if (tempDriver.isActive())
-        {
-            if (tempDriver.getRideRequestStatus() == RideRequest.MS_REQ_ACCEPTED) {
-                // Calling Ride View Model to get the Ride Object
-                rideViewModel.getStartingRideForDriver();
-            } else {
-                rideViewModel.setMarkActive(1);
+        if (tempDriver != null && tempDriver.isActive() != null) {
+            if (tempDriver.isActive()) {
+                if (tempDriver.getRideRequestStatus() == RideRequest.MS_REQ_ACCEPTED) {
+                    // Calling Ride View Model to get the Ride Object
+                    rideViewModel.getStartingRideForDriver();
+                } else {
+                    rideViewModel.setMarkActive(1);
+                }
             }
         }
     }
@@ -1007,6 +1013,7 @@ public class RideActivity
     /* Callback for when permissions have been granted/denied */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         locationPermissionGranted = false;
 
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {

@@ -68,6 +68,9 @@ public class RegisterViewModel extends ViewModel
 
     // Loading User Data
     public void loadUserData(int userID) {
+        if (userdataLoaded.getValue()) {
+            return;
+        }
         repository.loadUserData(object -> {
             try {
                 if (object != null) {

@@ -77,7 +77,7 @@ public class SettingsFragment extends ListFragment {
 
         // Instantiating an adapter to store each items
         // R.layout.listview_layout defines the layout of each item
-        SimpleAdapter adapter = new SimpleAdapter(getActivity(), aList, R.layout.settings_card, from, to);
+        SimpleAdapter adapter = new SimpleAdapter(getActivity(), aList, R.layout.card_settings, from, to);
 
         setListAdapter(adapter);
 

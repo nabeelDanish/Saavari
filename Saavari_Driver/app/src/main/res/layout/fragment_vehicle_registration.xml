@@ -27,6 +27,9 @@
                 android:selectAllOnFocus="true"
                 android:textColor="?attr/textColor"
                 android:textColorHint="?attr/lightTextColor"
+                android:maxLines="1"
+                android:lines="1"
+                android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 />
 
             <EditText
@@ -42,6 +45,9 @@
                 android:selectAllOnFocus="true"
                 android:textColor="?attr/textColor"
                 android:textColorHint="?attr/lightTextColor"
+                android:maxLines="1"
+                android:lines="1"
+                android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 />
             <EditText
                 android:id="@+id/vehicle_year"

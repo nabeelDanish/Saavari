@@ -53,7 +53,7 @@ public class SettingsActivity extends Util implements SettingsClickListener {
         ThemeVar.getInstance().themeSelect(this);
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.settings_activity);
+        setContentView(R.layout.activity_settings);
 
         myToolbar = findViewById(R.id.toolbar);
         myToolbar.setTitle("Settings");
