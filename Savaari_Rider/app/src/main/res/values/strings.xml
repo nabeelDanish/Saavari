@@ -115,6 +115,11 @@
 
     <string name="select_payment_method">Select a payment method</string>
 
+    <!-- RIDE LOG & REPORT A PROBLEM -->
+    <string name="report_problem">Report A Problem</string>
+    <string name="describe_problem">Describe your problem</string>
+    <string name="cancel">Cancel</string>
+
 
     <!-- ==================Settings Section ============== -->
 

@@ -337,6 +337,29 @@ public class NetworkUtil {
         }
     }
 
+    public Boolean reportProblem(String urlAddress, String problemDescription, int rideId) {
+        Log.d(TAG, "reportProblem() called!");
+        String url = urlAddress + "reportProblemFromRider";
+
+        JSONObject jsonParam = new JSONObject();
+
+        try {
+            jsonParam.put("PROBLEM_DESC", problemDescription);
+            jsonParam.put("RIDE_ID", rideId);
+            String resultString = sendPost(url, jsonParam, true);
+
+            if (resultString == null) {
+                return false;
+            } else {
+                return (new JSONObject(resultString).getInt("STATUS") == 200);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.d(TAG, " :getRide() - JSONException");
+            return null;
+        }
+    }
+
     public JSONObject getRideStatus(String urlAddress, int rideID) {
         Log.d(TAG, " :getRideStatus called!");
         String url = urlAddress + "getRideStatus";

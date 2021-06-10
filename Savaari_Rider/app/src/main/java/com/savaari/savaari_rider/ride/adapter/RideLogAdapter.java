@@ -15,9 +15,17 @@ import com.savaari.savaari_rider.R;
 import com.savaari.savaari_rider.ride.entity.Ride;
 
 import java.lang.ref.WeakReference;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class RideLogAdapter extends RecyclerView.Adapter<RideLogAdapter.ItemViewHolder> {
+
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+    private static DateFormat dateTextFormat = new SimpleDateFormat("dd MMM"),
+            timeTextFormat = new SimpleDateFormat("HH:mm"),
+            originalDateFormat = new SimpleDateFormat("yyy/MM/dd");
 
     private ArrayList<Ride> mItemList;
     private LogViewClickListener listener;
@@ -73,9 +81,20 @@ public class RideLogAdapter extends RecyclerView.Adapter<RideLogAdapter.ItemView
 
         holder.numberPlate.setText(currentItem.getRideParameters().getDriver().getActiveVehicle().getNumberPlate());
 
-        holder.duration.setText("Duration: 18:15 - 18:35");
-        holder.date.setText("Date: 12th July");
-        holder.fare.setText("Fare: " + Double.toString(currentItem.getFare()));
+        Long startTime = currentItem.getStartTime();
+        Long endTime = currentItem.getEndTime();
+
+        /*
+        Calendar c_start = Calendar.getInstance();
+        Calendar c_end = Calendar.getInstance();
+        c_start.setTimeInMillis(startTime);
+        c_end.setTimeInMillis(endTime);
+         */
+
+        holder.duration.setText("Duration: " + timeTextFormat.format(startTime) + " - " +
+                timeTextFormat.format(endTime));
+        holder.date.setText("Date: " + dateTextFormat.format(startTime));
+        holder.fare.setText("Fare: " + Double.toString(currentItem.getFare()) + " PKR");
     }
 
     @Override

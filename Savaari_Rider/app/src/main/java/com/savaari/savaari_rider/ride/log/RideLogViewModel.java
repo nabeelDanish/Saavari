@@ -21,6 +21,7 @@ public class RideLogViewModel extends ViewModel {
     private int USER_ID = -1;
 
     private final MutableLiveData<ArrayList<Ride>> rideLogFetched = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> problemReported = new MutableLiveData<>();
 
     public RideLogViewModel(int USER_ID, Repository repository) {
         this.repository = repository;
@@ -47,5 +48,36 @@ public class RideLogViewModel extends ViewModel {
 
     public LiveData<ArrayList<Ride>> isRideLogFetched() {
         return rideLogFetched;
+    }
+
+    public LiveData<Boolean> reportProblem(String problemDescription, int position) {
+        int rideId = -1;
+
+        ArrayList<Ride> rideLog = rideLogFetched.getValue();
+        if (rideLog != null) {
+            rideId = rideLog.get(position).getRideID();
+        }
+
+        if (rideId == -1) {
+            problemReported.postValue(false);
+        }
+        else {
+            repository.reportProblem(object -> {
+                try {
+                    if (object == null) {
+                        Log.d(LOG_TAG, " fetchRideLog: Failed to fetch ride");
+                    }
+                    else {
+                        problemReported.postValue(true);
+                    }
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    Log.d(LOG_TAG, "fetchRideLog(): Exception");
+                }
+            }, problemDescription, rideId);
+        }
+
+        return problemReported;
     }
 }

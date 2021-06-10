@@ -107,4 +107,8 @@ public class Repository {
     public void fetchRideLog(OnDataLoadedListener callback) {
         executor.execute(() -> callback.onDataLoaded(NetworkUtil.getInstance().fetchRideLog(url)));
     }
+
+    public void reportProblem(OnDataLoadedListener callback, String problemDescription, int rideId) {
+        executor.execute(() -> callback.onDataLoaded(NetworkUtil.getInstance().reportProblem(url, problemDescription, rideId)));
+    }
 }
