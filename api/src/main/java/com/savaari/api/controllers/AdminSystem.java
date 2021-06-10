@@ -1,10 +1,7 @@
 package com.savaari.api.controllers;
 
 import com.savaari.api.database.DBHandlerFactory;
-import com.savaari.api.entity.Administrator;
-import com.savaari.api.entity.Driver;
-import com.savaari.api.entity.User;
-import com.savaari.api.entity.Vehicle;
+import com.savaari.api.entity.*;
 
 import java.util.ArrayList;
 
@@ -34,5 +31,17 @@ public class AdminSystem {
 
     public boolean respondToDriverRegistrationRequest(Driver driver) {
         return DBHandlerFactory.getInstance().createDBHandler().respondToDriverRegistrationRequest(driver);
+    }
+
+    public boolean reportProblem(User user, String problemDescription, int rideID) {
+        return DBHandlerFactory.getInstance().createDBHandler().reportProblem(user, problemDescription, rideID);
+    }
+
+    public ArrayList<Complaint> fetchComplaints() {
+        return DBHandlerFactory.getInstance().createDBHandler().fetchComplaints();
+    }
+
+    public boolean respondToComplaint(int complaintId, int responseCategory, String responseMessage) {
+        return DBHandlerFactory.getInstance().createDBHandler().respondToComplaint(complaintId, responseCategory, responseMessage);
     }
 }

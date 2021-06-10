@@ -888,6 +888,104 @@ public class ApiApplication {
 
 
 	/* Ride system calls */
+
+	@CrossOrigin(origins = "*")
+	@RequestMapping(value = "/getRideForAdmin", method = RequestMethod.POST)
+	public String getRideForAdmin(@RequestBody Map<String, String> allParams, HttpServletRequest request) {
+		MatchmakingController matchmakingController = getAttributeObject(request, MatchmakingController.class,
+				MatchmakingController.class.getName());
+
+		if (matchmakingController == null) {
+			return null;
+		}
+
+		int rideId = Integer.parseInt(allParams.get("rideId"));
+		Ride fetchedRide = matchmakingController.getRideForAdmin(rideId);
+
+		if (fetchedRide != null) {
+			try {
+				storeObjectAsAttribute(request, MatchmakingController.class.getName(), matchmakingController);
+				return objectMapper.writeValueAsString(fetchedRide);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		return null;
+	}
+
+	@CrossOrigin(origins = "*")
+	@PostMapping("/respondToComplaint")
+	public String respondToComplaint(@RequestBody Map<String, String> allParams, HttpServletRequest request) {
+		AdminSystem adminSystem = getAttributeObject(request, AdminSystem.class, AdminSystem.class.getName());
+		if (adminSystem == null) {
+			return null;
+		}
+
+		int complaintId = Integer.parseInt(allParams.get("complaintId"));
+		int responseCategory = Integer.parseInt(allParams.get("responseCategory"));
+		String responseMessage = allParams.get("responseMessage");
+
+		boolean responseSent = adminSystem.respondToComplaint(complaintId, responseCategory, responseMessage);
+
+		JSONObject result = new JSONObject();
+		if (responseSent) {
+			result.put("STATUS", 200);
+		} else {
+			result.put("STATUS", 400);
+		}
+
+		return result.toString();
+	}
+
+	@CrossOrigin(origins = "*")
+	@PostMapping("/fetchComplaints")
+	public String fetchComplaints(@RequestBody Map<String, String> allParams, HttpServletRequest request) {
+		AdminSystem adminSystem = getAttributeObject(request, AdminSystem.class, AdminSystem.class.getName());
+		if (adminSystem == null) {
+			return null;
+		}
+
+		ArrayList<Complaint> complaints = adminSystem.fetchComplaints();
+
+		if (complaints != null) {
+			try {
+				return objectMapper.writeValueAsString(complaints);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		return null;
+	}
+
+    @RequestMapping(value = "/reportProblemFromRider", method = RequestMethod.POST)
+    public String reportProblemFromRider(@RequestBody Map<String, String> allParams, HttpServletRequest request) {
+        if (request.getSession(false) == null) {
+            return null;
+        }
+
+        CRUDController crudController = getAttributeObject(request, CRUDController.class, CRUDController.class.getName());
+        AdminSystem adminSystem = getAttributeObject(request, AdminSystem.class, AdminSystem.class.getName());
+
+        if (crudController == null || adminSystem == null) {
+            return null;
+        }
+
+        String problemDescription = allParams.get("PROBLEM_DESC");
+        int rideID = Integer.parseInt(allParams.get("RIDE_ID"));
+
+		JSONObject result = new JSONObject();
+		if (adminSystem.reportProblem(crudController.getRider(), problemDescription, rideID)) {
+			result.put("STATUS", 200);
+		} else {
+			result.put("STATUS", 400);
+		}
+
+		return result.toString();
+    }
+
+
 	@RequestMapping(value = "/getRideLogForRider", method = RequestMethod.POST)
 	public String getRideLogForRider(@RequestBody Map<String, String> allParams, HttpServletRequest request) {
 		if (request.getSession(false) == null) {

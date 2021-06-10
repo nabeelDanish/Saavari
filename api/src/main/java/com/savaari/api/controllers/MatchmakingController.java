@@ -38,6 +38,10 @@ public class MatchmakingController {
         return ride;
     }
 
+    public Ride getRideForAdmin(int rideId) {
+        return DBHandlerFactory.getInstance().createDBHandler().getRideForAdmin(rideId);
+    }
+
     public boolean acknowledgeEndOfRide() {
         return ride.acknowledgeEndOfRide();
     }
