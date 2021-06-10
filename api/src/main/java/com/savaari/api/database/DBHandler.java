@@ -16,6 +16,7 @@ public interface DBHandler {
     int loginDriver(Driver driver);
     boolean fetchRiderData(Rider rider);
     boolean fetchDriverData(Driver driver);
+    ArrayList<Ride> getRideLog(User user);
 
     /* Registration Methods */
     boolean sendRegistrationRequest(Driver driver);

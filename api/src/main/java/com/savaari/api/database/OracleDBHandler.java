@@ -124,7 +124,7 @@ public class OracleDBHandler implements DBHandler {
         }
     }
 
-    //Add a new Rider, TODO: replace last param with riderequest.NOT_SENT
+    //Add a new Rider, TODO: replace last param with RideRequest.NOT_SENT
     @Override
     public Boolean addRider(String username, String emailAddress, String password) {
 
@@ -398,6 +398,115 @@ public class OracleDBHandler implements DBHandler {
             System.out.println("Exception in DBHandler:driverData()");
             e.printStackTrace();
             return false;
+        }
+        finally {
+            closeAll(connect, null, resultSet);
+        }
+    }
+
+    @Override
+    public ArrayList<Ride> getRideLog(User user) {
+        String userClause;
+        int driverId = 0, riderId = 0;
+        if (user instanceof Driver) {
+            userClause = " WHERE RD.DRIVER_ID = " + user.getUserID();
+            driverId = user.getUserID();
+        }
+        else {
+            userClause =  " WHERE RD.RIDER_ID = " + user.getUserID();
+            riderId = user.getUserID();
+        }
+
+        Connection connect = null;
+        ResultSet resultSet = null;
+
+        String sqlQuery = "SELECT RD.RIDE_ID, R.USER_NAME, D.USER_NAME, RD.PAYMENT_ID, RD.SOURCE_LAT, RD.SOURCE_LONG, " +
+                "RD.DEST_LAT, RD.DEST_LONG, RD.START_TIME, RD.RIDE_TYPE, RD.ESTIMATED_FARE, RD.STATUS, D.LATITUDE, D.LONGITUDE, " +
+                "RD.FARE, D.ACTIVE_VEHICLE_ID, V.MAKE, V.MODEL, V.YEAR, DV.NUMBER_PLATE, DV.COLOR, R.RATING, D.RATING," +
+                " D.FIRST_NAME, D.LAST_NAME, D.PHONE_NO, RD.POLICY_ID," +
+                " RT.NAME, RT.MAX_PASSENGERS, RT.BASE_FARE, RT.PER_KM_CHARGE, RT.PER_MIN_CHARGE, RT.MIN_FARE, D.PAYMENT_MODE" +
+                " FROM RIDES RD\n" +
+                " INNER JOIN RIDER_DETAILS R ON RD.RIDER_ID = R.USER_ID" +
+                " INNER JOIN DRIVER_DETAILS D ON RD.DRIVER_ID = D.USER_ID" +
+                " INNER JOIN DRIVERS_VEHICLES DV ON D.USER_ID = DV.DRIVER_ID AND D.ACTIVE_VEHICLE_ID = DV.VEHICLE_ID" +
+                " INNER JOIN VEHICLE_TYPES V ON DV.VEHICLE_TYPE_ID = V.VEHICLE_TYPE_ID" +
+                " INNER JOIN RIDE_TYPES RT ON RT.TYPE_ID = RD.RIDE_TYPE" +
+                userClause +
+                " AND RD.STATUS = " + Ride.END_ACKED;
+
+        System.out.println("getRideLog(): " + sqlQuery);
+
+
+        try {
+            connect = DBCPDataSource.getConnection();
+            resultSet = connect.createStatement().executeQuery(sqlQuery);
+
+            ArrayList<Ride> rideLog = new ArrayList<>();
+            Ride ride;
+
+            // Package results into ride object
+            while (resultSet.next()) {
+
+                ride = new Ride();
+                ride.setRideID(resultSet.getInt(1));
+
+                ride.setPolicy(PolicyFactory.getInstance().determinePolicy(resultSet.getInt(27)));
+
+                // Set rider attributes
+                ride.getRideParameters().getRider().setUserID(riderId);
+                ride.getRideParameters().getRider().setUsername(resultSet.getString(2));
+
+                // Set driver attributes
+                ride.getRideParameters().getDriver().setUserID(driverId);
+                ride.getRideParameters().getDriver().setUsername(resultSet.getString(3));
+                ride.getRideParameters().getDriver().setCurrentLocation(new Location(resultSet.getDouble(13),
+                        resultSet.getDouble(14)));
+
+                // Set ride attributes
+                ride.getRideParameters().setRideType(new RideType(resultSet.getInt(10),
+                        resultSet.getString(28),
+                        resultSet.getInt(29),
+                        resultSet.getDouble(30),
+                        resultSet.getDouble(31),
+                        resultSet.getDouble(32),
+                        resultSet.getDouble(33)));
+
+                ride.getPayment().setPaymentID(resultSet.getInt(4));
+                ride.getRideParameters().setPaymentMethod(resultSet.getInt(34));
+
+                ride.getRideParameters().setPickupLocation(new Location(resultSet.getDouble(5), resultSet.getDouble(6)));
+                ride.getRideParameters().setDropoffLocation(new Location(resultSet.getDouble(7), resultSet.getDouble(8)));
+                ride.setStartTime(resultSet.getTimestamp(9).getTime());
+                ride.setEstimatedFare(resultSet.getInt(11));
+                ride.setRideStatus(resultSet.getInt(12));
+                ride.setFare(resultSet.getDouble(15));
+                ride.getRideParameters().setFindStatus(RideRequest.PAIRED);
+
+                Vehicle vehicle = new Vehicle();
+                vehicle.setVehicleID(resultSet.getInt(16));
+                vehicle.setMake(resultSet.getString(17));
+                vehicle.setModel(resultSet.getString(18));
+                vehicle.setYear(resultSet.getString(19));
+                vehicle.setNumberPlate(resultSet.getString(20));
+                vehicle.setColor(resultSet.getString(21));
+
+                ride.getRideParameters().getRider().setRating(resultSet.getFloat(22));
+                ride.getRideParameters().getDriver().setRating(resultSet.getFloat(23));
+                ride.getRideParameters().getDriver().setFirstName(resultSet.getString(24));
+                ride.getRideParameters().getDriver().setLastName(resultSet.getString(25));
+                ride.getRideParameters().getDriver().setPhoneNo(resultSet.getString(26));
+
+                ride.getRideParameters().getDriver().setActiveVehicle(vehicle);
+
+                rideLog.add(ride);
+            }
+
+            return rideLog;
+        }
+        catch (Exception e) {
+            System.out.println("Exception in DBHandler: getRideLog()");
+            e.printStackTrace();
+            return null;
         }
         finally {
             closeAll(connect, null, resultSet);
@@ -798,7 +907,7 @@ public class OracleDBHandler implements DBHandler {
         PreparedStatement sqlStatement = null;
         ResultSet generatedKeys = null;
         String insertPaymentQuery = "INSERT INTO PAYMENTS VALUES(NULL, ?, ?, TIMESTAMP = CURRENT_TIME(), ?)";
-        String generatedColumns[] = {"PAYMENT_ID"};
+        String[] generatedColumns = {"PAYMENT_ID"};
 
         int numRowsUpdated;
 

@@ -3,6 +3,8 @@ package com.savaari.api.controllers;
 import com.savaari.api.database.DBHandlerFactory;
 import com.savaari.api.entity.*;
 
+import java.util.ArrayList;
+
 public class MatchmakingController {
     // Main Attributes
     private static final String LOG_TAG = MatchmakingController.class.getSimpleName();

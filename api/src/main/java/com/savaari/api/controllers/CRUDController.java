@@ -1,11 +1,10 @@
 package com.savaari.api.controllers;
 
 import com.savaari.api.database.DBHandlerFactory;
-import com.savaari.api.entity.Driver;
-import com.savaari.api.entity.Rider;
-import com.savaari.api.entity.User;
-import com.savaari.api.entity.Vehicle;
+import com.savaari.api.entity.*;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class CRUDController
 {
@@ -115,5 +114,13 @@ public class CRUDController
 
     public boolean sendVehicleRegistrationRequest(Vehicle vehicle) {
         return driver.sendVehicleRegistrationRequest(vehicle);
+    }
+
+    public ArrayList<Ride> getRideLogForRider() {
+        return rider.getRideLog();
+    }
+
+    public ArrayList<Ride> getRideLogForDriver() {
+        return driver.getRideLog();
     }
 }

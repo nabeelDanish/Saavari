@@ -888,6 +888,56 @@ public class ApiApplication {
 
 
 	/* Ride system calls */
+	@RequestMapping(value = "/getRideLogForRider", method = RequestMethod.POST)
+	public String getRideLogForRider(@RequestBody Map<String, String> allParams, HttpServletRequest request) {
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		CRUDController crudController = getAttributeObject(request, CRUDController.class, CRUDController.class.getName());;
+
+		if (crudController == null) {
+			return null;
+		}
+
+		ArrayList<Ride> rideLog = crudController.getRideLogForRider();
+
+		if (rideLog != null) {
+			try {
+				return objectMapper.writeValueAsString(rideLog);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		return null;
+	}
+
+	@RequestMapping(value = "/getRideLogForDriver", method = RequestMethod.POST)
+	public String getRideLogForDriver(@RequestBody Map<String, String> allParams, HttpServletRequest request) {
+		if (request.getSession(false) == null) {
+			return null;
+		}
+
+		CRUDController crudController = getAttributeObject(request, CRUDController.class, CRUDController.class.getName());
+
+		if (crudController == null) {
+			return null;
+		}
+
+		ArrayList<Ride> rideLog = crudController.getRideLogForDriver();
+
+		if (rideLog != null) {
+			try {
+				return objectMapper.writeValueAsString(rideLog);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		return null;
+	}
+
 
 	@RequestMapping(value = "/getRideForRider", method = RequestMethod.POST)
 	public String getRideForRider(@RequestBody Map<String, String> allParams, HttpServletRequest request)
