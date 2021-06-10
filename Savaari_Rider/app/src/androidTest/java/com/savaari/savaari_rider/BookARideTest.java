@@ -53,9 +53,6 @@ public class BookARideTest {
         intent.putExtra("USER_ID", 1);
     }
 
-    //@Rule
-    //public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
-
     @Rule
     public ActivityScenarioRule<RideActivity> activityRule
             = new ActivityScenarioRule<>(intent);
@@ -121,13 +118,6 @@ public class BookARideTest {
         }
 
     }
-
-    @Test
-    public void onSearchRideActionTest() {
-        // Test Search Ride UI functionality with & without network
-        onSearchRideActionWithNetworkConfigTest(false);
-        onSearchRideActionWithNetworkConfigTest(true);
-    }
     
     private Rider setFakeRider(Rider rider) {
         rider.setUsername("samplerider");
@@ -176,6 +166,13 @@ public class BookARideTest {
         rideParameters.setFindStatus(RideRequest.PAIRED);
 
         return ride;
+    }
+
+    @Test
+    public void onSearchRideActionTest() {
+        // Test Search Ride UI functionality with & without network
+        onSearchRideActionWithNetworkConfigTest(false);
+        onSearchRideActionWithNetworkConfigTest(true);
     }
 
 

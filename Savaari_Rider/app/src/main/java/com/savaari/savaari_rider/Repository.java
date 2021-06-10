@@ -103,4 +103,8 @@ public class Repository {
     public void giveFeedbackForDriver(OnDataLoadedListener callback, int rideID, int driverID, float rating) {
         executor.execute(() -> callback.onDataLoaded(NetworkUtil.getInstance().giveFeedbackForDriver(url, rideID, driverID, rating)));
     }
+
+    public void fetchRideLog(OnDataLoadedListener callback) {
+        executor.execute(() -> callback.onDataLoaded(NetworkUtil.getInstance().fetchRideLog(url)));
+    }
 }

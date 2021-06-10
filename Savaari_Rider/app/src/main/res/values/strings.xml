@@ -2,7 +2,7 @@
 
     <!-- API Related -->
 
-    <string name = "sda_api_url">https://50ed16d8cec7.ngrok.io/</string>
+    <string name="sda_api_url">https://50ed16d8cec7.ngrok.io/</string>
 
     <!-- General App related -->
     <string name="app_name">savaari rider</string>
@@ -106,14 +106,14 @@
 
 
     <!-- BOOK A RIDE SECTION -->
-    <string name = "add_source">Add pickup point</string>
-    <string name = "add_dest">Add destination</string>
-    <string name = "add_stop">Add stop</string>
-    <string name = "search_ride">GO</string>
-    <string name = "searching_ride">Finding  a driver for you</string>
-    <string name = "select_ride_type">Select a ride type</string>
+    <string name="add_source">Add pickup point</string>
+    <string name="add_dest">Add destination</string>
+    <string name="add_stop">Add stop</string>
+    <string name="search_ride">GO</string>
+    <string name="searching_ride">Finding  a driver for you</string>
+    <string name="select_ride_type">Select a ride type</string>
 
-    <string name = "select_payment_method">Select a payment method</string>
+    <string name="select_payment_method">Select a payment method</string>
 
 
     <!-- ==================Settings Section ============== -->

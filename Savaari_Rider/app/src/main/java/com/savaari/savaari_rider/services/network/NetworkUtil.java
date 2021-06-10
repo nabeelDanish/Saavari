@@ -3,7 +3,9 @@ package com.savaari.savaari_rider.services.network;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.savaari.savaari_rider.ride.entity.Location;
 import com.savaari.savaari_rider.ride.entity.Ride;
@@ -21,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+
+import com.savaari.savaari_rider.ride.entity.Ride;
 
 // This class holds static functions for interacting with the API Layer
 public class NetworkUtil {
@@ -303,6 +307,30 @@ public class NetworkUtil {
             String resultString = sendPost(url, jsonParam, true);
             return ((resultString == null) ? null : objectMapper.readValue(resultString, Ride.class));
         } catch (JSONException | JsonProcessingException e) {
+            e.printStackTrace();
+            Log.d(TAG, " :getRide() - JSONException");
+            return null;
+        }
+    }
+
+    public static <T> T convertJsonToPOJO(String resultString, Class<?> target) throws IOException, ClassNotFoundException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(resultString, objectMapper .getTypeFactory().constructCollectionType(ArrayList.class, Class.forName(target.getName())));
+    }
+
+
+    public ArrayList<Ride> fetchRideLog(String urlAddress) {
+        Log.d(TAG, "fetchRideLog() called!");
+        String url = urlAddress + "getRideLogForRider";
+
+        JSONObject jsonParam = new JSONObject();
+
+        try {
+
+            String resultString = sendPost(url, jsonParam, true);
+
+            return ((resultString == null) ? null : convertJsonToPOJO(resultString, Ride.class));
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             Log.d(TAG, " :getRide() - JSONException");
             return null;
