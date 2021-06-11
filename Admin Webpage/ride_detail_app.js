@@ -12,6 +12,7 @@ navToggle.addEventListener("click", function () {
 	links.classList.toggle("show-links");
 });
 const progressText = document.getElementById("progress");
+var spinner = document.getElementById("spinner")
 
 // ---------------------------------------------------------
 // Actual API Connection and Processing
@@ -44,6 +45,7 @@ rideDataLoad.onload = function () {
   if (rideDataLoad.status >= 200 && rideDataLoad.status < 400) {
     let table = document.querySelector("table");
     progressText.innerHTML = "Data Loaded!";
+    spinner.style.visibility = "hidden"
     console.log(data);
     generateTable(table, data);
   } else {

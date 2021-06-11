@@ -8,8 +8,7 @@
 	<!-- Importing font -->
 	<link 
 		rel="stylesheet"
-		href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"
-	>
+		href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css">
 
 	<!-- styles -->
 	<link rel="stylesheet" type="text/css" href="styles.css">
@@ -75,6 +74,17 @@
 	<!-- Body -->
 	<h2>View Complaints</h2>
 	<h4 id="progress">Connecting ...</h4>
+	<div id="spinner" class="loader" style="margin: auto;"></div>
+	<div id="search_bar" style="text-align: center; visibility: hidden;">
+		<input id="search_text" style="margin: auto;" type="text" placeholder="Search">
+		<select id="search_option">
+			<option value="COMPLAINT_ID">COMPLAINT ID</option>
+			<option value="CATEGORY">CATEGORY</option>
+			<option value="SUBMITTED_BY">SUBMITTED BY</option>
+			<option value="STATUS">STATUS</option>
+		</select>
+		<button id="search_btn" style="padding: 0%; font-size: 12;">SEARCH</button>
+	</div>
 	<table>
 	</table>
 	<br>

@@ -23,11 +23,37 @@
 			<a href="#about">About</a>
 		</div>
 	</div>
+	<br><br>
+	<table align="center">
+		<tr>
+			<th id="connect_msg">Please Enter SAVAPI API URL here to connect the Web Appplication</th>
+		</tr>
+		<tr>
+			<td align="center" id="connection_error" style="color: red;"></td>
+		</tr>
+		<tr>
+			<td><input id="url_field" type="text" placeholder="Enter API URL like https:www.ngrok.com/1234/"></td>
+		</tr>
+		<tr>
+			<td><button id="btn_connect">Connect to API</button></td>
+		</tr>
+		<tr>
+			<td align="center"><div id="connect_loader" class="loader" style="visibility: hidden;"></div></td>
+		</tr>
+	</table>
 	<!-- Form -->
 	<form action="index.html" method="post">
 		<div class="imgcontainer">
 			<img src="img_avatar2.png" alt="Avatar" class="avatar">
 		</div>
+		<table align="center">
+			<tr>
+				<td id="login_err" style="color: red;"></td>
+			</tr>
+			<tr>
+				<td align="center"><div id="login_loader" class="loader" style="visibility: hidden;"></div></td>
+			</tr>
+		</table>
 
 		<div class="container">
 			<label for="uname"><b>Username</b></label>
@@ -47,6 +73,7 @@
 			<span class="psw">Forgot <a href="#">password?</a></span>
 		</div>
 	</form>
+	<br><br>
 	<!-- Javascript -->
 	<script type="text/javascript" src="login_app.js"></script>
 </body>

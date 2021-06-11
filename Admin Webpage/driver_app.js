@@ -13,6 +13,7 @@ navToggle.addEventListener("click", function () {
 });
 
 const progressText = document.getElementById("progress");
+var spinner = document.getElementById("spinner")
 
 // ---------------------------------------------------------
 // Actual API Connection and Processing
@@ -46,6 +47,7 @@ driverDataLoad.onload = function () {
     let table = document.querySelector("table");
     let head = ["ID", "FIRST NAME", "LAST NAME", "PHONE NO","CNIC", "LICENSE NUMBER", "ACCEPT", "REJECT"];
     progressText.innerHTML = "Data Loaded!";
+    spinner.style.visibility = "hidden"
     generateTableHead(table, head);
     generateTable(table, data);
   } else {

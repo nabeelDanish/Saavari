@@ -20,7 +20,14 @@ const progressText = document.getElementById("progress");
 
 const url = sessionStorage.getItem("url");
 const user_id = sessionStorage.getItem("USER_ID");
+var spinner = document.getElementById("spinner")
+var searchBar = document.getElementById("search_bar")
+var searchButton = document.getElementById("search_btn")
 console.log(user_id)
+
+// Data for stored Tables
+var data
+let head = ["VEHICLE ID", "MAKE", "MODEL", "YEAR", "COLOR" ,"NUMBER PLATE", "STATUS", "VEHICLE TYPE", "ACCEPT", "REJECT"];
 
 // Creating a Connection request
 var connectionRequest = new XMLHttpRequest();
@@ -43,13 +50,14 @@ vehicleDataLoad.onload = function () {
   // alert("Data loaded!");
   // console.log(this.response);
   // Begin accessing JSON data here
-  var data = JSON.parse(this.response);
+  data = JSON.parse(this.response);
 
   if (vehicleDataLoad.status >= 200 && vehicleDataLoad.status < 400) {
     // console.log(data);
     let table = document.querySelector("table");
-    let head = ["VEHICLE ID", "MAKE", "MODEL", "YEAR", "COLOR" ,"NUMBER PLATE", "STATUS", "VEHICLE TYPE", "ACCEPT", "REJECT"];
     progressText.innerHTML = "Data Loaded!";
+    spinner.style.visibility = "hidden"
+    searchBar.style.visibility = "visible"
     console.log(data);
     generateTableHead(table, head);
     generateTable(table, data);
@@ -212,4 +220,12 @@ function repondToVehicleRequest(driverID, rideRequestID, rideType, status) {
   });
   console.log("JSON = " + json);
   sendVehicleRequest.send(json);
+}
+
+// Search Bar
+searchButton.onclick = function() {
+  let table = document.querySelector("table");
+  table.innerHTML = ""
+  generateTableHead(table, head);
+  generateTable(table, data);
 }
