@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="8b972b28-1bbb-47b9-a964-122fac31a1bc" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/Savaari_Rider/app/src/androidTest/java/com/savaari/savaari_rider/BookARideTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/Savaari_Rider/app/src/androidTest/java/com/savaari/savaari_rider/BookARideTest.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1tA73KmpfTJfjCdGYkL3tyJvi8N" />
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="android.sdk.path" value="$USER_HOME$/AppData/Local/Android/Sdk" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../../../../GSOC/Projects/AnkiDroid/Anki-Android/AnkiDroid" />
+    <property name="settings.editor.selected.configurable" value="configurable.group.build" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8b972b28-1bbb-47b9-a964-122fac31a1bc" name="Default Changelist" comment="" />
+      <created>1622199839629</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1622199839629</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="687" y="235" key="FileChooserDialogImpl" timestamp="1622199858150">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="687" y="235" key="FileChooserDialogImpl/0.0.1920.1080@0.0.1920.1080" timestamp="1622199858150" />
+  </component>
+</project>

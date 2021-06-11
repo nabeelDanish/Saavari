@@ -121,7 +121,6 @@ public class BookARideTest {
         }
 
     }
-
     @Test
     public void onSearchRideActionTest() {
         // Test Search Ride UI functionality with & without network
@@ -178,7 +177,12 @@ public class BookARideTest {
         return ride;
     }
 
-
+    @Test
+    public void onSearchRideActionTest() {
+        // Test Search Ride UI functionality with & without network
+        onSearchRideActionWithNetworkConfigTest(false);
+        onSearchRideActionWithNetworkConfigTest(true);
+    }
     public void onSearchRideActionWithNetworkConfigTest(boolean networkAvailable) {
         LatLng pickupLocation = new LatLng(25.351364, 55.397967);
         LatLng dropOffLocation = new LatLng(25.197197,  55.274376);

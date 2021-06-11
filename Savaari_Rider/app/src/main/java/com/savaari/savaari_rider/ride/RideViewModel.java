@@ -26,7 +26,7 @@ public class RideViewModel extends ViewModel {
     private static String LOG_TAG = RideViewModel.class.getSimpleName();
     private Repository repository = null;
 
-    /* Credentials for netowrk operations */
+    /* Credentials for network operations */
     private int USER_ID = -1;
 
     /* User account data*/
@@ -46,6 +46,8 @@ public class RideViewModel extends ViewModel {
     private final MutableLiveData<Boolean> endOfRideAcknowledged = new MutableLiveData<>();
     private final MutableLiveData<Boolean> rideStatusChanged = new MutableLiveData<>();
     private final MutableLiveData<Boolean> closeToPickup = new MutableLiveData<>();
+
+
 
     /* Get user data */
     public LatLng getUserCoordinates() {

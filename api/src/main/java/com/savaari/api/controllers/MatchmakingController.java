@@ -3,6 +3,8 @@ package com.savaari.api.controllers;
 import com.savaari.api.database.DBHandlerFactory;
 import com.savaari.api.entity.*;
 
+import java.util.ArrayList;
+
 public class MatchmakingController {
     // Main Attributes
     private static final String LOG_TAG = MatchmakingController.class.getSimpleName();
@@ -34,6 +36,10 @@ public class MatchmakingController {
     public Ride getRideForRider(Rider rider) {
         ride = rider.getRideForRider();
         return ride;
+    }
+
+    public Ride getRideForAdmin(int rideId) {
+        return DBHandlerFactory.getInstance().createDBHandler().getRideForAdmin(rideId);
     }
 
     public boolean acknowledgeEndOfRide() {

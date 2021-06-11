@@ -4,6 +4,8 @@ import com.savaari.api.database.DBHandlerFactory;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 
+import java.util.ArrayList;
+
 public class User {
     public static final int DEFAULT_ID = -1;
 
@@ -109,5 +111,9 @@ public class User {
 
         return DBHandlerFactory.getInstance().createDBHandler().getRide(rideRequest);
         //result.put("IS_TAKING_RIDE", (result.getInt("STATUS_CODE") == 200));
+    }
+
+    public ArrayList<Ride> getRideLog() {
+        return DBHandlerFactory.getInstance().createDBHandler().getRideLog(this);
     }
 }

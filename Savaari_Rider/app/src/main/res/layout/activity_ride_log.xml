@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/task_linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/backgroundColor"
+        android:orientation="vertical"
+        tools:context=".ride.log.RideLog">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/foregroundColor"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/ride_log"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"
+            android:outlineProvider="bounds"
+            android:background="@null"
+            android:elevation="2dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/report_problem_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/rounded_box_2"
+        android:orientation="vertical"
+        android:paddingBottom="32dp"
+        android:visibility="gone">
+
+        <View
+            android:id="@+id/report_panel_sticky_top"
+            android:layout_width="60dp"
+            android:layout_height="8dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="0dp"
+            android:background="@drawable/rounded_box"
+            android:backgroundTint="?attr/lightTextColor" />
+
+        <TextView
+            android:id="@+id/report_panel_status_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp"
+            android:text="Report a problem"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display4"
+            android:textColor="?attr/textColor"
+            android:textSize="22dp"
+            android:textStyle="bold" />
+
+        <View
+            android:id="@+id/report_panel_tile_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="60dp"
+            android:layout_marginEnd="60dp"
+            android:layout_marginBottom="16dp"
+            android:background="?android:attr/dividerHorizontal"
+            android:backgroundTint="?attr/textColor" />
+
+        <TextView
+            android:id="@+id/desc_prompt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginStart="40dp"
+            android:layout_marginBottom="16dp"
+            android:text="Provide a short description"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display4"
+            android:textColor="?attr/textColor"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/problem_desc"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:minHeight="240dp"
+            android:outlineProvider="bounds"
+            android:textColor="?attr/textColor"
+            android:inputType="textShortMessage|textLongMessage"
+            android:gravity="top"/>
+
+        <Button
+            android:id="@+id/submit_rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_gravity="center"
+            android:background="@drawable/transparent_go_btn"
+            android:elegantTextHeight="true"
+            android:fontFamily="sans-serif-medium"
+            android:includeFontPadding="true"
+            android:text="@string/submit"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display4"
+            android:textColor="?attr/textColor"
+            android:textSize="18sp"/>
+
+    </LinearLayout>
+</RelativeLayout>

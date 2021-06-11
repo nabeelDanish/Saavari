@@ -16,6 +16,7 @@ public interface DBHandler {
     int loginDriver(Driver driver);
     boolean fetchRiderData(Rider rider);
     boolean fetchDriverData(Driver driver);
+    ArrayList<Ride> getRideLog(User user);
 
     /* Registration Methods */
     boolean sendRegistrationRequest(Driver driver);
@@ -64,6 +65,11 @@ public interface DBHandler {
     boolean loginAdmin(Administrator admin);
     ArrayList<Vehicle> getVehicleRequests();
     ArrayList<Driver> getDriverRequests();
+
+    boolean reportProblem(User user, String problemDescription, int rideID);
+    ArrayList<Complaint> fetchComplaints();
+    boolean respondToComplaint(int complaintId, int responseCategory, String responseMessage);
+    Ride getRideForAdmin(int rideId);
 
     /* Location method calls */
     boolean saveRiderLocation(Rider rider);

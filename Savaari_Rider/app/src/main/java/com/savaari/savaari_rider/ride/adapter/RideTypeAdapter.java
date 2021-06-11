@@ -53,7 +53,7 @@ public class RideTypeAdapter extends RecyclerView.Adapter<RideTypeAdapter.ItemVi
     @NonNull
     @Override
     public RideTypeAdapter.ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.ride_type_card, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.ride_entry, parent, false);
         return new ItemViewHolder(v, listener);
     }
 

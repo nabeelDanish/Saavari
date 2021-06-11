@@ -85,6 +85,7 @@ import com.savaari.savaari_rider.ride.entity.Location;
 import com.savaari.savaari_rider.ride.entity.Ride;
 import com.savaari.savaari_rider.ride.entity.RideRequest;
 import com.savaari.savaari_rider.ride.entity.Vehicle;
+import com.savaari.savaari_rider.ride.log.RideLog;
 import com.savaari.savaari_rider.services.location.LocationUpdateUtil;
 import com.savaari.savaari_rider.settings.SettingsActivity;
 import com.savaari.savaari_rider.utility.ThemeVar;
@@ -1314,14 +1315,19 @@ public class RideActivity extends Util implements OnMapReadyCallback, Navigation
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
         drawer.closeDrawer(GravityCompat.START);
+        Intent i;
 
         switch (item.getItemId()) {
             case (R.id.nav_your_trips):
+                i = new Intent(RideActivity.this, RideLog.class);
+                i.putExtra("USER_ID", USER_ID);
+                startActivity(i);
+                break;
             case (R.id.nav_help):
             case (R.id.nav_wallet):
                 break;
             case (R.id.nav_settings):
-                Intent i = new Intent(RideActivity.this, SettingsActivity.class);
+                i = new Intent(RideActivity.this, SettingsActivity.class);
                 startActivity(i);
                 break;
         }
