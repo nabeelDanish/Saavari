@@ -16,6 +16,7 @@ public class RideLogViewModel extends ViewModel {
 
     private static String LOG_TAG = RideViewModel.class.getSimpleName();
     private Repository repository = null;
+    private int categorySelected = -1;
 
     /* Credentials for network operations */
     private int USER_ID = -1;
@@ -26,6 +27,14 @@ public class RideLogViewModel extends ViewModel {
     public RideLogViewModel(int USER_ID, Repository repository) {
         this.repository = repository;
         this.USER_ID = USER_ID;
+    }
+
+    public void setCategorySelected(int catgoryId) {
+        categorySelected = catgoryId;
+    }
+
+    public int getCategorySelected() {
+        return categorySelected;
     }
 
     public void fetchRideLog() {

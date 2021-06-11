@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.savaari.savaari_rider.MainActivity;
 import com.savaari.savaari_rider.R;
 import com.savaari.savaari_rider.SavaariApplication;
 import com.savaari.savaari_rider.ride.RideViewModel;
@@ -44,7 +45,14 @@ public class RideLog extends Util implements LogViewClickListener {
     private Toolbar myToolbar;
     private LinearLayout reportProblemPanel;
     private Button submitRatingButton;
+    private Button cancelRatingButton;
     private EditText problemDescriptionText;
+    private Button categorySelectButton;
+
+    private AlertDialog.Builder alertDialog;
+
+    private boolean categoryPickerDisplayed = false;
+    private boolean reportPanelDisplayed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,9 +84,21 @@ public class RideLog extends Util implements LogViewClickListener {
             onBackPressed();
         }
         else {
+            categorySelectButton = findViewById(R.id.cat_select_btn);
             problemDescriptionText = findViewById(R.id.problem_desc);
             reportProblemPanel = findViewById(R.id.report_problem_panel);
             submitRatingButton = findViewById(R.id.submit_rating);
+            cancelRatingButton = findViewById(R.id.cancel_rating);
+
+            categorySelectButton.setOnClickListener(v -> {
+                v.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
+                showCategoryPicker();
+            });
+
+            cancelRatingButton.setOnClickListener(v -> {
+                toggleReportProblemPanel(false, true);
+                rideLogViewModel.setCategorySelected(-1);
+            });
 
             rideLogViewModel = new ViewModelProvider(this, new RideLogViewModelFactory(USER_ID,
                     ((SavaariApplication) this.getApplication()).getRepository())).get(RideLogViewModel.class);
@@ -88,18 +108,53 @@ public class RideLog extends Util implements LogViewClickListener {
         }
     }
 
+    private void showCategoryPicker() {
+        alertDialog = new AlertDialog.Builder(RideLog.this);
+        alertDialog.setTitle("Select a Problem Category");
+        String[] items = {"Pickup / Drop-off", "Route", "Fare", "Driver Conduct", "Other"};
+        int checkedItem = (rideLogViewModel.getCategorySelected() == -1)? 0 : rideLogViewModel.getCategorySelected();
+        rideLogViewModel.setCategorySelected(0);
+        alertDialog.setSingleChoiceItems(items, checkedItem, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                rideLogViewModel.setCategorySelected(which);
+            }
+        });
+
+        alertDialog.setPositiveButton(R.string.submit, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                categorySelectButton.setText(items[rideLogViewModel.getCategorySelected()]);
+                categoryPickerDisplayed = false;
+            }
+        });
+
+        alertDialog.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                rideLogViewModel.setCategorySelected(-1);
+                categoryPickerDisplayed = false;
+            }
+        });
+
+        categoryPickerDisplayed = true;
+        alertDialog.show();
+    }
+
     private void toggleReportProblemPanel(boolean visibility, boolean withAnimation) {
         if (visibility && reportProblemPanel.getVisibility() != View.VISIBLE) {
             if (withAnimation) {
                 reportProblemPanel.setAnimation(inFromBottomAnimation(400));
             }
             reportProblemPanel.setVisibility(View.VISIBLE);
+            reportPanelDisplayed = true;
         }
         else if (!visibility && reportProblemPanel.getVisibility() != View.GONE) {
             if (withAnimation) {
                 reportProblemPanel.setAnimation(outToBottomAnimation(400));
             }
             reportProblemPanel.setVisibility(View.GONE);
+            reportPanelDisplayed = false;
         }
     }
 
@@ -124,9 +179,24 @@ public class RideLog extends Util implements LogViewClickListener {
 
         toggleReportProblemPanel(true, true);
         submitRatingButton.setOnClickListener(v -> {
-            v.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
-            submitReport(problemDescriptionText.getText().toString(), position);
-            toggleReportProblemPanel(false, true);
+            String problemDescription = problemDescriptionText.getText().toString();
+            if (rideLogViewModel.getCategorySelected() == -1) {
+                Toast.makeText(this, "Please select a problem category", Toast.LENGTH_SHORT).show();
+            }
+            else if (problemDescription.length() < 50) {
+                Toast.makeText(this, "Description is too short (" +
+                        (50-problemDescription.length()) + " characters below min", Toast.LENGTH_SHORT).show();
+            }
+            else if (problemDescription.length() > 500) {
+                Toast.makeText(this, "Description is too long (" +
+                        (problemDescription.length() - 500) + " characters above max", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                v.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
+                submitReport(problemDescription, position);
+                toggleReportProblemPanel(false, true);
+                rideLogViewModel.setCategorySelected(-1);
+            }
         });
 
         /*
@@ -156,4 +226,21 @@ public class RideLog extends Util implements LogViewClickListener {
 
         builder.show();*/
     }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        if (categoryPickerDisplayed) {
+            alertDialog.create().dismiss();
+            categoryPickerDisplayed = false;
+        }
+        else if (reportPanelDisplayed) {
+            toggleReportProblemPanel(false, true);
+        }
+        else {
+            onBackPressed();
+            return true;
+        }
+        return false;
+    }
+
 }

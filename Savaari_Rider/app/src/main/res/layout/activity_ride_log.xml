@@ -78,6 +78,20 @@
             android:background="?android:attr/dividerHorizontal"
             android:backgroundTint="?attr/textColor" />
 
+        <Button
+            android:id="@+id/cat_select_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="24dp"
+            android:text="Select Problem Category"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display4"
+            android:textColor="?attr/textColor"
+            android:drawableEnd="@drawable/ic_expand_more"
+            android:background="@android:color/transparent"
+            android:padding="12dp"
+            android:textSize="16sp" />
+
         <TextView
             android:id="@+id/desc_prompt"
             android:layout_width="wrap_content"
@@ -102,22 +116,52 @@
             android:inputType="textShortMessage|textLongMessage"
             android:gravity="top"/>
 
-        <Button
-            android:id="@+id/submit_rating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_marginTop="24dp"
-            android:layout_gravity="center"
-            android:background="@drawable/transparent_go_btn"
-            android:elegantTextHeight="true"
-            android:fontFamily="sans-serif-medium"
-            android:includeFontPadding="true"
-            android:text="@string/submit"
-            android:textAlignment="center"
-            android:textAllCaps="false"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display4"
-            android:textColor="?attr/textColor"
-            android:textSize="18sp"/>
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/cancel_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginStart="60dp"
+                android:background="@drawable/transparent_go_btn"
+                android:elegantTextHeight="true"
+                android:fontFamily="sans-serif-medium"
+                android:includeFontPadding="true"
+                android:text="@string/cancel"
+                android:textAlignment="center"
+                android:textAllCaps="false"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display4"
+                android:textColor="?attr/textColor"
+                android:textSize="18sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/submit_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginEnd="60dp"
+                android:background="@drawable/transparent_go_btn"
+                android:elegantTextHeight="true"
+                android:fontFamily="sans-serif-medium"
+                android:includeFontPadding="true"
+                android:text="@string/submit"
+                android:textAlignment="center"
+                android:textAllCaps="false"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display4"
+                android:textColor="?attr/textColor"
+                android:textSize="18sp" />
+        </LinearLayout>
 
     </LinearLayout>
 </RelativeLayout>
