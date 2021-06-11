@@ -8,8 +8,14 @@
 	<!-- Importing font -->
 	<link 
 		rel="stylesheet"
-		href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"
-	>
+		href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css">
+	<link 
+		rel="stylesheet" 
+		href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	<link 
+		rel="stylesheet" 
+		href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/css/ol.css" type="text/css">
 
 	<!-- styles -->
 	<link rel="stylesheet" type="text/css" href="styles.css">
@@ -39,7 +45,7 @@
 					<a href="contact.html">contact</a>
 				</li>
 				<li>
-					<a href="problem.html">complaints</a>>
+					<a href="problem.html">complaints</a>
 				</li>
 			</ul>
 			<!-- social media -->
@@ -73,9 +79,14 @@
 		</div>
 	</nav>
 	<!-- Body -->
-	<h2>Contact Us</h2>
-	<h4>Nabeel Danish 18I-0579</h4>
-	<h4>Farjad Ilyas 18I-0436</h4>
+	<h2>View Ride Details</h2>
+	<h4 id="progress">Connecting ...</h4>
+	<table>
+	</table>
+	<br>
+	<br>
 	<!-- javascript -->
+	<script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/build/ol.js"></script>
+	<script type="text/javascript" src="ride_detail_app.js"></script>
 </body>
 </html>
