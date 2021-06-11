@@ -19,6 +19,8 @@ const progressText = document.getElementById("progress");
 // ---------------------------------------------------------
 
 const url = sessionStorage.getItem("url");
+const user_id = sessionStorage.getItem("USER_ID");
+console.log(user_id)
 
 // Creating a Connection request
 var connectionRequest = new XMLHttpRequest();
@@ -30,8 +32,10 @@ connectionRequest.onload = function () {
 }
 connectionRequest.send();
 
+// -------------------------------------------------------------
+//                    Loading Vehicle Data
+// -------------------------------------------------------------
 var vehicleDataLoad = new XMLHttpRequest();
-
 vehicleDataLoad.open('POST', url + 'vehicleRequests');
 vehicleDataLoad.setRequestHeader('Content-Type', 'application/json');
 
@@ -54,7 +58,7 @@ vehicleDataLoad.onload = function () {
   }
 }
 
-vehicleDataLoad.send(JSON.stringify({"USER_ID":1}));
+vehicleDataLoad.send(JSON.stringify({"USER_ID":user_id}));
 
 
 // ---------------------------------------------------------
@@ -87,9 +91,10 @@ function generateTable(table, data) {
 
     // Adding Data
     var vehicleID = element['vehicleID'];
-    var make = element['make'];
-    var model = element['model'];
-    var year = element['year'];
+    var vehicleType = element['vehicleType']
+    var make = vehicleType['make'];
+    var model = vehicleType['model'];
+    var year = vehicleType['year'];
     var color = element['color'];
     var numberPlate = element['numberPlate'];
     var status = element['status'];
@@ -125,9 +130,19 @@ function generateTable(table, data) {
 
     // Setting Logic for Table entries
     cell = row.insertCell();
-    var rideTypeInput = document.createElement("input");
+    var rideTypeInput = document.createElement("select");
     rideTypeInput.id = "rideTypeInput" + i;
-    rideTypeInput.setAttribute("type", "number");
+    
+    var options = ["BIKE", "SAAVARI MINI", "SAAVARI GO", "SAAVARI X"]; 
+
+    for (var k = 0; k < options.length; k++) {
+      var opt = options[k];
+      var el = document.createElement("option");
+      el.textContent = opt;
+      el.value = opt;
+      rideTypeInput.appendChild(el);
+    }
+
     cell.appendChild(rideTypeInput);
 
     // Accept Button
@@ -142,7 +157,7 @@ function generateTable(table, data) {
     buttonAccept.onclick = function() {
       progressText.innerHTML = "Sending Request ...";
       var i = acceptButtonIDs.indexOf(this.id);
-      var r_id = parseInt(document.getElementById("rideTypeInput" + i).value);
+      var r_id = parseInt(document.getElementById("rideTypeInput" + i).value + 1);
       repondToVehicleRequest(1, regReqID, r_id, 3);
     };
 
@@ -160,7 +175,7 @@ function generateTable(table, data) {
     buttonReject.onclick = function() {
       progressText.innerHTML = "Sending Request ...";
       var i = rejectButtonIDs.indexOf(this.id);
-      var r_id = parseInt(document.getElementById("rideTypeInput" + i).value);
+      var r_id = parseInt(document.getElementById("rideTypeInput" + i).value + 1);
       repondToVehicleRequest(1, regReqID, r_id, 2);
     };
     cell.appendChild(buttonReject);

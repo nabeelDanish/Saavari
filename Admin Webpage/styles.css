@@ -142,6 +142,13 @@ button:hover
   color: var(--clr-white);
   background: var(--clr-black);
 }
+.checked {
+  color: orange;
+}
+.map {
+  height: 400px;
+  width: 100%;
+}
 
 /* Section Class */
 .section {
