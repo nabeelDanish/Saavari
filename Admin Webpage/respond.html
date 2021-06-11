@@ -39,7 +39,7 @@
 					<a href="contact.html">contact</a>
 				</li>
 				<li>
-					<a href="problem.html">complaints</a>>
+					<a href="problem.html">complaints</a>
 				</li>
 			</ul>
 			<!-- social media -->
@@ -73,9 +73,47 @@
 		</div>
 	</nav>
 	<!-- Body -->
-	<h2>Contact Us</h2>
-	<h4>Nabeel Danish 18I-0579</h4>
-	<h4>Farjad Ilyas 18I-0436</h4>
+	<h2>Respond to Complaint</h2>
+	<h4 id="progress">Connecting ...</h4>
+	<table>
+		<tr>
+			<th style="padding-left: 230px;padding-right: 230px;font-size: x-large" colspan="3">YOUR RESPONSE</th>
+		</tr>
+		<tr>
+			<td>Response Message</td>
+			<td colspan="2">
+				<textarea rows="4" cols="60" placeholder="Your Response to this complaint" id="response_text"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td>Select Response Type</td>\
+			<td colspan="2">
+				<select name="type" id="type">
+					<option value="1">Payment Compensation</option>
+					<option value="2">Needs Further Review</option>
+					<option value="3">Gift Voucher</option>
+					<option value="4">Not Valid Complain</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>Is the Complaint Resolved?</td>
+			<td>
+				<input type="radio" id="resolved" name="resolved" value="resolved"><label for="resolved">  YES</label>
+			</td>
+			<td>
+				<input type="radio" id="not_resolved" name="not_resolved" value="not_resolved"><label for="not_resolved">  NO</label>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="3" align="center">
+				<button id="submit_btn">SUBMIT RESPONSE</button>
+			</td>
+		</tr>
+	</table>
+	<br>
+	<br>
 	<!-- javascript -->
+	<script type="text/javascript" src="respond_app.js"></script>
 </body>
 </html>
