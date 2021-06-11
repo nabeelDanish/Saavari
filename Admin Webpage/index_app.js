@@ -17,15 +17,18 @@ navToggle.addEventListener("click", function () {
 // Actual API Connection and Processing
 // ---------------------------------------------------------
 
+var spinner = document.getElementById("spinner")
 const url = sessionStorage.getItem("url");
 const user_id = sessionStorage.getItem("USER_ID");
 console.log(user_id)
 
 // Creating a Connection request
 var connectionRequest = new XMLHttpRequest();
+var progress = document.getElementById("progress")
 
 connectionRequest.open('GET', url + 'hello');
 connectionRequest.onload = function () {
-	alert("Connection Established");
+	spinner.style.visibility = "hidden"
+	progress.innerText = "Connected!"
 }
 connectionRequest.send();

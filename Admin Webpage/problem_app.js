@@ -11,7 +11,12 @@ const links = document.querySelector(".links");
 navToggle.addEventListener("click", function () {
 	links.classList.toggle("show-links");
 });
-const progressText = document.getElementById("progress");
+const progressText = document.getElementById("progress")
+var spinner = document.getElementById("spinner")
+var searchBar = document.getElementById("search_bar")
+var searchButton = document.getElementById("search_btn")
+let head = ["COMPLAINT ID", "SUBMITTED BY", "CATEGORY", "PROBLEM DESCRIPTION", "STATUS", "SUBMISSION DATE"];
+var data
 
 // ---------------------------------------------------------
 // Actual API Connection and Processing
@@ -39,16 +44,16 @@ problemDataLoad.setRequestHeader('Content-Type', 'application/json');
 
 problemDataLoad.onload = function () {
   // Begin accessing JSON data here
-  var data = JSON.parse(this.response);
+  data = JSON.parse(this.response);
 
   if (problemDataLoad.status >= 200 && problemDataLoad.status < 400) {
-    // console.log(data);
     let table = document.querySelector("table");
-    let head = ["COMPLAINT ID", "SUBMITTED BY", "CATEGORY", "PROBLEM DESCRIPTION", "STATUS", "SUBMISSION DATE"];
     progressText.innerHTML = "Data Loaded!";
+    spinner.style.visibility = "hidden"
+    searchBar.style.visibility = "visible"
     console.log(data);
     generateTableHead(table, head);
-    generateTable(table, data);
+    generateTable(table, data, "", "");
   } else {
     console.log('error');
   }
@@ -77,13 +82,11 @@ var detailButtonIDs = []
 var storedRideIds = []
 var storedComplaintIDS = []
 
-function generateTable(table, data) {
+function generateTable(table, data, field, query) {
 
   // Adding Objects to table
   let i = 0;
   for (let element of data) {
-    let row = table.insertRow();
-    let cell = row.insertCell();
 
     // Adding Data
     var complaintId = element['complaintId'];
@@ -95,6 +98,33 @@ function generateTable(table, data) {
     var status = element['status'];
     var submissionTime = element['submissionTime'];
     var resolutionTime = element['resolutionTime'];
+    var userTypeString;
+    if (userType == 0) {
+    	userTypeString = "RIDER";
+    } else {
+    	userTypeString = "DRIVER";
+    }
+
+    // Checking Search Data
+    if (field == "COMPLAINT_ID" && complaintId != parseInt(query)) {
+      continue
+    }
+
+    if (field == "CATEGORY" && category != parseInt(query)) {
+      continue
+    }
+
+    if (field == "SUBMITTED_BY" && userTypeString != query) {
+      continue
+    }
+
+    if (field == "STATUS" && status != parseInt(query)) {
+      continue
+    }
+
+    // Creating First Row
+    let row = table.insertRow();
+    let cell = row.insertCell();
 
     // Storing Ride ID to be used later
     storedRideIds.push(rideId);
@@ -105,12 +135,6 @@ function generateTable(table, data) {
     storedComplaintIDS.push(complaintId)
 
     cell = row.insertCell();
-    var userTypeString;
-    if (userType == 0) {
-    	userTypeString = "RIDER";
-    } else {
-    	userTypeString = "DRIVER";
-    }
     text = document.createTextNode(userTypeString);
     cell.appendChild(text);
 
@@ -180,4 +204,19 @@ function viewRideDetails(rideID) {
 function respondToComplaint(complaintId) {
 	sessionStorage.setItem("COMPLAINT_ID", complaintId);
 	window.location.replace("respond.html");
+}
+
+// Search Function
+searchButton.onclick = function() {
+  var searchText = document.getElementById("search_text")
+  if (searchText.value == "") {
+    return
+  }
+  var searchField = document.getElementById("search_option")
+
+  // Generating the Table Again
+  let table = document.querySelector("table");
+  table.innerHTML = ""
+  generateTableHead(table, head);
+  generateTable(table, data, searchField.value, searchText.value);
 }
