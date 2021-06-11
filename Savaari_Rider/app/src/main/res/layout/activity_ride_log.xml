@@ -84,7 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="24dp"
-            android:text="Select Problem Category"
+            android:text="@string/select_problem_category"
             android:textAppearance="@style/TextAppearance.AppCompat.Display4"
             android:textColor="?attr/textColor"
             android:drawableEnd="@drawable/ic_expand_more"

@@ -155,6 +155,8 @@ public class RideLog extends Util implements LogViewClickListener {
             }
             reportProblemPanel.setVisibility(View.GONE);
             reportPanelDisplayed = false;
+            problemDescriptionText.setText("");
+            categorySelectButton.setText(R.string.select_problem_category);
         }
     }
 

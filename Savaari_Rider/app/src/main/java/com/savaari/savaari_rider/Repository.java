@@ -108,7 +108,7 @@ public class Repository {
         executor.execute(() -> callback.onDataLoaded(NetworkUtil.getInstance().fetchRideLog(url)));
     }
 
-    public void reportProblem(OnDataLoadedListener callback, String problemDescription, int rideId) {
-        executor.execute(() -> callback.onDataLoaded(NetworkUtil.getInstance().reportProblem(url, problemDescription, rideId)));
+    public void reportProblem(OnDataLoadedListener callback, String problemDescription, int rideId, int categoryId) {
+        executor.execute(() -> callback.onDataLoaded(NetworkUtil.getInstance().reportProblem(url, problemDescription, rideId, categoryId)));
     }
 }

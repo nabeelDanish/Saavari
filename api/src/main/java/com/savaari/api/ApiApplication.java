@@ -974,15 +974,43 @@ public class ApiApplication {
 
         String problemDescription = allParams.get("PROBLEM_DESC");
         int rideID = Integer.parseInt(allParams.get("RIDE_ID"));
+        int categoryId = Integer.parseInt(allParams.get("CATEGORY_ID"));
 
 		JSONObject result = new JSONObject();
-		if (adminSystem.reportProblem(crudController.getRider(), problemDescription, rideID)) {
+		if (adminSystem.reportProblem(crudController.getRider(), problemDescription, rideID, categoryId)) {
 			result.put("STATUS", 200);
 		} else {
 			result.put("STATUS", 400);
 		}
 
 		return result.toString();
+    }
+
+    @RequestMapping(value = "/reportProblemFromDriver", method = RequestMethod.POST)
+    public String reportProblemFromDriver(@RequestBody Map<String, String> allParams, HttpServletRequest request) {
+        if (request.getSession(false) == null) {
+            return null;
+        }
+
+        CRUDController crudController = getAttributeObject(request, CRUDController.class, CRUDController.class.getName());
+        AdminSystem adminSystem = getAttributeObject(request, AdminSystem.class, AdminSystem.class.getName());
+
+        if (crudController == null || adminSystem == null) {
+            return null;
+        }
+
+        String problemDescription = allParams.get("PROBLEM_DESC");
+        int rideID = Integer.parseInt(allParams.get("RIDE_ID"));
+        int categoryId = Integer.parseInt(allParams.get("CATEGORY_ID"));
+
+        JSONObject result = new JSONObject();
+        if (adminSystem.reportProblem(crudController.getDriver(), problemDescription, rideID, categoryId)) {
+            result.put("STATUS", 200);
+        } else {
+            result.put("STATUS", 400);
+        }
+
+        return result.toString();
     }
 
 

@@ -66,7 +66,7 @@ public interface DBHandler {
     ArrayList<Vehicle> getVehicleRequests();
     ArrayList<Driver> getDriverRequests();
 
-    boolean reportProblem(User user, String problemDescription, int rideID);
+    boolean reportProblem(User user, String problemDescription, int rideID, int categoryId);
     ArrayList<Complaint> fetchComplaints();
     boolean respondToComplaint(int complaintId, int responseCategory, String responseMessage);
     Ride getRideForAdmin(int rideId);

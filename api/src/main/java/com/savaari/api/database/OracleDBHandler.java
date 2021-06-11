@@ -1550,7 +1550,7 @@ public class OracleDBHandler implements DBHandler {
     }
 
     @Override
-    public boolean reportProblem(User user, String problemDescription, int rideID) {
+    public boolean reportProblem(User user, String problemDescription, int rideID, int categoryId) {
         return executeUpdate(String.format("INSERT INTO `COMPLAINTS`" +
                 " (`COMPLAINT_ID` ,`USER_ID`, `USER_TYPE`, `RIDE_ID`, `CATEGORY`, `DESC`, `SUBMISSION_DATE`)" +
                 " VALUES(%d, %d, %d, %d, %d, '%s', CURRENT_TIME())",
@@ -1558,7 +1558,7 @@ public class OracleDBHandler implements DBHandler {
                 user.getUserID(),
                 ((user instanceof Rider)? 0: 1),
                 rideID,
-                0,
+                categoryId,
                 problemDescription)) > 0;
     }
 

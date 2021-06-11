@@ -337,7 +337,7 @@ public class NetworkUtil {
         }
     }
 
-    public Boolean reportProblem(String urlAddress, String problemDescription, int rideId) {
+    public Boolean reportProblem(String urlAddress, String problemDescription, int rideId, int categoryId) {
         Log.d(TAG, "reportProblem() called!");
         String url = urlAddress + "reportProblemFromRider";
 
@@ -346,6 +346,7 @@ public class NetworkUtil {
         try {
             jsonParam.put("PROBLEM_DESC", problemDescription);
             jsonParam.put("RIDE_ID", rideId);
+            jsonParam.put("CATEGORY_ID", categoryId);
             String resultString = sendPost(url, jsonParam, true);
 
             if (resultString == null) {

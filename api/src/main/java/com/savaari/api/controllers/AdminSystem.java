@@ -33,8 +33,8 @@ public class AdminSystem {
         return DBHandlerFactory.getInstance().createDBHandler().respondToDriverRegistrationRequest(driver);
     }
 
-    public boolean reportProblem(User user, String problemDescription, int rideID) {
-        return DBHandlerFactory.getInstance().createDBHandler().reportProblem(user, problemDescription, rideID);
+    public boolean reportProblem(User user, String problemDescription, int rideID, int categoryId) {
+        return DBHandlerFactory.getInstance().createDBHandler().reportProblem(user, problemDescription, rideID, categoryId);
     }
 
     public ArrayList<Complaint> fetchComplaints() {

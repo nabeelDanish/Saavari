@@ -84,7 +84,7 @@ public class RideLogViewModel extends ViewModel {
                     e.printStackTrace();
                     Log.d(LOG_TAG, "fetchRideLog(): Exception");
                 }
-            }, problemDescription, rideId);
+            }, problemDescription, rideId, categorySelected);
         }
 
         return problemReported;
