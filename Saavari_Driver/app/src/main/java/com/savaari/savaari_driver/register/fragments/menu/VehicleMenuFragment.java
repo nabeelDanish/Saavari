@@ -52,7 +52,7 @@ public class VehicleMenuFragment extends Fragment implements OnItemClickListener
     // Main Methods
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.registration_menu_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_registration_menu, container, false);
         recyclerView = view.findViewById(R.id.vehicle_list_recycler);
         addVehicleBtn = view.findViewById(R.id.add_vehicle_btn);
 

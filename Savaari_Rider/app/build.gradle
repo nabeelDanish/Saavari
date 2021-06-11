@@ -55,6 +55,14 @@ dependencies {
         exclude module: 'recyclerview-v7'
     }
 
+    androidTestImplementation('com.android.support.test.espresso:espresso-contrib:3.0.2') {
+        // Necessary to avoid version conflicts
+        exclude group: 'com.android.support', module: 'appcompat'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude module: 'recyclerview-v7'
+    }
+
     implementation "com.google.android.gms:play-services-location:18.0.0"
 
     //Google Maps & Places API

@@ -28,7 +28,7 @@ import com.savaari.savaari_driver.register.fragments.driver.DriverRegistrationFr
 import com.savaari.savaari_driver.register.fragments.menu.VehicleMenuFragment;
 import com.savaari.savaari_driver.register.fragments.vehicle.VehicleRegistrationFragment;
 import com.savaari.savaari_driver.ride.RideActivity;
-// import com.savaari.savaari_driver.settings.SettingsActivity;
+import com.savaari.savaari_driver.settings.SettingsActivity;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.concurrent.ScheduledFuture;
@@ -46,6 +46,7 @@ public class RegisterActivity
     private RegisterViewModel registerViewModel;
     private ScheduledFuture<?> future = null;
     private boolean networkConnection = false;
+    int USER_ID;
 
     // UI
     private ProgressBar loadingCircle;
@@ -86,7 +87,7 @@ public class RegisterActivity
         if (!networkConnection) {
             Toast.makeText(this, "No network connection", Toast.LENGTH_SHORT).show();
         }
-        int USER_ID = recvIntent.getIntExtra("USER_ID", -1);
+        USER_ID = recvIntent.getIntExtra("USER_ID", -1);
 
         // Creating View Model
         registerViewModel = ViewModelProviders.of(this, new RegisterViewModelFactory(
@@ -103,6 +104,7 @@ public class RegisterActivity
         registerViewModel.getPersistConnection().observe(this, aBoolean -> {
             if (aBoolean != null) {
                 if (aBoolean) {
+                    Log.d(LOG_TAG, "onCreate: getPersistConnection: Connection Established!");
                     Toast.makeText(this, "Connection Established!", Toast.LENGTH_SHORT).show();
                     registerViewModel.loadUserData(USER_ID);
                 } else {
@@ -194,6 +196,7 @@ public class RegisterActivity
     }
 
     private void launchVehicleMenuFragment() {
+        registerViewModel.loadUserData(USER_ID);
         registerViewModel.loadUserData(registerViewModel.getDriver().getUserID());
         myToolbar.setTitle("VEHICLES");
         Log.d(LOG_TAG, "launchVehicleMenuFragment: launching Vehicle Menu Fragment");
@@ -203,6 +206,7 @@ public class RegisterActivity
                 .commit();
     }
     private void launchDocumentFragment() {
+        registerViewModel.loadUserData(USER_ID);
         registerViewModel.loadUserData(registerViewModel.getDriver().getUserID());
         myToolbar.setTitle("DOCUMENTS");
         // Driver needs to fill the form and send it
@@ -285,9 +289,9 @@ public class RegisterActivity
                 launchVehicleMenuFragment();
                 break;
             case (R.id.nav_settings):
-//                i = new Intent(com.savaari.savaari_driver.register.RegisterActivity.this, SettingsActivity.class);
-//                startActivity(i);
-//                finish();
+                i = new Intent(com.savaari.savaari_driver.register.RegisterActivity.this, SettingsActivity.class);
+                startActivity(i);
+                finish();
                 break;
         }
         return true;

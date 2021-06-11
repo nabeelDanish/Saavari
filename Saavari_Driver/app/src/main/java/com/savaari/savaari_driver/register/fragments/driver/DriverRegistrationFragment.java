@@ -12,7 +12,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -93,7 +92,7 @@ public class DriverRegistrationFragment extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
         // Get View
-        View view = inflater.inflate(R.layout.driver_registration_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_driver_registration, container, false);
 
         // Setting UI Elements
         // Setting Forms

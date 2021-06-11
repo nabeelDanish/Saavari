@@ -4,6 +4,7 @@ package com.savaari.savaari_driver.ride;
 
 import android.util.Log;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -69,7 +70,8 @@ public class RideViewModel extends ViewModel {
             FEEDBACK_FAILURE = 23;
 
     /* Status Flags */
-    private final MutableLiveData<Integer> driverStatus = new MutableLiveData<>();
+    @VisibleForTesting
+    public final MutableLiveData<Integer> driverStatus = new MutableLiveData<>();
     private final MutableLiveData<Boolean> userLocationsLoaded = new MutableLiveData<>(false);
     private final MutableLiveData<Boolean> rideFound = new MutableLiveData<>();
     private final MutableLiveData<Integer> vehicleSelected = new MutableLiveData<>();
@@ -86,15 +88,6 @@ public class RideViewModel extends ViewModel {
         this.repository = repository;
         driver = new Driver();
         driver.setUserID(USER_ID);
-        // TODO : Complete syncing with repository
-//        driver = repository.getDriver();
-//        if (driver == null) {
-//            driver = new Driver();
-//            driver.setUserID(USER_ID);
-//            userDataLoaded.setValue(false);
-//        } else {
-//            userDataLoaded.setValue(true);
-//        }
     }
 
     // Getters and Setters
@@ -552,6 +545,7 @@ public class RideViewModel extends ViewModel {
                 if (object != null) {
                     boolean aBoolean = (boolean) object;
                     if (aBoolean) {
+                        Log.d(TAG, "giveRiderFeedback: FEEDBACK SUCCESS");
                         driverStatus.postValue(FEEDBACK_SUCCESS);
                     } else {
                         driverStatus.postValue(FEEDBACK_FAILURE);
@@ -571,5 +565,9 @@ public class RideViewModel extends ViewModel {
     // ---------------------------------------------------------------------------------------------
     public void resetFlags() {
         driverStatus.postValue(MARKED_ACTIVE_SUCCESS);
+    }
+
+    public void setRideRequest(RideRequest loadRideRequestForTesting) {
+        this.rideRequest = loadRideRequestForTesting;
     }
 }

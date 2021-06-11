@@ -55,7 +55,7 @@ public class VehicleRegistrationFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.vehicle_registration_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_vehicle_registration, container, false);
 
         // Initializing UI Elements
         makeText = view.findViewById(R.id.make);

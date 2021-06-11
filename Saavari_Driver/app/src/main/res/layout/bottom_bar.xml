@@ -29,7 +29,7 @@
             android:gravity="center"
             android:paddingTop="16dp"
             android:paddingBottom="18dp"
-            android:text="Your Offline"
+            android:text="You're Offline"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Display4"
             android:textColor="?attr/negativeTextColor"

@@ -64,7 +64,7 @@ public class VehicleRegistrationAdapter extends RecyclerView.Adapter<VehicleRegi
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.vehicle_card, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_vehicle, parent, false);
         return new ItemViewHolder(v, listener);
     }
 

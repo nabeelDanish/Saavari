@@ -61,7 +61,7 @@ public class VehicleSelectAdapter extends RecyclerView.Adapter<VehicleSelectAdap
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.ride_type_card, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_ride_type, parent, false);
         return new ItemViewHolder(v, listener);
     }
 

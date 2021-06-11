@@ -51,27 +51,27 @@
 
         <include
             android:id="@+id/theme1"
-            layout = "@layout/theme_select"/>
+            layout = "@layout/card_theme_select"/>
 
         <include
             android:id="@+id/theme2"
-            layout = "@layout/theme_select"/>
+            layout = "@layout/card_theme_select"/>
 
         <include
             android:id="@+id/theme3"
-            layout = "@layout/theme_select"/>
+            layout = "@layout/card_theme_select"/>
 
         <include
             android:id="@+id/theme4"
-            layout = "@layout/theme_select"/>
+            layout = "@layout/card_theme_select"/>
 
         <include
             android:id="@+id/theme5"
-            layout = "@layout/theme_select"/>
+            layout = "@layout/card_theme_select"/>
 
         <include
             android:id="@+id/theme6"
-            layout = "@layout/theme_select"/>
+            layout = "@layout/card_theme_select"/>
 
     </LinearLayout>
 

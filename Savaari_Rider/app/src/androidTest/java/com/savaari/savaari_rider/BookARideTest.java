@@ -53,6 +53,9 @@ public class BookARideTest {
         intent.putExtra("USER_ID", 1);
     }
 
+    //@Rule
+    //public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
+
     @Rule
     public ActivityScenarioRule<RideActivity> activityRule
             = new ActivityScenarioRule<>(intent);
@@ -118,6 +121,12 @@ public class BookARideTest {
         }
 
     }
+    @Test
+    public void onSearchRideActionTest() {
+        // Test Search Ride UI functionality with & without network
+        onSearchRideActionWithNetworkConfigTest(false);
+        onSearchRideActionWithNetworkConfigTest(true);
+    }
     
     private Rider setFakeRider(Rider rider) {
         rider.setUsername("samplerider");
@@ -174,8 +183,6 @@ public class BookARideTest {
         onSearchRideActionWithNetworkConfigTest(false);
         onSearchRideActionWithNetworkConfigTest(true);
     }
-
-
     public void onSearchRideActionWithNetworkConfigTest(boolean networkAvailable) {
         LatLng pickupLocation = new LatLng(25.351364, 55.397967);
         LatLng dropOffLocation = new LatLng(25.197197,  55.274376);
